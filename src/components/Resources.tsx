@@ -12,7 +12,7 @@ const Resources = () => {
       description: "A 4-week intensive training program for growing as a disciple of Christ",
       duration: "4 weeks",
       downloadUrl: "#",
-      image: "https://images.pexels.com/photos/1112048/pexels-photo-1112048.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+      image: "https://images.pexels.com/photos/8383409/pexels-photo-8383409.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
     },
     {
       id: 2,
@@ -20,7 +20,7 @@ const Resources = () => {
       description: "Discovering God's purpose for your life and career",
       duration: "40 days devotion",
       videoPlaylistUrl: "https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf",
-      image: "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+      image: "https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
       isVideoSeries: true
     }
   ];
@@ -40,7 +40,7 @@ const Resources = () => {
       description: "Devotions for every day of the year with encouraging messages of hope and peace",
       type: "Daily Devotional",
       externalUrl: "https://www.jesuscalling.com/",
-      image: "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+      image: "https://images.pexels.com/photos/8383412/pexels-photo-8383412.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
     },
     {
       id: 3,
@@ -48,7 +48,7 @@ const Resources = () => {
       description: "Rich theological devotionals that help deepen your understanding of God's character",
       type: "Daily Devotional",
       externalUrl: "https://www.desiringgod.org/",
-      image: "https://images.pexels.com/photos/1112048/pexels-photo-1112048.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+      image: "https://images.pexels.com/photos/8383672/pexels-photo-8383672.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
     }
   ];
 

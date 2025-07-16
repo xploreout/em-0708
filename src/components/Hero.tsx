@@ -39,8 +39,7 @@ const Hero = () => {
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
-            Join our amazing community of adults as we grow together in faith, friendship, and fun! 
-            We'd love to get to know you and help you find your tribe here. ✨
+            Welcoming to our Christ centered community of adults growing together in faith, building genuine relationships, and serving together.  ✨
           </p>
           
           <div className="flex items-center justify-center space-x-3 text-orange-600 mb-10">

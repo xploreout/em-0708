@@ -41,27 +41,29 @@ const Announcements = () => {
       time: "12:45 - 2:30 PM",
       location: "varies",
       description: "Did you ever wonder what exactly the purpose of your life is? Does it matter what you do and live your life? Join us to explore a 6 sessions book study by Pastor Rick Warren on Purpose Driven Life.",
-      image: "https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      image: "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-orange-400 to-pink-400"
     },
     {
       id: 2,
-      title: "Fall Outing",
+      title: "Nov Outing",
       date: "Mid November",
       time: "8AM",
       location: "Tbd",
-      description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will finish with a lunch at a restaurent. All skill levels welcome!",
-      image: "https://images.pexels.com/photos/618833/pexels-photo-618833.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will finish with lunch. All skill levels welcome!",
+      image: "https://images.pexels.com/photos/531857/pexels-photo-531857.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-green-400 to-blue-400"
+
+      
     },
     {
       id: 3,
-      title: "Community Service",
+      title: "Operation Christmas Child",
       date: "December 2025",
       time: "9:00 AM - 2:00 PM",
       location: "Operation Christmas Child Warehouse",
-      description: "Make a difference in our community! We'll be at warehouse gathering and sorting shoe boxes to be ready to ship to children all over the world, sharing the joy of Jesus love and gift of salvation",
-      image: "https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      description: "Make a difference in our community! We'll be at warehouse handling donated shoe boxes to be shipped to children all over the world, sharing the joy of Jesus love and gift of salvation",
+      image: "https://images.pexels.com/photos/1666069/pexels-photo-1666069.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-purple-400 to-pink-400"
     }
   ];
@@ -82,30 +84,30 @@ const Announcements = () => {
     // },
     {
       id: 5,
-      title: "EMA Open House",
+      title: "Adults Open House",
       date: "Aug 9, 2025",
       location: "Alpharetta",
       description: "A wonderful start to our new book study, filled with dumpling-making fun, games, meaningful conversation and fellowship!",
       images: [
-        "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/1677710/pexels-photo-1677710.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+        "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+        // "https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+        // "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+        "https://images.pexels.com/photos/6646201/pexels-photo-6646201.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
       ],
       attendees: 38
     },
     {
       id: 6,
-      title: "EMY Open House",
+      title: "Youth Open House",
       date: "Aug 2025",
       location: "Club House",
       description: "What an amazing Saturday to kick off a new year of youth group! We enjoyed great fellowship and warmly welcomed everyone back after the summer.",
       images: [
-        "https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/618833/pexels-photo-618833.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+        "https://images.pexels.com/photos/5384585/pexels-photo-5384585.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+        "https://images.pexels.com/photos/7429625/pexels-photo-7429625.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+        // "https://images.pexels.com/photos/618833/pexels-photo-618833.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+        // "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+        // "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
       ],
       attendees: 45
     },
