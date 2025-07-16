@@ -203,13 +203,13 @@ const Resources = () => {
 
         {/* Video Archive */}
         <div className="mb-20">
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center">
+          {/* <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center">
             <Video className="h-8 w-8 mr-3 text-blue-600" />
             Video Archive
-          </h3>
+          </h3> */}
           
           {/* Featured Videos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+          {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
             {featuredVideos.map((video) => (
               <div key={video.id} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
                 <div className="relative">
@@ -244,7 +244,7 @@ const Resources = () => {
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
 
         {/* Call to Action */}

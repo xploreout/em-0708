@@ -46,12 +46,12 @@ const Hero = () => {
           <div className="flex items-center justify-center space-x-3 text-orange-600 mb-10">
             <Users className="h-6 w-6" />
             <span className="text-lg font-semibold">
-              Part of{' '}
+              We are part of{' '}
               <a 
                 href="https://www.acbcc.org" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="hover:text-pink-600 transition-colors duration-200 underline decoration-2 underline-offset-2"
+                className="hover:text-pink-600 transition-colors duration-200  decoration-2 underline-offset-2"
               >
                 ACBCC
               </a>
