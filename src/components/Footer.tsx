@@ -1,12 +1,6 @@
 import React, { useState } from 'react'
-import {
-  Facebook,
-  Instagram,
-  Youtube,
-  Mail,
-  MapPin,
-  Church,
-} from 'lucide-react'
+import { Mail, MapPin, Church } from 'lucide-react'
+import { FaInstagram, FaFacebook, FaYoutube } from 'react-icons/fa'
 
 const Footer = () => {
   const [showMap, setShowMap] = useState(false)
@@ -31,9 +25,7 @@ const Footer = () => {
               </h3>
             </div>
             <p className='text-gray-300 mb-4 leading-relaxed'>
-              We are a group of vibrant Jesus followers committed to growing together in
-              faith, friendship, and life! Join us as we serve God and our
-              community with joy and open hearts. ✨
+              We're a lively community of Jesus followers growing together in faith, friendship, and everyday life. Come join us as we joyfully serve God and our neighbors with open hearts! ✨
             </p>
             <div className='flex space-x-4'>
               <a
@@ -41,21 +33,21 @@ const Footer = () => {
                 className='text-gray-400 hover:text-orange-400 transition-colors duration-200 transform hover:scale-110'
                 aria-label='Facebook'
               >
-                <Facebook className='h-6 w-6' />
-              </a>
-              <a
-                href='#'
-                className='text-gray-400 hover:text-pink-400 transition-colors duration-200 transform hover:scale-110'
-                aria-label='Instagram'
-              >
-                <Instagram className='h-6 w-6' />
+                <FaFacebook className='h-6 w-6' />
               </a>
               <a
                 href='https://www.instagram.com/acbccem/'
+                className='text-gray-400 hover:text-pink-400 transition-colors duration-200 transform hover:scale-110'
+                aria-label='Instagram'
+              >
+                <FaInstagram className='h-6 w-6' />
+              </a>
+              <a
+                href='#'
                 className='text-gray-400 hover:text-purple-400 transition-colors duration-200 transform hover:scale-110'
                 aria-label='YouTube'
               >
-                <Youtube className='h-6 w-6' />
+                <FaYoutube className='h-6 w-6' />
               </a>
             </div>
           </div>

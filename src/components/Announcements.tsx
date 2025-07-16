@@ -67,25 +67,25 @@ const Announcements = () => {
   ];
 
   const pastEvents = [
-    {
-      id: 4,
-      title: "AI and Career Opportunities Panel",
-      date: "February 5, 2024",
-      location: "Church Conference Room",
-      description: "Insightful panel discussion on how AI is shaping career paths and opportunities for the future.",
-      images: [
-        "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
-      ],
-      attendees: 42
-    },
+    // {
+    //   id: 4,
+    //   title: "AI and Career Opportunities Panel",
+    //   date: "February 5, 2024",
+    //   location: "Church Conference Room",
+    //   description: "Insightful panel discussion on how AI is shaping career paths and opportunities for the future.",
+    //   images: [
+    //     "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+    //     "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+    //     "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+    //   ],
+    //   attendees: 42
+    // },
     {
       id: 5,
-      title: "Music Jam Night",
-      date: "January 19, 2024",
-      location: "Church Youth Room",
-      description: "An amazing evening of music, worship, and fellowship with talented musicians from our community.",
+      title: "EMA Open House",
+      date: "Aug 9, 2025",
+      location: "Alpharetta",
+      description: "A wonderful start to our new book study, filled with dumpling-making fun, games, meaningful conversation and fellowship!",
       images: [
         "https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
         "https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
@@ -96,10 +96,10 @@ const Announcements = () => {
     },
     {
       id: 6,
-      title: "Winter Retreat 2024",
-      date: "February 10-12, 2024",
-      location: "Mountain Lodge",
-      description: "An amazing weekend of worship, fellowship, and spiritual growth in the mountains.",
+      title: "EMY Open House",
+      date: "Aug 2025",
+      location: "Club House",
+      description: "What an amazing Saturday to kick off a new year of youth group! We enjoyed great fellowship and warmly welcomed everyone back after the summer.",
       images: [
         "https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
         "https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
@@ -109,33 +109,33 @@ const Announcements = () => {
       ],
       attendees: 45
     },
-    {
-      id: 7,
-      title: "Valentine's Day Outreach",
-      date: "February 14, 2024",
-      location: "Downtown Area",
-      description: "Spread love in our community by distributing care packages to those in need.",
-      images: [
-        "https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/6995247/pexels-photo-6995247.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/6646919/pexels-photo-6646919.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
-      ],
-      attendees: 28
-    },
-    {
-      id: 8,
-      title: "Game Night Extravaganza",
-      date: "January 26, 2024",
-      location: "Church Youth Room",
-      description: "Epic night of board games, video games, and lots of laughter with pizza and snacks!",
-      images: [
-        "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
-      ],
-      attendees: 35
-    }
+    // {
+    //   id: 7,
+    //   title: "Valentine's Day Outreach",
+    //   date: "February 14, 2024",
+    //   location: "Downtown Area",
+    //   description: "Spread love in our community by distributing care packages to those in need.",
+    //   images: [
+    //     "https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+    //     "https://images.pexels.com/photos/6995247/pexels-photo-6995247.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+    //     "https://images.pexels.com/photos/6646919/pexels-photo-6646919.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+    //   ],
+    //   attendees: 28
+    // },
+    // {
+    //   id: 8,
+    //   title: "Game Night Extravaganza",
+    //   date: "January 26, 2024",
+    //   location: "Church Youth Room",
+    //   description: "Epic night of board games, video games, and lots of laughter with pizza and snacks!",
+    //   images: [
+    //     "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+    //     "https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+    //     "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+    //     "https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+    //   ],
+    //   attendees: 35
+    // }
   ];
 
   const handleEventInterest = (event: any) => {
