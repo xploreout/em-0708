@@ -6,23 +6,33 @@ const Resources = () => {
   const [showVideoArchive, setShowVideoArchive] = useState(false);
 
   const bibleStudies = [
+  
     {
       id: 1,
-      title: "Discipleship Training",
-      description: "A 4-week intensive training program for growing as a disciple of Christ",
-      duration: "4 weeks",
-      downloadUrl: "#",
-      image: "https://images.pexels.com/photos/8383409/pexels-photo-8383409.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+      title: "Purpose Driven Life - Intro",
+      description: "Discovering God's purpose for your life and career",
+      duration: "2 min",
+      videoPlaylistUrl: "https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf",
+      image: "./images/rickwarren.jpg",
+      isVideoSeries: true
     },
     {
       id: 2,
-      title: "Purpose Driven Life",
+      title: "Purpose Driven Life - Daily",
       description: "Discovering God's purpose for your life and career",
-      duration: "40 days devotion",
-      videoPlaylistUrl: "https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf",
+      duration: "5-10 min/40 days dev",
+      videoPlaylistUrl: "https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P",
       image: "https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
       isVideoSeries: true
-    }
+    },
+      {
+      id: 3,
+      title: "Discipleship Training",
+      description: "A 4-weeks intensive training program for growing as a disciple of Christ",
+      duration: "please contact us",
+      // downloadUrl: "#",
+      image: "https://images.pexels.com/photos/8383409/pexels-photo-8383409.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+    },
   ];
 
   const devotionalMaterials = [
@@ -142,16 +152,16 @@ const Resources = () => {
                       className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
                     >
                       <Play className="h-4 w-4" />
-                      <span>Watch Video Course</span>
+                      <span>Watch Video</span>
                     </a>
-                  ) : (
-                    <a 
-                      href={study.downloadUrl}
-                      className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
-                    >
-                      <Download className="h-4 w-4" />
-                      <span>Download Study</span>
-                    </a>
+                  ) : (<div></div>
+                    // <a 
+                    //   href={study.downloadUrl}
+                    //   className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+                    // >
+                    //   <Download className="h-4 w-4" />
+                    //   <span>Download Study</span>
+                    // </a>
                   )}
                 </div>
               </div>
