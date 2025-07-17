@@ -59,10 +59,10 @@ const Announcements = () => {
     {
       id: 3,
       title: "Operation Christmas Child",
-      date: "December 2025",
-      time: "9:00 AM - 2:00 PM",
+      date: "Early December",
+      duration: "2-4 hours",
       location: "Operation Christmas Child Warehouse",
-      description: "Make a difference in our community! We'll be at warehouse handling donated shoe boxes to be shipped to children all over the world, sharing the joy of Jesus love and gift of salvation",
+      description: "Make a difference in our community! We'll be at warehouse handling donated shoe boxes to be shipped to children all over the world, sharing the joy of Jesus love and His gift of salvation!",
       image: "https://images.pexels.com/photos/1666069/pexels-photo-1666069.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-purple-400 to-pink-400"
     }

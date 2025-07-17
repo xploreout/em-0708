@@ -262,7 +262,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
           </div>
 
           {/* Contact Information Display */}
-          <div className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-xl p-4">
+          {/* <div className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-xl p-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
               <Phone className="h-5 w-5 mr-2 text-orange-500" />
               Need Help? Contact Us
@@ -281,7 +281,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                 <span>123 Faith Avenue, Community City, ST 12345</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* reCAPTCHA */}
           <div className="flex justify-center">
