@@ -12,9 +12,10 @@ const Header = () => {
             <div className="bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-xl">
               <Church className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+            <a href="#" className="text-xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent hover:text-purple-600 transition-colors duration-200">
               ACBCC English Ministry
-            </span>
+            </a>
+          
           </div>
           
           {/* Desktop Navigation */}

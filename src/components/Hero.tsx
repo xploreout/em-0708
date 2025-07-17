@@ -1,5 +1,6 @@
 import React from 'react';
-import { Heart, Users, ArrowDown } from 'lucide-react';
+import { Users, ArrowDown } from 'lucide-react';
+import FireworkButton from './FireworkButton';
 
 const Hero = () => {
   return (
@@ -22,11 +23,12 @@ const Hero = () => {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <div className="flex justify-center mb-6">
+        <div className="text-center" >
+          <div className="flex justify-center mb-6 ">
+
             <div className="flex items-center space-x-2 bg-white/90 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-orange-200">
-              <Heart className="h-5 w-5 text-pink-500 animate-pulse" />
-              <span className="text-sm font-semibold text-gray-800 tracking-wide">Welcome to our vibrant community</span>
+              <FireworkButton/>
+              <span className="text-sm font-semibold text-gray-800 tracking-wide  transition-all duration-300 transform hover:-translate-y-1">Welcome to our vibrant community</span>
             </div>
           </div>
           

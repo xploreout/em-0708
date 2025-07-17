@@ -133,18 +133,17 @@ const NewcomerForm = () => {
     <section id="newcomer-form" className="py-16 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-semibold mb-4">
+          {/* <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-semibold mb-4">
             <Heart className="h-4 w-4" />
             <span>Join Our Family</span>
-          </div>
+          </div> */}
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
               Let's Stay Connected
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">
-            We'd love to learn more about you and help you find your tribe in our amazing adult community! 
-            Fill out this form so we can connect and make some awesome memories together. 🌟
+            We'd love to learn more about you and to welcome you to our amazing adult community! 🌟
           </p>
         </div>
 
