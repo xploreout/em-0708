@@ -98,7 +98,7 @@ const Resources = () => {
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover tools and materials to deepen your faith journey and grow in community with others! 📚✨
+            Discover materials to deepen your faith with the Lord Jesus Christ! 📚✨
           </p>
         </div>
 
