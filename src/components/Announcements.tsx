@@ -90,8 +90,6 @@ const Announcements = () => {
       description: "A wonderful start to our new book study, filled with dumpling-making fun, games, meaningful conversation and fellowship!",
       images: [
         "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        // "https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        // "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
         "https://images.pexels.com/photos/6646201/pexels-photo-6646201.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
       ],
       // attendees: 38
@@ -105,39 +103,9 @@ const Announcements = () => {
       images: [
         "https://images.pexels.com/photos/5384585/pexels-photo-5384585.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
         "https://images.pexels.com/photos/7429625/pexels-photo-7429625.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        // "https://images.pexels.com/photos/618833/pexels-photo-618833.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        // "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        // "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
       ],
       // attendees: 20
     },
-    // {
-    //   id: 7,
-    //   title: "Valentine's Day Outreach",
-    //   date: "February 14, 2024",
-    //   location: "Downtown Area",
-    //   description: "Spread love in our community by distributing care packages to those in need.",
-    //   images: [
-    //     "https://images.pexels.com/photos/6646918/pexels-photo-6646918.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-    //     "https://images.pexels.com/photos/6995247/pexels-photo-6995247.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-    //     "https://images.pexels.com/photos/6646919/pexels-photo-6646919.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
-    //   ],
-    //   attendees: 28
-    // },
-    // {
-    //   id: 8,
-    //   title: "Game Night Extravaganza",
-    //   date: "January 26, 2024",
-    //   location: "Church Youth Room",
-    //   description: "Epic night of board games, video games, and lots of laughter with pizza and snacks!",
-    //   images: [
-    //     "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-    //     "https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-    //     "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-    //     "https://images.pexels.com/photos/1540406/pexels-photo-1540406.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
-    //   ],
-    //   attendees: 35
-    // }
   ];
 
   const handleEventInterest = (event: any) => {
@@ -259,10 +227,6 @@ const Announcements = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          {/* <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-semibold mb-4">
-            <Calendar className="h-4 w-4" />
-            <span>What's Happening</span>
-          </div> */}
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             <span className="bg-gradient-to-r from-orange-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
               Announcements
@@ -351,17 +315,17 @@ const Announcements = () => {
                 <div className="relative">
                   <PhotoCollage images={event.images} title={event.title} />
                   <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2">
-                    <button
+                    <div
                       onClick={(e) => handleHeartClick(event.id, e)}
                       className={`transition-colors duration-200 ${
                         likedEvents.has(event.id) 
                           ? 'text-red-500' 
                           : 'text-gray-400 hover:text-red-400'
                       }`}
-                      disabled={likedEvents.has(event.id)}
+                      // disabled={likedEvents.has(event.id)}
                     >
                       <Heart className={`h-4 w-4 ${likedEvents.has(event.id) ? 'fill-current' : ''}`} />
-                    </button>
+                    </div>
                   </div>
                   <div className="absolute bottom-4 left-4 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-semibold">
                     {heartLikes[event.id] || 0} ❤️
