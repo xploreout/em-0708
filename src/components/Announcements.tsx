@@ -50,7 +50,7 @@ const Announcements = () => {
       date: "Mid November",
       time: "8AM",
       location: "Tbd",
-      description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will finish with lunch. All skill levels welcome!",
+      description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will finish with optional lunch together. All skill levels welcome!",
       image: "https://images.pexels.com/photos/531857/pexels-photo-531857.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-green-400 to-blue-400"
 
@@ -94,14 +94,14 @@ const Announcements = () => {
         // "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
         "https://images.pexels.com/photos/6646201/pexels-photo-6646201.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
       ],
-      attendees: 38
+      // attendees: 38
     },
     {
       id: 6,
       title: "Youth Open House",
       date: "Aug 2025",
       location: "Club House",
-      description: "What an amazing Saturday to kick off a new year of youth group! We enjoyed great fellowship and warmly welcomed everyone back after the summer.",
+      description: "What an amazing Saturday to kick off a new year of youth group! We enjoyed great games and fellowship to warmly welcome everyone back after the summer.",
       images: [
         "https://images.pexels.com/photos/5384585/pexels-photo-5384585.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
         "https://images.pexels.com/photos/7429625/pexels-photo-7429625.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
@@ -109,7 +109,7 @@ const Announcements = () => {
         // "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
         // "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
       ],
-      attendees: 45
+      // attendees: 20
     },
     // {
     //   id: 7,

@@ -345,7 +345,7 @@ const NewcomerForm = () => {
             {/* reCAPTCHA */}
             <div className="flex justify-center">
               <ReCAPTCHA
-                sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // Test site key
+                sitekey="6LdMlYYrAAAAAF0I4BVZeKhJA8kExec_WXc5apyi" 
                 onChange={handleRecaptchaChange}
                 theme="light"
               />
