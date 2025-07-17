@@ -286,7 +286,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
           {/* reCAPTCHA */}
           <div className="flex justify-center">
             <ReCAPTCHA
-              sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // Test site key
+              sitekey="6Ld2k4YrAAAAAJzKAMRU7GEZLVIECGowsGBFFr3i" 
               onChange={handleRecaptchaChange}
               theme="light"
             />
