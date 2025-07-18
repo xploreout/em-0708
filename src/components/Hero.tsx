@@ -41,20 +41,20 @@ const Hero = () => {
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
-            Welcoming to our Christ centered community of adults growing together in faith, building genuine relationships, and serving together.  ✨
+            Welcome our Christ-centered community where we grow in faith, build relationships, and serve the community together.  ✨
           </p>
           
           <div className="flex items-center justify-center space-x-3 text-orange-600 mb-10">
             <Users className="h-6 w-6" />
             <span className="text-lg font-semibold">
-              We are part of{' '}
+              We are a part of{' '}
               <a 
                 href="https://www.acbcc.org" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:text-pink-600 transition-colors duration-200  decoration-2 underline-offset-2"
               >
-                ACBCC
+                Atlanta Chinese Bible Community Church (ACBCC)
               </a>
             </span>
           </div>
