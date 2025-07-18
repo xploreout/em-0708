@@ -13,7 +13,7 @@ const Resources = () => {
       description: "Discovering God's purpose for your life and career",
       duration: "2 min",
       videoPlaylistUrl: "https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf",
-      image: "./images/rickwarren.jpg",
+      image: "./images/pdl2.jpg",
       isVideoSeries: true
     },
     {

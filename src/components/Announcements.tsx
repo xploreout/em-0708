@@ -252,7 +252,7 @@ const Announcements = () => {
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2">
-                    <button
+                    <div
                       onClick={(e) => handleHeartClick(event.id, e)}
                       className={`transition-colors duration-200 ${
                         likedEvents.has(event.id) 
@@ -262,7 +262,7 @@ const Announcements = () => {
                       disabled={likedEvents.has(event.id)}
                     >
                       <Heart className={`h-4 w-4 ${likedEvents.has(event.id) ? 'fill-current' : ''}`} />
-                    </button>
+                    </div>
                   </div>
                   <div className="absolute bottom-4 right-4 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-semibold">
                     {heartLikes[event.id] || 0} ❤️
