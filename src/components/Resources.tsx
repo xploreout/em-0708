@@ -143,7 +143,7 @@ const Resources = () => {
                       10-15min | 40 days devotions
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors">
+                  <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer">
                   <a
                     href="https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf"
                     target="_blank"
@@ -152,7 +152,7 @@ const Resources = () => {
                    <span >An Introduction by Pastor Rick Warren</span>
                   </a>
                   </div>
-                  <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors">
+                  <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer">
                   <a
                    href="https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P"
                    target="_blank"
@@ -160,7 +160,7 @@ const Resources = () => {
                     <span>Daily Devotion to Listen</span>
                   </a>
                   </div>
-                   <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors">
+                   <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer">
                    <a  
                     href="https://dn720003.ca.archive.org/0/items/the-purpose-driven-life/The%20Purpose%20Driven%20Life.pdf"
                     target="_blank"
