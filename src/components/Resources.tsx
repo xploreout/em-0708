@@ -146,18 +146,25 @@ const Resources = () => {
                   <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors">
                   <a
                     href="https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf"
+                    target="_blank"
+                    rel="Intro to PDL"
                   >
                    <span >An Introduction by Pastor Rick Warren</span>
                   </a>
                   </div>
                   <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors">
                   <a
-                   href="https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P">
+                   href="https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P"
+                   target="_blank"
+                   rel="Listen Daily Devotion">
                     <span>Daily Devotion to Listen</span>
                   </a>
                   </div>
                    <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors">
-                   <a>
+                   <a  
+                    href="https://dn720003.ca.archive.org/0/items/the-purpose-driven-life/The%20Purpose%20Driven%20Life.pdf"
+                    target="_blank"
+                    rel="Read Daily Devotion">
                     <span>Daily Devotion to Read</span>
                   </a>
                   </div>
