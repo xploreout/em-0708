@@ -1,30 +1,31 @@
 import React, { useState } from 'react';
-import { Book, Video, Heart, Download, ExternalLink, Play, Calendar } from 'lucide-react';
+import { Listen, Book, Video, Heart, Download, ExternalLink, Play, Calendar } from 'lucide-react';
 import VideoArchive from './VideoArchive';
+
 
 const Resources = () => {
   const [showVideoArchive, setShowVideoArchive] = useState(false);
 
   const bibleStudies = [
   
-    {
-      id: 1,
-      title: "Purpose Driven Life - Intro",
-      description: "Discovering God's purpose for your life and career",
-      duration: "2 min",
-      videoPlaylistUrl: "https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf",
-      image: "./images/pdl2.jpg",
-      isVideoSeries: true
-    },
-    {
-      id: 2,
-      title: "Purpose Driven Life - Daily",
-      description: "Discovering God's purpose for your life and career",
-      duration: "5-10 min/40 days dev",
-      videoPlaylistUrl: "https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P",
-      image: "https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-      isVideoSeries: true
-    },
+    // {
+    //   id: 1,
+    //   title: "Purpose Driven Life - Intro",
+    //   description: "Discovering God's purpose for your life and career",
+    //   duration: "2 min",
+    //   videoPlaylistUrl: "https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf",
+    //   image: "./images/pdl2.jpg",
+    //   isVideoSeries: true
+    // },
+    // {
+    //   id: 2,
+    //   title: "Purpose Driven Life - Daily",
+    //   description: "Discovering God's purpose for your life and career",
+    //   duration: "5-10 min/40 days dev",
+    //   videoPlaylistUrl: "https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P",
+    //   image: "https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+    //   isVideoSeries: true
+    // },
       {
       id: 3,
       title: "Discipleship Training",
@@ -119,6 +120,50 @@ const Resources = () => {
             Bible Studies
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div  className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
+                <div className="relative">
+                  <img 
+                    src="./images/pdl2.jpg" 
+                    alt="purpose driven life"
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                
+                <div className="p-6">
+                  <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
+                    The Purpose Driven Life 
+                  </h4>
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                    Discover God's purpose for your life.
+                  </p>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <span className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      10-15min | 40 days devotions
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors">
+                  <a
+                    href="https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf"
+                  >
+                   <span >An Introduction by Pastor Rick Warren</span>
+                  </a>
+                  </div>
+                  <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors">
+                  <a
+                   href="https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P">
+                    <span>Daily Devotion to Listen</span>
+                  </a>
+                  </div>
+                   <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors">
+                   <a>
+                    <span>Daily Devotion to Read</span>
+                  </a>
+                  </div>
+                </div>
+              </div>
+
             {bibleStudies.map((study) => (
               <div key={study.id} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
                 <div className="relative">
