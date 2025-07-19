@@ -37,9 +37,9 @@ const Announcements = () => {
     {
       id: 1,
       title: "Book Study Fellowship",
-      date: "2nd and 4th Sunday of each month ",
-      time: "12:45 - 2:30 PM",
-      location: "varies",
+      date: "8/22, 1st/3rd Friday each month  ",
+      time: "7:30PM",
+      location: "DMS",
       description: "Did you ever wonder what exactly the purpose of your life is? Does it matter what you do and live your life? Join us to explore a 6 sessions book study by Pastor Rick Warren on Purpose Driven Life.",
       image: "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-orange-400 to-pink-400"
@@ -47,8 +47,8 @@ const Announcements = () => {
     {
       id: 2,
       title: "Nov Outing",
-      date: "Mid November",
-      time: "8AM",
+      date: "November 22",
+      time: "Sat 8AM",
       location: "Tbd",
       description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will finish with optional lunch together. All skill levels welcome!",
       image: "https://images.pexels.com/photos/531857/pexels-photo-531857.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
@@ -60,7 +60,7 @@ const Announcements = () => {
       id: 3,
       title: "Operation Christmas Child",
       date: "Early December",
-      time: "2-4 hours",
+      time: "2-4hr",
       location: "Operation Christmas Child Warehouse",
       description: "Make a difference in our community! We'll be at warehouse handling donated shoe boxes to be shipped to children all over the world, sharing the joy of Jesus love and His gift of salvation!",
       image: "https://images.pexels.com/photos/1666069/pexels-photo-1666069.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
