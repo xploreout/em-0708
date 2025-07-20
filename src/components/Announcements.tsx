@@ -36,20 +36,30 @@ const Announcements = () => {
   const upcomingEvents = [
     {
       id: 1,
-      title: "Book Study Fellowship",
-      date: "8/22, 1st/3rd Friday each month  ",
-      time: "7:30PM",
-      location: "DMS",
-      description: "Did you ever wonder what exactly the purpose of your life is? Does it matter what you do and live your life? Join us to explore a 6 sessions book study by Pastor Rick Warren on Purpose Driven Life.",
-      image: "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      title: "English Ministry Open Hosue",
+      date: "Saturday, August 9",
+      time: "3:30pm",
+      location: "Alpharetta, GA",
+      description: "Join us for a dumpling making and eating fest. Get to know each other. Praise and worship God together. Celebrate the kickoff of the English ministry.",
+      image: "./images/poster8-9.jpg",
       color: "from-orange-400 to-pink-400"
     },
     {
       id: 2,
-      title: "Nov Outing",
+      title: "Book Study Fellowship",
+      date: "August 22, 1st and 3rd Friday each month  ",
+      time: "7:30pm",
+      location: "Duluth, GA",
+      description: "Did you ever wonder what exactly the purpose of your life is? Does it matter what you do and live your life? Join us to explore a 6 sessions book study by Pastor Rick Warren on 'The Purpose Driven Life'. Click 'Resource' for study materials.",
+      image: "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      color: "from-orange-400 to-pink-400"
+    },
+    {
+      id: 3,
+      title: "November Outing",
       date: "November 22",
-      time: "Sat 8AM",
-      location: "Tbd",
+      time: "Saturday 8am",
+      location: "TBD",
       description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will finish with optional lunch together. All skill levels welcome!",
       image: "https://images.pexels.com/photos/531857/pexels-photo-531857.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-green-400 to-blue-400"
@@ -57,7 +67,7 @@ const Announcements = () => {
       
     },
     {
-      id: 3,
+      id: 4,
       title: "Operation Christmas Child",
       date: "Early December",
       time: "2-4hr",
@@ -82,18 +92,18 @@ const Announcements = () => {
     //   ],
     //   attendees: 42
     // },
-    {
-      id: 5,
-      title: "Adults Open House",
-      date: "Aug 9, 2025",
-      location: "Alpharetta",
-      description: "A wonderful start to our new book study, filled with dumpling-making fun, games, meaningful conversation and fellowship!",
-      images: [
-        "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/6646201/pexels-photo-6646201.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
-      ],
-      // attendees: 38
-    },
+    // {
+    //   id: 5,
+    //   title: "Adults Open House",
+    //   date: "Aug 9, 2025",
+    //   location: "Alpharetta",
+    //   description: "A wonderful start to our new book study, filled with dumpling-making fun, games, meaningful conversation and fellowship!",
+    //   images: [
+    //     "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+    //     "https://images.pexels.com/photos/6646201/pexels-photo-6646201.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+    //   ],
+    //   // attendees: 38
+    // },
     {
       id: 6,
       title: "Youth Open House",
@@ -245,6 +255,7 @@ const Announcements = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {upcomingEvents.map((event) => (
               <div key={event.id} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
+                 {/* transition-all duration-300 transform hover:-translate-y-2 group */}
                 <div className="relative">
                   <img 
                     src={event.image} 
@@ -264,9 +275,9 @@ const Announcements = () => {
                       <Heart className={`h-4 w-4 ${likedEvents.has(event.id) ? 'fill-current' : ''}`} />
                     </div>
                   </div>
-                  <div className="absolute bottom-4 right-4 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                  {/* <div className="absolute bottom-4 right-4 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-semibold">
                     {heartLikes[event.id] || 0} ❤️
-                  </div>
+                  </div> */}
                 </div>
                 
                 <div className="p-6">
@@ -291,10 +302,9 @@ const Announcements = () => {
                       <span>{event.location}</span>
                     </div>
                   </div>
-                  
                   <button 
                     onClick={() => handleEventInterest(event)}
-                    className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105"
+                    className="pt-2 w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105"
                   >
                     I'm Interested! 🙋‍♀️
                   </button>
