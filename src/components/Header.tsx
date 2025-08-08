@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X, Church, ArrowLeft } from 'lucide-react';
+import { FaInstagram } from 'react-icons/fa';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -76,6 +77,16 @@ const Header = () => {
               >
                 Resources
               </a>
+              <a
+                href="https://www.instagram.com/acbccem/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-xl"
+                onClick={() => setIsMenuOpen(false)}
+                aria-label='Instagram'
+              >
+                <FaInstagram className="h-6 w-6 text-gray" />
+              </a> 
             </nav>
           </div>
         )}
