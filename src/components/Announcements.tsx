@@ -66,6 +66,18 @@ const Announcements = () => {
     },
     {
       id: 4,
+      title: "Youth Open House",
+      date: "August 23",
+      time: "Saturday 4-7pm",
+      location: "Club House - details after registration.",
+      description: "An amazing Saturday to kick off a new year of youth group! We will have great activities and fellowship to warmly welcome everyone back after the summer.",
+      image: "./images/yopenhse.JPG",
+      color: "from-green-400 to-blue-400"
+
+      
+    },
+     {
+      id: 5,
       title: "November Outing",
       date: "November 22",
       time: "Saturday 8am",
@@ -77,7 +89,7 @@ const Announcements = () => {
       
     },
     {
-      id: 5,
+      id: 6,
       title: "Operation Christmas Child",
       date: "Early December",
       time: "2-4hr",
@@ -90,15 +102,15 @@ const Announcements = () => {
 
   const pastEvents = [
     {
-      id: 1,
-      title: "Youth Open House",
-      date: "Aug 2025",
-      location: "Club House",
-      description: "What an amazing Saturday to kick off a new year of youth group! We enjoyed great games and fellowship to warmly welcome everyone back after the summer.",
-      images: [
-        "https://images.pexels.com/photos/5384585/pexels-photo-5384585.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-        "https://images.pexels.com/photos/7429625/pexels-photo-7429625.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-      ],
+      // id: 1,
+      // title: "Youth Open House",
+      // date: "Aug 2025",
+      // location: "Club House",
+      // description: "What an amazing Saturday to kick off a new year of youth group! We enjoyed great games and fellowship to warmly welcome everyone back after the summer.",
+      // images: [
+      //   "https://images.pexels.com/photos/5384585/pexels-photo-5384585.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+      //   "https://images.pexels.com/photos/7429625/pexels-photo-7429625.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+      // ],
       // attendees: 20
     },
   ];
@@ -299,59 +311,7 @@ const Announcements = () => {
           </div>
         </div>
 
-        {/* Past Events */}
-        <div>
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            📸 Recent Memories
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {pastEvents.map((event) => (
-              <div key={event.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group relative">
-                <div className="relative">
-                  <PhotoCollage images={event.images} title={event.title} />
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2">
-                    <div
-                      onClick={(e) => handleHeartClick(event.id, e)}
-                      className={`transition-colors duration-200 ${
-                        likedEvents.has(event.id) 
-                          ? 'text-red-500' 
-                          : 'text-gray-400 hover:text-red-400'
-                      }`}
-                      // disabled={likedEvents.has(event.id)}
-                    >
-                      <Heart className={`h-4 w-4 ${likedEvents.has(event.id) ? 'fill-current' : ''}`} />
-                    </div>
-                  </div>
-                  <div className="absolute bottom-4 left-4 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    {heartLikes[event.id] || 0} ❤️
-                  </div>
-                  
-                  {/* Event Details Overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4">
-                    <h4 className="text-lg font-bold text-white mb-1">
-                      {event.title}
-                    </h4>
-                    <div className="flex items-center text-white/90 text-sm mb-1">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>{event.date}</span>
-                    </div>
-                    <div className="flex items-center text-white/90 text-sm">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      <span>{event.location}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="p-4">
-                  <p className="text-gray-600 mb-3 text-sm">
-                    {event.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
+       
         {/* Call to Action */}
         {/* <div className="text-center mt-16">
           <div className="bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl p-8 text-white">
