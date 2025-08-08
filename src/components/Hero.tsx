@@ -15,7 +15,7 @@ const Hero = () => {
       {/* Hero Image */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="https://images.pexels.com/photos/1255061/pexels-photo-1255061.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop" 
+          src="https://images.pexels.com/photos/33307468/pexels-photo-33307468.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop" 
           alt="Young adults fellowship" 
           className="w-full h-full object-cover opacity-20"
         />
