@@ -5,7 +5,7 @@ import { FaInstagram, FaFacebook, FaYoutube } from 'react-icons/fa'
 const Footer = () => {
   const [showMap, setShowMap] = useState(false)
 
-  const address = '2965 Duluth Hwy, Duluth, GA 30096'
+  const address = '2965 Duluth Hwy, Duluth GA 30096'
   const googleMapsUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dronpxnlwSugjY&q=${encodeURIComponent(
     address
   )}`
@@ -24,31 +24,36 @@ const Footer = () => {
                 ACBCC English Ministry
               </h3>
             </div>
-            <p className='text-gray-300 mb-4 leading-relaxed'>
-              We're a lively community of Jesus followers growing together in faith, friendship, and everyday life. Come join us as we joyfully serve God and our neighbors with open hearts! ✨
+            <p className='text-gray-300 mb-4 leading-relaxed mr-10'>
+              We're a lively community of Jesus followers growing together in
+              faith, friendship, and everyday life. Our mission is to cultivate
+              a Christ-centered ministry where people across cultures and
+              generations belong, believe and become lifelong disciples of Jesus
+              Christ. Come join us as we joyfully serve God and our neighbors
+              with open hearts! ✨
             </p>
             <div className='flex space-x-4'>
-              <a
+              {/* <a
                 href='#'
                 className='text-gray-400 hover:text-orange-400 transition-colors duration-200 transform hover:scale-110'
                 aria-label='Facebook'
               >
                 <FaFacebook className='h-6 w-6' />
-              </a>
+              </a> */}
               <a
                 href='https://www.instagram.com/acbccem/'
                 className='text-gray-400 hover:text-pink-400 transition-colors duration-200 transform hover:scale-110'
                 aria-label='Instagram'
               >
                 <FaInstagram className='h-6 w-6' />
-              </a>
-              <a
+              </a> <span>Follow Us</span>
+              {/* <a
                 href='#'
                 className='text-gray-400 hover:text-purple-400 transition-colors duration-200 transform hover:scale-110'
                 aria-label='YouTube'
               >
                 <FaYoutube className='h-6 w-6' />
-              </a>
+              </a> */}
             </div>
           </div>
 
