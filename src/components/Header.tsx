@@ -25,7 +25,7 @@ const Header = () => {
               href="https://www.acbcc.org" 
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-semibold flex items-center space-x-1"
+              className="text-gray-700 hover:text-blue-400 transition-colors duration-200 font-semibold flex items-center space-x-1"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>ACBCC</span>
@@ -36,6 +36,17 @@ const Header = () => {
             <a href="#resources" className="text-gray-700 hover:text-purple-600 transition-colors duration-200 font-semibold">
               Resources
             </a>
+             <a
+                href="https://www.instagram.com/acbccem/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-700 hover:text-purple-400 transition-colors duration-200 font-semibold flex items-center space-x-1"
+                onClick={() => setIsMenuOpen(false)}
+                aria-label='Instagram'
+              >
+                <FaInstagram className="h-6 w-6 text-gray" />
+                <span>Follow Us</span>
+              </a> 
           </nav>
 
           {/* Mobile menu button */}
@@ -57,7 +68,7 @@ const Header = () => {
                 href="https://www.acbcc.org" 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-700 hover:text-blue-600 transition-colors duration-200 font-semibold py-2 flex items-center space-x-1"
+                className="text-gray-700 hover:text-blue-400 transition-colors duration-200 font-semibold py-2 flex items-center space-x-1"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -81,11 +92,12 @@ const Header = () => {
                 href="https://www.instagram.com/acbccem/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-xl"
+                className="text-orange-700 hover:text-purple-400 transition-colors duration-200 font-semibold flex items-center space-x-1"
                 onClick={() => setIsMenuOpen(false)}
                 aria-label='Instagram'
               >
                 <FaInstagram className="h-6 w-6 text-gray" />
+                <span>Follow Us</span>
               </a> 
             </nav>
           </div>
