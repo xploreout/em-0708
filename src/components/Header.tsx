@@ -9,9 +9,9 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
-            <div className="bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-xl">
+            {/* <div className="bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-xl">
               <Church className="h-6 w-6 text-white" />
-            </div>
+            </div> */}
             <a href="#" className="text-xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent hover:text-purple-600 transition-colors duration-200">
               ACBCC English Ministry
             </a>
