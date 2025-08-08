@@ -45,7 +45,7 @@ const Header = () => {
                 aria-label='Instagram'
               >
                 <FaInstagram className="h-6 w-6 text-gray" />
-                <span>Follow Us</span>
+                
               </a> 
           </nav>
 
@@ -97,7 +97,6 @@ const Header = () => {
                 aria-label='Instagram'
               >
                 <FaInstagram className="h-6 w-6 text-gray" />
-                <span>Follow Us</span>
               </a> 
             </nav>
           </div>
