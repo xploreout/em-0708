@@ -46,6 +46,16 @@ const Announcements = () => {
     },
     {
       id: 2,
+      title: "Ministry Kickoff Celebration",
+      date: "Sunday, August 10",
+      time: "11:30am",
+      location: "Duluth, GA",
+      description: "Come celebrate a new ministry kickoff with delicious bao-zi and much more. Get to know coworkers and program materials, from children, youth, and adult ministries. Will you come join us?",
+      image: "./images/aug10.png",
+      color: "from-orange-400 to-pink-400"
+    },
+    {
+      id: 3,
       title: "Book Study Fellowship",
       date: "August 22, 1st and 3rd Friday each month  ",
       time: "7:30pm",
@@ -55,19 +65,19 @@ const Announcements = () => {
       color: "from-orange-400 to-pink-400"
     },
     {
-      id: 3,
+      id: 4,
       title: "November Outing",
       date: "November 22",
       time: "Saturday 8am",
       location: "TBD",
       description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will finish with optional lunch together. All skill levels welcome!",
-      image: "https://images.pexels.com/photos/531857/pexels-photo-531857.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      image: "https://images.pexels.com/photos/631986/pexels-photo-631986.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-green-400 to-blue-400"
 
       
     },
     {
-      id: 4,
+      id: 5,
       title: "Operation Christmas Child",
       date: "Early December",
       time: "2-4hr",
@@ -79,33 +89,8 @@ const Announcements = () => {
   ];
 
   const pastEvents = [
-    // {
-    //   id: 4,
-    //   title: "AI and Career Opportunities Panel",
-    //   date: "February 5, 2024",
-    //   location: "Church Conference Room",
-    //   description: "Insightful panel discussion on how AI is shaping career paths and opportunities for the future.",
-    //   images: [
-    //     "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-    //     "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-    //     "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
-    //   ],
-    //   attendees: 42
-    // },
-    // {
-    //   id: 5,
-    //   title: "Adults Open House",
-    //   date: "Aug 9, 2025",
-    //   location: "Alpharetta",
-    //   description: "A wonderful start to our new book study, filled with dumpling-making fun, games, meaningful conversation and fellowship!",
-    //   images: [
-    //     "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-    //     "https://images.pexels.com/photos/6646201/pexels-photo-6646201.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
-    //   ],
-    //   // attendees: 38
-    // },
     {
-      id: 6,
+      id: 1,
       title: "Youth Open House",
       date: "Aug 2025",
       location: "Club House",
@@ -255,7 +240,7 @@ const Announcements = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {upcomingEvents.map((event) => (
               <div key={event.id} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
-                 {/* transition-all duration-300 transform hover:-translate-y-2 group */}
+                
                 <div className="relative">
                   <img 
                     src={event.image} 
