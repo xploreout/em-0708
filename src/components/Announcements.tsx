@@ -82,7 +82,7 @@ const Announcements = () => {
       date: "November 22",
       time: "Saturday 8am",
       location: "TBD",
-      description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will finish with optional lunch together. All skill levels welcome!",
+      description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will have snacks and picnic lunch together if weather permits. All skill levels welcome!",
       image: "https://images.pexels.com/photos/631986/pexels-photo-631986.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-green-400 to-blue-400"
 
