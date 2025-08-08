@@ -50,13 +50,13 @@ const Announcements = () => {
       date: "Sunday, August 10",
       time: "11:30am",
       location: "Duluth, GA",
-      description: "Come celebrate a new ministry kickoff with delicious bao-zi and much more. Get to know coworkers and program materials, from children, youth, and adult ministries. Will you come join us?",
+      description: "Come celebrate a new ministry kickoff with delicious bao-zi and much more. Get to know coworkers and review program materials,from children, youth, and adult ministries. Will you come join us?",
       image: "./images/aug10.png",
       color: "from-orange-400 to-pink-400"
     },
     {
       id: 3,
-      title: "Book Study Fellowship",
+      title: "Book Study & Fellowship",
       date: "August 22, 1st and 3rd Friday each month  ",
       time: "7:30pm",
       location: "Duluth, GA",
@@ -240,7 +240,7 @@ const Announcements = () => {
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Stay connected with all the exciting events and activities happening in our adult community! 🎉
+            
           </p>
         </div>
 
