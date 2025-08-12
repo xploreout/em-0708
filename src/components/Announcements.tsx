@@ -106,7 +106,7 @@ const Announcements = () => {
       title: "English Ministry Open House",
       date: "August",
       // location: "Club House",
-      description: "What an amazing Saturday to kick off the English Ministry! We enjoyed great dumplings and great time getting to know each other and share many more.",
+      description: "",
       images: [
           "./images/pic2.JPG",
           "./images/pic3.JPG",
