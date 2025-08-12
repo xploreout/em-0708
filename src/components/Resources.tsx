@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
-import { Listen, Book, Video, Heart, Download, ExternalLink, Play, Calendar } from 'lucide-react';
-import VideoArchive from './VideoArchive';
-
+import React, { useState } from 'react'
+import {
+  Listen,
+  Book,
+  Video,
+  Heart,
+  Download,
+  ExternalLink,
+  Play,
+  Calendar,
+} from 'lucide-react'
+import VideoArchive from './VideoArchive'
 
 const Resources = () => {
-  const [showVideoArchive, setShowVideoArchive] = useState(false);
+  const [showVideoArchive, setShowVideoArchive] = useState(false)
 
   const bibleStudies = [
-  
     // {
     //   id: 1,
     //   title: "Purpose Driven Life - Intro",
@@ -26,188 +33,218 @@ const Resources = () => {
     //   image: "https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
     //   isVideoSeries: true
     // },
-      {
+    {
       id: 3,
-      title: "Discipleship Training",
-      description: "A 4-weeks intensive training program for growing as a disciple of Christ",
-      duration: "please contact us",
+      title: 'Discipleship Training',
+      description:
+        'A 4-weeks intensive training program for growing as a disciple of Christ',
+      duration: 'please contact us',
       // downloadUrl: "#",
-      image: "https://images.pexels.com/photos/8383409/pexels-photo-8383409.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+      image:
+        'https://images.pexels.com/photos/8383409/pexels-photo-8383409.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
     },
-  ];
+  ]
 
   const devotionalMaterials = [
     {
       id: 1,
-      title: "Our Daily Bread",
-      description: "Daily devotional with biblical insights and practical applications for everyday life",
-      type: "Daily Devotional",
-      externalUrl: "https://www.odbm.org/en/devotionals",
-      image: "https://images.pexels.com/photos/1112048/pexels-photo-1112048.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+      title: 'Our Daily Bread',
+      description:
+        'Daily devotional with biblical insights and practical applications for everyday life',
+      type: 'Daily Devotional',
+      externalUrl: 'https://www.odbm.org/en/devotionals',
+      image:
+        'https://images.pexels.com/photos/1112048/pexels-photo-1112048.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
     },
     {
       id: 2,
-      title: "Jesus Calling",
-      description: "Devotions for every day of the year with encouraging messages of hope and peace",
-      type: "Daily Devotional",
-      externalUrl: "https://www.jesuscalling.com/",
-      image: "https://images.pexels.com/photos/8383412/pexels-photo-8383412.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
+      title: 'Jesus Calling',
+      description:
+        'Devotions for every day of the year with encouraging messages of hope and peace',
+      type: 'Daily Devotional',
+      externalUrl: 'https://www.jesuscalling.com/',
+      image:
+        'https://images.pexels.com/photos/8383412/pexels-photo-8383412.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
     },
     {
       id: 3,
-      title: "Desiring God",
-      description: "Rich theological devotionals that help deepen your understanding of God's character",
-      type: "Daily Devotional",
-      externalUrl: "https://www.desiringgod.org/",
-      image: "https://images.pexels.com/photos/8383672/pexels-photo-8383672.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop"
-    }
-  ];
+      title: 'Desiring God',
+      description:
+        "Rich theological devotionals that help deepen your understanding of God's character",
+      type: 'Daily Devotional',
+      externalUrl: 'https://www.desiringgod.org/',
+      image:
+        'https://images.pexels.com/photos/8383672/pexels-photo-8383672.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+    },
+  ]
 
   const featuredVideos = [
     {
       id: 1,
-      title: "Finding Hope in Difficult Times",
-      speaker: "Pastor John Smith",
-      duration: "45 min",
-      thumbnail: "https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-      videoUrl: "#"
+      title: 'Finding Hope in Difficult Times',
+      speaker: 'Pastor John Smith',
+      duration: '45 min',
+      thumbnail:
+        'https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      videoUrl: '#',
     },
     {
       id: 2,
-      title: "Building Authentic Relationships",
-      speaker: "Sarah Johnson",
-      duration: "38 min",
-      thumbnail: "https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-      videoUrl: "#"
+      title: 'Building Authentic Relationships',
+      speaker: 'Sarah Johnson',
+      duration: '38 min',
+      thumbnail:
+        'https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      videoUrl: '#',
     },
     {
       id: 3,
-      title: "Discovering Your Spiritual Gifts",
-      speaker: "Michael Chen",
-      duration: "52 min",
-      thumbnail: "https://images.pexels.com/photos/1112048/pexels-photo-1112048.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-      videoUrl: "#"
-    }
-  ];
+      title: 'Discovering Your Spiritual Gifts',
+      speaker: 'Michael Chen',
+      duration: '52 min',
+      thumbnail:
+        'https://images.pexels.com/photos/1112048/pexels-photo-1112048.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      videoUrl: '#',
+    },
+  ]
 
   if (showVideoArchive) {
-    return <VideoArchive onBack={() => setShowVideoArchive(false)} />;
+    return <VideoArchive onBack={() => setShowVideoArchive(false)} />
   }
 
   return (
-    <section id="resources" className="py-10 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      id='resources'
+      className='py-10 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50'
+    >
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className='text-center mb-16'>
           {/* <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-2 rounded-full text-sm font-semibold mb-4">
             <Book className="h-4 w-4" />
             <span>Spiritual Growth</span>
           </div> */}
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          <h2 className='text-4xl md:text-5xl font-bold text-gray-900 mb-4'>
+            <span className='bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent'>
               Resources
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover materials to deepen your faith with the Lord Jesus Christ! 📚✨
+          <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+            Discover materials to deepen your faith with the Lord Jesus Christ!
+            📚✨
           </p>
         </div>
 
         {/* Bible Studies */}
-        <div className="mb-20">
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center">
-            <Book className="h-8 w-8 mr-3 text-purple-600" />
+        <div className='mb-20'>
+          <h3 className='text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center'>
+            <Book className='h-8 w-8 mr-3 text-purple-600' />
             Bible Studies
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div  className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
-                <div className="relative">
-                  <img 
-                    src="./images/pdl2.jpg" 
-                    alt="purpose driven life"
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-                
-                <div className="p-6">
-                  <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
-                    The Purpose Driven Life 
-                  </h4>
-                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                    Discover God's purpose for your life.
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <span className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      10-15min | 40 days devotions
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer">
-                  <a
-                    href="https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf"
-                    target="_blank"
-                    rel="Intro to PDL"
-                  >
-                   <span >An Introduction by Pastor Rick Warren</span>
-                  </a>
-                  </div>
-                  <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer">
-                  <a
-                   href="https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P"
-                   target="_blank"
-                   rel="Listen Daily Devotion">
-                    <span>Daily Devotion to Listen</span>
-                  </a>
-                  </div>
-                   <div className="flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer">
-                   <a  
-                    href="https://dn720003.ca.archive.org/0/items/the-purpose-driven-life/The%20Purpose%20Driven%20Life.pdf"
-                    target="_blank"
-                    rel="Read Daily Devotion">
-                    <span>Daily Devotion to Read</span>
-                  </a>
-                  </div>
-                </div>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+            <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group'>
+              <div className='relative'>
+                <img
+                  src='./images/pdl2.jpg'
+                  alt='purpose driven life'
+                  className='w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300'
+                />
               </div>
 
+              <div className='p-6'>
+                <h4 className='text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors'>
+                  The Purpose Driven Life
+                </h4>
+                <p className='text-gray-600 mb-4 text-sm leading-relaxed'>
+                  Discover God's purpose for your life.
+                </p>
+
+                <div className='flex items-center justify-between text-sm text-gray-500 mb-4'>
+                  <span className='flex items-center'>
+                    <Calendar className='h-4 w-4 mr-1' />
+                    10-15min | 40 days devotions
+                  </span>
+                </div>
+                <div className='flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer'>
+                  <a
+                    href='https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf'
+                    target='_blank'
+                    rel='Intro to PDL'
+                  >
+                    <span>An Introduction by Pastor Rick Warren</span>
+                  </a>
+                </div>
+                <div className='flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer'>
+                  <a
+                    href='https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P'
+                    target='_blank'
+                    rel='Listen Daily Devotion'
+                  >
+                    <span>Daily Devotion to Listen</span>
+                  </a>
+                </div>
+                <div className='flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer'>
+                  <a
+                    href='https://dn720003.ca.archive.org/0/items/the-purpose-driven-life/The%20Purpose%20Driven%20Life.pdf'
+                    target='_blank'
+                    rel='Read Daily Devotion'
+                  >
+                    <span>Daily Devotion to Read</span>
+                  </a>
+                </div>
+                <div className='flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer'>
+                  <a
+                    href='https://purposedriven.com/day1'
+                    target='_blank'
+                    rel='Resources with QR Code'
+                  >
+                    <span>Official Resources with QR Code</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
             {bibleStudies.map((study) => (
-              <div key={study.id} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
-                <div className="relative">
-                  <img 
-                    src={study.image} 
+              <div
+                key={study.id}
+                className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group'
+              >
+                <div className='relative'>
+                  <img
+                    src={study.image}
                     alt={study.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className='w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300'
                   />
                 </div>
-                
-                <div className="p-6">
-                  <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
+
+                <div className='p-6'>
+                  <h4 className='text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors'>
                     {study.title}
                   </h4>
-                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                  <p className='text-gray-600 mb-4 text-sm leading-relaxed'>
                     {study.description}
                   </p>
-                  
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <span className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
+
+                  <div className='flex items-center justify-between text-sm text-gray-500 mb-4'>
+                    <span className='flex items-center'>
+                      <Calendar className='h-4 w-4 mr-1' />
                       {study.duration}
                     </span>
                   </div>
-                  
+
                   {study.isVideoSeries ? (
-                    <a 
+                    <a
                       href={study.videoPlaylistUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2'
                     >
-                      <Play className="h-4 w-4" />
+                      <Play className='h-4 w-4' />
                       <span>Watch Video</span>
                     </a>
-                  ) : (<div></div>
-                    // <a 
+                  ) : (
+                    <div></div>
+                    // <a
                     //   href={study.downloadUrl}
                     //   className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-purple-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
                     // >
@@ -222,39 +259,39 @@ const Resources = () => {
         </div>
 
         {/* Devotional Materials */}
-        <div className="mb-20">
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center">
-            <Heart className="h-8 w-8 mr-3 text-pink-600" />
+        <div className='mb-20'>
+          <h3 className='text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center'>
+            <Heart className='h-8 w-8 mr-3 text-pink-600' />
             Devotional Materials
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
             {devotionalMaterials.map((material) => (
-              <a 
-                key={material.id} 
+              <a
+                key={material.id}
                 href={material.externalUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group block cursor-pointer"
+                target='_blank'
+                rel='noopener noreferrer'
+                className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group block cursor-pointer'
               >
-                <div className="relative">
-                  <img 
-                    src={material.image} 
+                <div className='relative'>
+                  <img
+                    src={material.image}
                     alt={material.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className='w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300'
                   />
-                  <div className="absolute top-4 left-4 bg-pink-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                  <div className='absolute top-4 left-4 bg-pink-500 text-white px-3 py-1 rounded-full text-xs font-semibold'>
                     {material.type}
                   </div>
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2">
-                    <ExternalLink className="h-4 w-4 text-gray-600" />
+                  <div className='absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2'>
+                    <ExternalLink className='h-4 w-4 text-gray-600' />
                   </div>
                 </div>
-                
-                <div className="p-6">
-                  <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-pink-600 transition-colors">
+
+                <div className='p-6'>
+                  <h4 className='text-xl font-bold text-gray-900 mb-2 group-hover:text-pink-600 transition-colors'>
                     {material.title}
                   </h4>
-                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                  <p className='text-gray-600 mb-4 text-sm leading-relaxed'>
                     {material.description}
                   </p>
                 </div>
@@ -264,12 +301,12 @@ const Resources = () => {
         </div>
 
         {/* Video Archive */}
-        <div className="mb-20">
+        <div className='mb-20'>
           {/* <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center">
             <Video className="h-8 w-8 mr-3 text-blue-600" />
             Video Archive
           </h3> */}
-          
+
           {/* Featured Videos */}
           {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
             {featuredVideos.map((video) => (
@@ -327,7 +364,7 @@ const Resources = () => {
         </div> */}
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Resources;
+export default Resources

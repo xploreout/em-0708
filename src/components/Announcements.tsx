@@ -34,32 +34,32 @@ const Announcements = () => {
   };
 
   const upcomingEvents = [
-    {
-      id: 1,
-      title: "English Ministry Open Hosue",
-      date: "Saturday, August 9",
-      time: "3:30pm",
-      location: "Alpharetta, GA",
-      description: "Join us for a dumpling making and eating fest. Get to know each other. Praise and worship God together. Celebrate the kickoff of the English ministry.",
-      image: "./images/poster8-9.jpg",
-      color: "from-orange-400 to-pink-400"
-    },
-    {
-      id: 2,
-      title: "Ministry Kickoff Celebration",
-      date: "Sunday, August 10",
-      time: "11:30am",
-      location: "Duluth, GA",
-      description: "Come celebrate a new ministry kickoff with delicious bao-zi and much more. Get to know coworkers and review program materials,from children, youth, and adult ministries. Will you come join us?",
-      image: "./images/aug10.png",
-      color: "from-orange-400 to-pink-400"
-    },
+    // {
+    //   id: 1,
+    //   title: "English Ministry Open Hosue",
+    //   date: "Saturday, August 9",
+    //   time: "3:30pm",
+    //   location: "Alpharetta, GA",
+    //   description: "Join us for a dumpling making and eating fest. Get to know each other. Praise and worship God together. Celebrate the kickoff of the English ministry.",
+    //   image: "./images/poster8-9.jpg",
+    //   color: "from-orange-400 to-pink-400"
+    // },
+    // {
+    //   id: 2,
+    //   title: "Ministry Kickoff Celebration",
+    //   date: "Sunday, August 10",
+    //   time: "11:30am",
+    //   location: "Duluth, GA",
+    //   description: "Come celebrate a new ministry kickoff with delicious bao-zi and much more. Get to know coworkers and review program materials,from children, youth, and adult ministries. Will you come join us?",
+    //   image: "./images/aug10.png",
+    //   color: "from-orange-400 to-pink-400"
+    // },
     {
       id: 3,
       title: "Book Study & Fellowship",
       date: "August 22, 1st and 3rd Friday each month  ",
       time: "7:30pm",
-      location: "Duluth, GA",
+      location: "Coleman Middle School, Duluth, GA",
       description: "Did you ever wonder what exactly the purpose of your life is? Does it matter what you do and live your life? Join us to explore a 6 sessions book study by Pastor Rick Warren on 'The Purpose Driven Life'. Click 'Resource' for study materials.",
       image: "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-orange-400 to-pink-400"
@@ -102,15 +102,18 @@ const Announcements = () => {
 
   const pastEvents = [
     {
-      // id: 1,
-      // title: "Youth Open House",
-      // date: "Aug 2025",
+      id: 1,
+      title: "English Ministry Open House",
+      date: "August",
       // location: "Club House",
-      // description: "What an amazing Saturday to kick off a new year of youth group! We enjoyed great games and fellowship to warmly welcome everyone back after the summer.",
-      // images: [
-      //   "https://images.pexels.com/photos/5384585/pexels-photo-5384585.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-      //   "https://images.pexels.com/photos/7429625/pexels-photo-7429625.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-      // ],
+      description: "What an amazing Saturday to kick off the English Ministry! We enjoyed great dumplings and great time getting to know each other and share many more.",
+      images: [
+          "./images/pic2.JPG",
+          "./images/pic3.JPG",
+          "./images/pic4.JPG",
+          "./images/pic5.JPG"
+      ],
+      
       // attendees: 20
     },
   ];
@@ -311,7 +314,46 @@ const Announcements = () => {
           </div>
         </div>
 
-       
+         {/* Past Events */}
+
+        <div>
+
+          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+
+            📸 Recent Memories
+
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            {pastEvents.map((event) => (
+
+              <div key={event.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group relative">
+                <div className="relative">
+                  <PhotoCollage images={event.images} title={event.title} />
+                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2">
+                  </div>
+                  {/* Event Details Overlay */}
+                  <div className="absolute bottom-0 left-0 right-0   p-4">
+                    <h4 className="text-lg font-bold text-white mb-1">
+                      {event.title}
+                    </h4>
+                    <div className="flex items-center text-white/90 text-sm mb-1">
+                      <Calendar className="h-3 w-3 mr-1" />
+                      <span>{event.date}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <p className="text-gray-600 mb-3 text-sm">
+                    {event.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Call to Action */}
         {/* <div className="text-center mt-16">
           <div className="bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl p-8 text-white">
