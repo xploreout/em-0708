@@ -34,17 +34,15 @@ const Header = () => {
   return (
     <header className=" bg-white shadow-lg sticky top-0 z-50 transition-all duration-300">
       <div className="  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
-        <div className="  items-center py-4 ">
-          {/* Logo */}
-          {/* Desktop Navigation */}
-          
-          <nav className=" flex justify-between hidden md:flex space-x-8 ">
-            <a 
+        <div className="flex justify-between items-center py-4 ">
+           <a 
               href="#"
               rel="noopener noreferrer"
               >
               <h1 className="text-xl font-bold text-gray-900">ACBCC English Ministry</h1>
-              </a>
+           </a>
+          <nav className="hidden md:flex space-x-8 ">
+           
              <a
               href="https://www.acbcc.org"
               target="_blank"
@@ -96,10 +94,10 @@ const Header = () => {
           
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="flex md:hidden justify-between">
             <button
               onClick={toggleMenu}
-              className="text-gray-700 hover:text-primary-600 p-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className=" text-gray-700 hover:text-primary-600 p-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
               aria-label="Toggle menu"
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
