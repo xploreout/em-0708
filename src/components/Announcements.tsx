@@ -124,7 +124,7 @@ const Announcements = () => {
       images: [
         "./images/IMG_5814.jpg",
         "./images/awanacollage.png",
-          "./images/IMG_5818.jpg",
+          "./images/IMG_5815.jpg",
           "./images/awanayouth.jpg",
       ]
       
