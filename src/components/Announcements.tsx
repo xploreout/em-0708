@@ -57,25 +57,25 @@ const Announcements = () => {
     {
       id: 3,
       title: "Book Study & Fellowship",
-      date: "August 22, 1st and 3rd Friday each month  ",
+      date: "Every 1st and 3rd Friday of the month  ",
       time: "7:30pm",
       location: "Coleman Middle School, Duluth, GA",
       description: "Did you ever wonder what exactly the purpose of your life is? Does it matter what you do and live your life? Join us to explore a 6 sessions book study by Pastor Rick Warren on 'The Purpose Driven Life'. Click 'Resource' for study materials.",
       image: "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-orange-400 to-pink-400"
     },
-    {
-      id: 4,
-      title: "Youth Open House",
-      date: "August 23",
-      time: "Saturday 4-7pm",
-      location: "Club House - details after registration.",
-      description: "An amazing Saturday to kick off a new year of youth group! We will have great activities and fellowship to warmly welcome everyone back after the summer.",
-      image: "./images/yopenhse.JPG",
-      color: "from-green-400 to-blue-400"
+    // {
+    //   id: 4,
+    //   title: "Youth Open House",
+    //   date: "August 23",
+    //   time: "Saturday 4-7pm",
+    //   location: "Club House - details after registration.",
+    //   description: "An amazing Saturday to kick off a new year of youth group! We will have great activities and fellowship to warmly welcome everyone back after the summer.",
+    //   image: "./images/yopenhse.JPG",
+    //   color: "from-green-400 to-blue-400"
 
       
-    },
+    // },
      {
       id: 5,
       title: "November Outing",
@@ -85,8 +85,6 @@ const Announcements = () => {
       description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will have snacks and picnic lunch together if weather permits. All skill levels welcome!",
       image: "https://images.pexels.com/photos/631986/pexels-photo-631986.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-green-400 to-blue-400"
-
-      
     },
     {
       id: 6,
@@ -103,6 +101,37 @@ const Announcements = () => {
   const pastEvents = [
     {
       id: 1,
+      title: "Youth Summer Open House",
+      date: "August",
+      // location: "Club House",
+      description: "",
+      images: [
+          "./images/IMG_0179.jpg",
+          "./images/IMG_5482.jpg",
+          "./images/IMG_5431.jpg",
+          "./images/IMG_5440.jpg",
+          
+      ],
+      
+      // attendees: 20
+    },
+     {
+      id: 2,
+      title: "Awana Award Ceremony",
+      date: "August",
+      // location: "Club House",
+      description: "",
+      images: [
+        "./images/IMG_5814.jpg",
+        "./images/awanacollage.png",
+          "./images/IMG_5818.jpg",
+          "./images/awanayouth.jpg",
+      ]
+      
+      // attendees: 20
+    },
+     {
+      id: 3,
       title: "English Ministry Open House",
       date: "August",
       // location: "Club House",
@@ -144,7 +173,7 @@ const Announcements = () => {
         <img 
           src={images[0]} 
           alt={title}
-          className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-80 object-cover group-hover:scale-101 transition-transform duration-300"
         />
       );
     }
@@ -190,7 +219,7 @@ const Announcements = () => {
 
     if (images.length === 4) {
       return (
-        <div className="grid grid-cols-2 gap-1 h-40">
+        <div className="grid grid-cols-2 gap-1 h-80">
           {images.map((img, idx) => (
             <img 
               key={idx}
@@ -331,14 +360,12 @@ const Announcements = () => {
               <div key={event.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group relative">
                 <div className="relative">
                   <PhotoCollage images={event.images} title={event.title} />
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2">
-                  </div>
                   {/* Event Details Overlay */}
                   <div className="absolute bottom-0 left-0 right-0   p-4">
-                    <h4 className="text-lg font-bold text-white mb-1">
+                    <h4 className="text-lg font-bold text-white mb-1 opacity-70">
                       {event.title}
                     </h4>
-                    <div className="flex items-center text-white/90 text-sm mb-1">
+                    <div className="flex items-center text-white/90 text-sm mb-1 opacity-70">
                       <Calendar className="h-3 w-3 mr-1" />
                       <span>{event.date}</span>
                     </div>

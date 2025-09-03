@@ -32,12 +32,14 @@ const Header = () => {
     setIsOpen(false);
   };
   return (
-    <header className="bg-white shadow-lg sticky top-0 z-50 transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4 ">
+    <header className=" bg-white shadow-lg sticky top-0 z-50 transition-all duration-300">
+      <div className="  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
+        <div className="  items-center py-4 ">
           {/* Logo */}
           {/* Desktop Navigation */}
-          <a 
+          
+          <nav className=" flex justify-between hidden md:flex space-x-8 ">
+            <a 
               href="#"
               rel="noopener noreferrer"
               >
@@ -52,10 +54,9 @@ const Header = () => {
               <ArrowLeft className="h-4 w-4" />
               <span>ACBCC</span>
             </a>
-          <nav className="hidden md:flex space-x-8 ">
-            
             {navItems.map((item) => (
               item.href.startsWith('/#') ? (
+                
                 <a
                   key={item.name}
                   href={item.href}
@@ -111,6 +112,21 @@ const Header = () => {
           isOpen ? 'max-h-96 py-4 opacity-100' : 'max-h-0 py-0 opacity-0 overflow-hidden'
         }`}>
             <nav className="flex flex-col space-y-2">
+              <a 
+              href="#"
+              rel="noopener noreferrer"
+              >
+              <h1 className="text-xl font-bold text-gray-900">ACBCC English Ministry</h1>
+              </a>
+             <a
+              href="https://www.acbcc.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-700 hover:text-blue-400 transition-colors duration-200 font-medium-sm flex items-center space-x-1 "
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Acbcc</span>
+            </a>
               {navItems.map((item) => (
                 item.href.startsWith('/#') ? (
                   <a
@@ -120,7 +136,7 @@ const Header = () => {
                       e.preventDefault();
                       handleNavClick(item.href);
                     }}
-                    className="text-gray-700 hover:text-primary-600 hover:bg-primary-50 px-3 py-2 rounded-md text-base font-medium transition-colors duration-200"
+                    className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3  rounded-md text-base font-medium-sm transition-colors duration-200"
                   >
                     {item.name}
                   </a>
@@ -128,10 +144,10 @@ const Header = () => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 hover:bg-primary-50 ${
+                    className={`px-3  rounded-md text-base font-medium transition-colors duration-200 hover:bg-primary-50 ${
                       location.pathname === item.href
                         ? 'text-primary-600 bg-primary-50'
-                        : 'text-gray-700 hover:text-primary-600'
+                        : 'text-blue-700 hover:text-blue-500'
                     }`}
                     onClick={() => setIsOpen(false)}
                   >
