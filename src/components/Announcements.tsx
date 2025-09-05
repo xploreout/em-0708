@@ -281,15 +281,14 @@ const Announcements = () => {
           <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
             🔥 Upcoming Events
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
             {upcomingEvents.map((event) => (
-              <div key={event.id} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
-                
+              <div onClick={() => handleEventInterest(event)} key={event.id} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl cursor-pointer">
                 <div className="relative">
                   <img 
                     src={event.image} 
                     alt={event.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-48 object-cover"
                   />
                   <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2">
                     <div
@@ -299,17 +298,13 @@ const Announcements = () => {
                           ? 'text-red-500' 
                           : 'text-gray-400 hover:text-red-400'
                       }`}
-                      disabled={likedEvents.has(event.id)}
                     >
                       <Heart className={`h-4 w-4 ${likedEvents.has(event.id) ? 'fill-current' : ''}`} />
                     </div>
                   </div>
-                  {/* <div className="absolute bottom-4 right-4 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                    {heartLikes[event.id] || 0} ❤️
-                  </div> */}
                 </div>
                 
-                <div className="p-6">
+                <div className="p-6" >
                   <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
                     {event.title}
                   </h4>
@@ -331,12 +326,6 @@ const Announcements = () => {
                       <span>{event.location}</span>
                     </div>
                   </div>
-                  <button 
-                    onClick={() => handleEventInterest(event)}
-                    className="pt-2 w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105"
-                  >
-                    I'm Interested! 🙋‍♀️
-                  </button>
                 </div>
               </div>
             ))}
