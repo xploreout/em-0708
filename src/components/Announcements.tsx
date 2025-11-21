@@ -56,12 +56,12 @@ const Announcements = () => {
     // },
     {
       id: 3,
-      title: "Book Study & Fellowship",
+      title: "Bible Study & Fellowship",
       date: "Every 1st and 3rd Friday of the month  ",
       time: "7:30pm",
       location: "Coleman Middle School, Duluth, GA",
-      description: "Did you ever wonder what exactly the purpose of your life is? Does it matter what you do and live your life? Join us to explore a 6 sessions book study by Pastor Rick Warren on 'The Purpose Driven Life'. Click 'Resource' for study materials.",
-      image: "https://images.pexels.com/photos/7652241/pexels-photo-7652241.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      description: "We are studying the book of James from the Bible. Join us for a time of fellowship and learning as we dive into the practical wisdom of James. All are welcome to attend!",
+      image: "https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-orange-400 to-pink-400"
     },
     // {
@@ -80,20 +80,20 @@ const Announcements = () => {
       id: 5,
       title: "November Outing",
       date: "November 22",
-      time: "Saturday 8am",
-      location: "TBD",
-      description: "Adventure awaits! Join us for a day of hiking and outdoor worship. We will have snacks and picnic lunch together if weather permits. All skill levels welcome!",
-      image: "https://images.pexels.com/photos/631986/pexels-photo-631986.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      time: "Saturday 4:30pm",
+      location: "Details after registration",
+      description: "Come join us for a thanksgiving meal and fellowship! We will have a fun time together as we celebrate the season of gratitude.",
+      image: "https://images.pexels.com/photos/3184183/pexels-photo-3184183.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-green-400 to-blue-400"
     },
     {
       id: 6,
-      title: "Operation Christmas Child",
-      date: "Early December",
-      time: "2-4hr",
-      location: "Operation Christmas Child Warehouse",
-      description: "Make a difference in our community! We'll be at warehouse handling donated shoe boxes to be shipped to children all over the world, sharing the joy of Jesus love and His gift of salvation!",
-      image: "https://images.pexels.com/photos/1666069/pexels-photo-1666069.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      title: "Christmas Event",
+      date: "December 19",
+      time: "7:30pm",
+      location: "Let's celebrate together!",
+      description: "Celebrate the joy of the season with us! Join in for an evening of festive activities, caroling, and community fellowship.",
+      image: "https://images.pexels.com/photos/730588/pexels-photo-730588.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-purple-400 to-pink-400"
     }
   ];
@@ -326,6 +326,13 @@ const Announcements = () => {
                       <span>{event.location}</span>
                     </div>
                   </div>
+                 
+                  <button 
+                    onClick={() => handleEventInterest(event)}
+                    className="pt-2 w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105"
+                  >
+                    I'm Interested! 🙋‍♀️
+                  </button>
                 </div>
               </div>
             ))}

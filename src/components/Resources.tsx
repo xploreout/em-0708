@@ -1,10 +1,7 @@
 import React, { useState } from 'react'
 import {
-  Listen,
-  Book,
-  Video,
+ 
   Heart,
-  Download,
   ExternalLink,
   Play,
   Calendar,
@@ -78,39 +75,39 @@ const Resources = () => {
     },
   ]
 
-  const featuredVideos = [
-    {
-      id: 1,
-      title: 'Finding Hope in Difficult Times',
-      speaker: 'Pastor John Smith',
-      duration: '45 min',
-      thumbnail:
-        'https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      videoUrl: '#',
-    },
-    {
-      id: 2,
-      title: 'Building Authentic Relationships',
-      speaker: 'Sarah Johnson',
-      duration: '38 min',
-      thumbnail:
-        'https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      videoUrl: '#',
-    },
-    {
-      id: 3,
-      title: 'Discovering Your Spiritual Gifts',
-      speaker: 'Michael Chen',
-      duration: '52 min',
-      thumbnail:
-        'https://images.pexels.com/photos/1112048/pexels-photo-1112048.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      videoUrl: '#',
-    },
-  ]
+  // const featuredVideos = [
+  //   {
+  //     id: 1,
+  //     title: 'Finding Hope in Difficult Times',
+  //     speaker: 'Pastor John Smith',
+  //     duration: '45 min',
+  //     thumbnail:
+  //       'https://images.pexels.com/photos/1181533/pexels-photo-1181533.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+  //     videoUrl: '#',
+  //   },
+  //   {
+  //     id: 2,
+  //     title: 'Building Authentic Relationships',
+  //     speaker: 'Sarah Johnson',
+  //     duration: '38 min',
+  //     thumbnail:
+  //       'https://images.pexels.com/photos/1157557/pexels-photo-1157557.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+  //     videoUrl: '#',
+  //   },
+  //   {
+  //     id: 3,
+  //     title: 'Discovering Your Spiritual Gifts',
+  //     speaker: 'Michael Chen',
+  //     duration: '52 min',
+  //     thumbnail:
+  //       'https://images.pexels.com/photos/1112048/pexels-photo-1112048.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+  //     videoUrl: '#',
+  //   },
+  // ]
 
-  if (showVideoArchive) {
-    return <VideoArchive onBack={() => setShowVideoArchive(false)} />
-  }
+  // if (showVideoArchive) {
+  //   return <VideoArchive onBack={() => setShowVideoArchive(false)} />
+  // }
 
   return (
     <section
@@ -129,18 +126,18 @@ const Resources = () => {
               Resources
             </span>
           </h2>
-          <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+          {/* <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
             Discover materials to deepen your faith with the Lord Jesus Christ!
             📚✨
-          </p>
+          </p> */}
         </div>
 
         {/* Bible Studies */}
         <div className='mb-20'>
-          <h3 className='text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center'>
+          {/* <h3 className='text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center'>
             <Book className='h-8 w-8 mr-3 text-purple-600' />
             Bible Studies
-          </h3>
+          </h3> */}
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
             <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group'>
               <div className='relative'>
@@ -232,7 +229,7 @@ const Resources = () => {
                     </span>
                   </div>
 
-                  {study.isVideoSeries ? (
+                  {/* {study.isVideoSeries ? (
                     <a
                       href={study.videoPlaylistUrl}
                       target='_blank'
@@ -251,7 +248,7 @@ const Resources = () => {
                     //   <Download className="h-4 w-4" />
                     //   <span>Download Study</span>
                     // </a>
-                  )}
+                  )} */}
                 </div>
               </div>
             ))}
