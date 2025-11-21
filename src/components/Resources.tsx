@@ -129,18 +129,18 @@ const Resources = () => {
               Resources
             </span>
           </h2>
-          <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+          {/* <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
             Discover materials to deepen your faith with the Lord Jesus Christ!
             📚✨
-          </p>
+          </p> */}
         </div>
 
         {/* Bible Studies */}
         <div className='mb-20'>
-          <h3 className='text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center'>
+          {/* <h3 className='text-3xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center'>
             <Book className='h-8 w-8 mr-3 text-purple-600' />
             Bible Studies
-          </h3>
+          </h3> */}
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
             <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group'>
               <div className='relative'>
