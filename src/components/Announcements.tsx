@@ -59,7 +59,7 @@ const Announcements = () => {
       title: "Bible Study & Fellowship",
       date: "Every 1st and 3rd Friday of the month  ",
       time: "7:30pm",
-      location: "Coleman Middle School, Duluth, GA",
+      location: "SDA Church, Duluth, GA",
       description: "We are studying the book of James from the Bible. Join us for a time of fellowship and learning as we dive into the practical wisdom of James. All are welcome to attend!",
       image: "https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-orange-400 to-pink-400"
@@ -78,22 +78,22 @@ const Announcements = () => {
     // },
      {
       id: 5,
-      title: "November Outing",
-      date: "November 22",
-      time: "Saturday 4:30pm",
-      location: "Details after registration",
-      description: "Come join us for a thanksgiving meal and fellowship! We will have a fun time together as we celebrate the season of gratitude.",
-      image: "https://images.pexels.com/photos/3184183/pexels-photo-3184183.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      title: "CNY Gala",
+      date: "February 22, Sunday",
+      time: "5:30pm Dinner 7:00pm Program",
+      location: "SDA Church, Duluth, GA",
+      description: "Come join us to celebrate Chinese New Year with good food and entertainment programs.",
+      image: "https://images.pexels.com/photos/7364071/pexels-photo-7364071.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-green-400 to-blue-400"
     },
     {
       id: 6,
-      title: "Christmas Event",
-      date: "December 19",
-      time: "7:30pm",
-      location: "Let's celebrate together!",
-      description: "Celebrate the joy of the season with us! Join in for an evening of festive activities, caroling, and community fellowship.",
-      image: "https://images.pexels.com/photos/730588/pexels-photo-730588.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      title: "Calling Actors / Helpers for CNY Silent Skit",
+      date: "Rehearsal Dates: 2/6, 2/8, 2/20",
+      time: "varied times",
+      location: "SDA Church, Duluth, GA",
+      description: "Celebrate Chinse New Year with a silent skit performance! The short silent skit will explore the joy of receiving red pockets and the true meaning of joy and redemption. We are looking for actors and helpers to make this event a success. Join us for rehearsals and be part of the fun!",
+      image: "https://images.pexels.com/photos/713149/pexels-photo-713149.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-purple-400 to-pink-400"
     }
   ];
@@ -327,12 +327,12 @@ const Announcements = () => {
                     </div>
                   </div>
                  
-                  <button 
+                  {/* <button 
                     onClick={() => handleEventInterest(event)}
                     className="pt-2 w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105"
                   >
                     I'm Interested! 🙋‍♀️
-                  </button>
+                  </button> */}
                 </div>
               </div>
             ))}
