@@ -53,6 +53,7 @@ In `src/services/emailService.ts`, update the following constants:
 ```typescript
 const EMAILJS_SERVICE_ID = 'your_service_id'; // Replace with your EmailJS service ID
 const EMAILJS_PUBLIC_KEY = 'your_public_key'; // Replace with your EmailJS public key
+- ~/projects/acbcc/em-first/emfirst-0708
 ```
 
 ### 4. Template IDs

@@ -57,45 +57,45 @@ const Announcements = () => {
     {
       id: 3,
       title: "Bible Study & Fellowship",
-      date: "Every 1st and 3rd Friday of the month  ",
+      date: "1st and 3rd Fridays of the month  ",
       time: "7:30pm",
       location: "SDA Church, Duluth, GA",
-      description: "We are studying the book of James from the Bible. Join us for a time of fellowship and learning as we dive into the practical wisdom of James. All are welcome to attend!",
+      description: "We are exploring a video series of 6 sessions on 'Basics of Faith' by Life Church Open Network. Each session includes a short video and group discussion. Come join us for fellowship, explore and grow spiritually together!",
       image: "https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-orange-400 to-pink-400"
     },
-    // {
-    //   id: 4,
-    //   title: "Youth Open House",
-    //   date: "August 23",
-    //   time: "Saturday 4-7pm",
-    //   location: "Club House - details after registration.",
-    //   description: "An amazing Saturday to kick off a new year of youth group! We will have great activities and fellowship to warmly welcome everyone back after the summer.",
-    //   image: "./images/yopenhse.JPG",
-    //   color: "from-green-400 to-blue-400"
+    {
+      id: 4,
+      title: "Youth Friday Night",
+      date: "1st, 2nd and 3rd Fridays of the month",
+      time: "7:30pm - 9:30pm",
+      location: "SDA Church, Duluth, GA",
+      description: "Our Friday Night Fellowship is a fun and welcoming space for students in grades 6–12 to hang out, strengthen faith and build meaningful friendships. Each week includes engaging activities, a relevant Bible message and discussion, and a time of prayer to help students grow in their faith and encourage one another!",
+      image: "./images/cny.jpg",
+      color: "from-green-400 to-blue-400"
 
       
-    // },
+    },
      {
       id: 5,
-      title: "CNY Gala",
-      date: "February 22, Sunday",
-      time: "5:30pm Dinner 7:00pm Program",
-      location: "SDA Church, Duluth, GA",
-      description: "Come join us to celebrate Chinese New Year with good food and entertainment programs.",
-      image: "https://images.pexels.com/photos/7364071/pexels-photo-7364071.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      title: "EM Parents and Youth Hangout",
+      date: "February 28",
+      time: "6:15 - 8:45pm",
+      location: "Alpharetta, GA",
+      description: "Come join us for a fun and relaxed evening of food, fellowship and sharing on plans for the youth this year! This is a great opportunity for parents and youth to connect with each other, share, and enjoy some quality time together. We will have delicious food and engaging activities for everyone. ",
+      image: "https://images.pexels.com/photos/7363753/pexels-photo-7363753.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-green-400 to-blue-400"
     },
-    {
-      id: 6,
-      title: "Calling Actors / Helpers for CNY Silent Skit",
-      date: "Rehearsal Dates: 2/6, 2/8, 2/20",
-      time: "varied times",
-      location: "SDA Church, Duluth, GA",
-      description: "Celebrate Chinse New Year with a silent skit performance! The short silent skit will explore the joy of receiving red pockets and the true meaning of joy and redemption. We are looking for actors and helpers to make this event a success. Join us for rehearsals and be part of the fun!",
-      image: "https://images.pexels.com/photos/713149/pexels-photo-713149.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
-      color: "from-purple-400 to-pink-400"
-    }
+    // {
+    //   id: 6,
+    //   title: "Calling Actors / Helpers for CNY Silent Skit",
+    //   date: "Rehearsal Dates: 2/6, 2/8, 2/20",
+    //   time: "varied times",
+    //   location: "SDA Church, Duluth, GA",
+    //   description: "Celebrate Chinse New Year with a silent skit performance! The short silent skit will explore the joy of receiving red pockets and the true meaning of joy and redemption. We are looking for actors and helpers to make this event a success. Join us for rehearsals and be part of the fun!",
+    //   image: "https://images.pexels.com/photos/713149/pexels-photo-713149.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+    //   color: "from-purple-400 to-pink-400"
+    // }
   ];
 
   const pastEvents = [
@@ -278,9 +278,9 @@ const Announcements = () => {
 
         {/* Upcoming Events */}
         <div className="mb-20">
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            🔥 Upcoming Events
-          </h3>
+          {/* <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+            🔥 Events
+          </h3> */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
             {upcomingEvents.map((event) => (
               <div onClick={() => handleEventInterest(event)} key={event.id} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl cursor-pointer">
@@ -345,7 +345,7 @@ const Announcements = () => {
 
           <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
 
-            📸 Recent Memories
+            📸 Recent Activities
 
           </h3>
 

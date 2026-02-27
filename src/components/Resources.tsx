@@ -12,24 +12,24 @@ const Resources = () => {
   const [showVideoArchive, setShowVideoArchive] = useState(false)
 
   const bibleStudies = [
-    // {
-    //   id: 1,
-    //   title: "Purpose Driven Life - Intro",
-    //   description: "Discovering God's purpose for your life and career",
-    //   duration: "2 min",
-    //   videoPlaylistUrl: "https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf",
-    //   image: "./images/pdl2.jpg",
-    //   isVideoSeries: true
-    // },
-    // {
-    //   id: 2,
-    //   title: "Purpose Driven Life - Daily",
-    //   description: "Discovering God's purpose for your life and career",
-    //   duration: "5-10 min/40 days dev",
-    //   videoPlaylistUrl: "https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P",
-    //   image: "https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-    //   isVideoSeries: true
-    // },
+    {
+      id: 1,
+      title: "Basics of Faith - Episode 1",
+      description: "What Does Following Jesus Mean?  We will gather on Friday to discuss and explore this topic for everyone in various stages of faith journey.",
+      duration: "6 min",
+      videoPlaylistUrl: "https://www.youtube.com/watch?v=kFh3dHvAsLE&t=1s",
+      image: "https://images.pexels.com/photos/66100/pexels-photo-66100.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+      isVideoSeries: true
+    },
+    {
+      id: 2,
+      title: "Purpose Driven Life - Daily",
+      description: "Discovering God's purpose for your life and career",
+      duration: "5-10 min/40 days dev",
+      videoPlaylistUrl: "https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P",
+      image: "https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
+      isVideoSeries: true
+    },
     {
       id: 3,
       title: 'Discipleship Training',
@@ -139,67 +139,7 @@ const Resources = () => {
             Bible Studies
           </h3> */}
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-            <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group'>
-              <div className='relative'>
-                <img
-                  src='./images/pdl2.jpg'
-                  alt='purpose driven life'
-                  className='w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300'
-                />
-              </div>
-
-              <div className='p-6'>
-                <h4 className='text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors'>
-                  The Purpose Driven Life
-                </h4>
-                <p className='text-gray-600 mb-4 text-sm leading-relaxed'>
-                  Discover God's purpose for your life.
-                </p>
-
-                <div className='flex items-center justify-between text-sm text-gray-500 mb-4'>
-                  <span className='flex items-center'>
-                    <Calendar className='h-4 w-4 mr-1' />
-                    10-15min | 40 days devotions
-                  </span>
-                </div>
-                <div className='flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer'>
-                  <a
-                    href='https://www.youtube.com/watch?v=vgEDaR4bAWYhttps://youtu.be/o98U5HYdJww?si=m82Xy-deCaacf6Yf'
-                    target='_blank'
-                    rel='Intro to PDL'
-                  >
-                    <span>An Introduction by Pastor Rick Warren</span>
-                  </a>
-                </div>
-                <div className='flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer'>
-                  <a
-                    href='https://youtube.com/playlist?list=PL_UPGMCoup7CAZylckDzth0KuYLYh7A6P&si=FXZa-3l1stPyw4_P'
-                    target='_blank'
-                    rel='Listen Daily Devotion'
-                  >
-                    <span>Daily Devotion to Listen</span>
-                  </a>
-                </div>
-                <div className='flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer'>
-                  <a
-                    href='https://dn720003.ca.archive.org/0/items/the-purpose-driven-life/The%20Purpose%20Driven%20Life.pdf'
-                    target='_blank'
-                    rel='Read Daily Devotion'
-                  >
-                    <span>Daily Devotion to Read</span>
-                  </a>
-                </div>
-                <div className='flex items-center justify-between text-m text-gray-900 mb-4 hover:text-purple-600 transition-colors cursor-pointer'>
-                  <a
-                    href='https://purposedriven.com/day1'
-                    target='_blank'
-                    rel='Resources with QR Code'
-                  >
-                    <span>Official Resources with QR Code</span>
-                  </a>
-                </div>
-              </div>
-            </div>
+          
 
             {bibleStudies.map((study) => (
               <div
@@ -229,12 +169,12 @@ const Resources = () => {
                     </span>
                   </div>
 
-                  {/* {study.isVideoSeries ? (
+                  {study.isVideoSeries ? (
                     <a
                       href={study.videoPlaylistUrl}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2'
+                      className='w-full bg-gradient-to-r from-blue-500 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-red-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2'
                     >
                       <Play className='h-4 w-4' />
                       <span>Watch Video</span>
@@ -248,7 +188,7 @@ const Resources = () => {
                     //   <Download className="h-4 w-4" />
                     //   <span>Download Study</span>
                     // </a>
-                  )} */}
+                  )}
                 </div>
               </div>
             ))}
