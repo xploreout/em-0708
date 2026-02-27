@@ -60,7 +60,7 @@ const Announcements = () => {
       date: "1st and 3rd Fridays of the month  ",
       time: "7:30pm",
       location: "SDA Church, Duluth, GA",
-      description: "We are exploring a video series of 6 sessions on 'Basics of Faith' by Life Church Open Network. Each session includes a short video and group discussion. Come join us for fellowship, explore and grow spiritually together!",
+      description: "Now that we have finished the book study of 'Purpose Driven Life' and scripture study on the book James. We are starting a video series on 'Basics of Faith' by Life Church Open Network. Each session includes a short video and group discussion. Come join us for fellowship, explore faithand grow spiritually together!",
       image: "https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-orange-400 to-pink-400"
     },
