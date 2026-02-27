@@ -15,7 +15,7 @@ const Resources = () => {
     {
       id: 1,
       title: "Basics of Faith - Episode 1",
-      description: "What Does Following Jesus Mean?  We will gather on Friday to discuss and explore this topic for everyone in various stages of faith journey.",
+      description: "We will explore the following: What is faith? Why is faith important? How can we grow in our faith? This video series will help you understand the basics of Christian faith and how to apply it in your daily life.",
       duration: "6 min",
       videoPlaylistUrl: "https://www.youtube.com/watch?v=kFh3dHvAsLE&t=1s",
       image: "https://images.pexels.com/photos/66100/pexels-photo-66100.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
