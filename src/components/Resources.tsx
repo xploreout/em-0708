@@ -174,7 +174,9 @@ const Resources = () => {
                       <p style={{ cursor: "pointer", color: "blue" }}
                         onClick={() => window.open("/images/whatsmean1.jpg", "_blank")} className="text-sm text-purple-600 mb-4">Conversation Guide</p>
                         <p style={{ cursor: "pointer", color: "blue" }}
-                        onClick={() => window.open("https://finds.life.church/myths-life-as-a-christian/", "_blank")} className="text-sm text-purple-600 mb-6">Let’s Unpack 3 Myths About Life as a Christian</p>
+                        onClick={() => window.open("https://finds.life.church/myths-life-as-a-christian/", "_blank")} className="text-sm text-purple-600 mb-4">Let’s Unpack 3 Myths About Life as a Christian</p>
+                        <p style={{ cursor: "pointer", color: "blue" }}
+                        onClick={() => window.open("https://finds.life.church/spiritual-disciplines/", "_blank")} className="text-sm text-purple-600 mb-7">Spiritual Habits</p>
                     </>) : null
                   }
                   {study.isVideoSeries ? (
