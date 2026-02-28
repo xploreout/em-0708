@@ -132,7 +132,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-orange-500 to-pink-500 text-white p-6 rounded-t-2xl">
+        <div className="sticky top-0 bg-blue-500 text-white p-6 rounded-t-2xl">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">Event Registration 🎊</h2>
             <button
@@ -143,7 +143,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
             </button>
           </div>
           <p className="text-orange-100 mt-2">
-            Join us for amazing fellowship and community activities!
+            Join our activities!
           </p>
         </div>
 
@@ -224,7 +224,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   key={event.id}
                   className={`border rounded-xl p-4 transition-all duration-200 ${
                     selectedEvents.includes(event.id)
-                      ? 'border-orange-500 bg-orange-50'
+                      ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
@@ -234,13 +234,13 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                       type="checkbox"
                       checked={selectedEvents.includes(event.id)}
                       onChange={() => handleEventToggle(event.id)}
-                        className="mt-1 h-5 w-5 text-orange-600 focus:ring-orange-500 border-gray-300 rounded cursor-pointer"
+                        className="mt-1 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
                       />
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-900">{event.title}</h4>
                         <div className="mt-2 space-y-1 text-sm text-gray-600">
                           <div className="flex items-center">
-                            <Calendar className="h-4 w-4 mr-2 text-orange-500" />
+                            <Calendar className="h-4 w-4 mr-2 text-blue-500" />
                             <span>{event.date}</span>
                           </div>
                           <div className="flex items-center">
@@ -304,7 +304,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
             <button
               type="submit"
               disabled={selectedEvents.length === 0 || !contactInfo.name || !contactInfo.email || !recaptchaValue || isSubmitting}
-              className="bg-gradient-to-r from-orange-500 to-pink-500 text-white px-8 py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-green-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               <Send className="h-5 w-5" />
               <span>{isSubmitting ? 'Sending...' : 'Register Now! 🚀'}</span>

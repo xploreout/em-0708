@@ -112,7 +112,7 @@ const Resources = () => {
   return (
     <section
       id='resources'
-      className='py-10 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50'
+      className='py-20 bg-gray-20 '
     >
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
@@ -122,7 +122,8 @@ const Resources = () => {
             <span>Spiritual Growth</span>
           </div> */}
           <h2 className='text-4xl md:text-5xl font-bold text-gray-900 mb-4'>
-            <span className='bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent'>
+            {/* <span className='bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent'> */}
+              <span>
               Resources
             </span>
           </h2>
@@ -144,7 +145,7 @@ const Resources = () => {
             {bibleStudies.map((study) => (
               <div
                 key={study.id}
-                className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group'
+                className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl  group'
               >
                 <div className='relative'>
                   <img
@@ -155,7 +156,7 @@ const Resources = () => {
                 </div>
 
                 <div className='p-6'>
-                  <h4 className='text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors'>
+                  <h4 className='text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors'>
                     {study.title}
                   </h4>
                   <p className='text-gray-600 mb-4 text-sm leading-relaxed'>
@@ -172,11 +173,11 @@ const Resources = () => {
                     study.id === 1 ? 
                     (<>
                       <p style={{ cursor: "pointer", color: "blue" }}
-                        onClick={() => window.open("/images/whatsmean1.jpg", "_blank")} className="text-sm text-purple-600 mb-4">Conversation Guide</p>
+                        onClick={() => window.open("/images/whatsmean1.jpg", "_blank")} className="text-sm text-blue-600 mb-4">Conversation Guide</p>
                         <p style={{ cursor: "pointer", color: "blue" }}
-                        onClick={() => window.open("https://finds.life.church/myths-life-as-a-christian/", "_blank")} className="text-sm text-purple-600 mb-4">Let’s Unpack 3 Myths About Life as a Christian</p>
+                        onClick={() => window.open("https://finds.life.church/myths-life-as-a-christian/", "_blank")} className="text-sm text-blue-600 mb-4">Let’s Unpack 3 Myths About Life as a Christian</p>
                         <p style={{ cursor: "pointer", color: "blue" }}
-                        onClick={() => window.open("https://finds.life.church/spiritual-disciplines/", "_blank")} className="text-sm text-purple-600 mb-7">Spiritual Habits</p>
+                        onClick={() => window.open("https://finds.life.church/spiritual-disciplines/", "_blank")} className="text-sm text-blue-600 mb-7">Spiritual Habits</p>
                     </>) : null
                   }
                   {study.isVideoSeries ? (
@@ -184,7 +185,7 @@ const Resources = () => {
                       href={study.videoPlaylistUrl}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='w-full bg-gradient-to-r from-blue-500 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-red-600 hover:to-blue-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2'
+                      className='w-full bg-gradient-to-r from-blue-400 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-blue-800 hover:to-blue-600  flex items-center justify-center space-x-2'
                     >
                       <Play className='h-4 w-4' />
                       <span>Watch Video</span>

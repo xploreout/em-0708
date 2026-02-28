@@ -130,7 +130,7 @@ const NewcomerForm = () => {
   }
 
   return (
-    <section id="newcomer-form" className="py-16 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <section id="newcomer-form" className="py-16 bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           {/* <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-2 rounded-full text-sm font-semibold mb-4">
@@ -138,7 +138,7 @@ const NewcomerForm = () => {
             <span>Join Our Family</span>
           </div> */}
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600  to-green-600 bg-clip-text text-transparent">
               Let's Stay Connected
             </span>
           </h2>
@@ -147,7 +147,7 @@ const NewcomerForm = () => {
           </p>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-orange-200">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-blue-200">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -161,7 +161,7 @@ const NewcomerForm = () => {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 bg-white/70"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/70"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -207,7 +207,7 @@ const NewcomerForm = () => {
                   name="availableToServe"
                   value={formData.availableToServe}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 bg-white/70"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/70"
                   placeholder="How would you like to serve?"
                 />
               </div>
@@ -256,7 +256,7 @@ const NewcomerForm = () => {
                       name="purposes.activityInterest"
                       checked={formData.purposes.activityInterest}
                       onChange={handleChange}
-                      className="mt-1 h-5 w-5 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                      className="mt-1 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <label htmlFor="activityInterest" className="block text-sm text-gray-700 font-medium">
                       I'm interested in a specific activity or event 🎯
@@ -264,7 +264,7 @@ const NewcomerForm = () => {
                   </div>
                   
                   {formData.purposes.activityInterest && (
-                    <div className="ml-8 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-orange-50 rounded-xl border border-orange-200">
+                    <div className="ml-8 grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Activity/Event Name
@@ -274,7 +274,7 @@ const NewcomerForm = () => {
                           name="activityDetails.activityName"
                           value={formData.activityDetails.activityName}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                           placeholder="e.g., Fellowship Gathering, Bible Study"
                         />
                       </div>
@@ -287,7 +287,7 @@ const NewcomerForm = () => {
                           name="activityDetails.activityDate"
                           value={formData.activityDetails.activityDate}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                           placeholder="e.g., March 15, 2024"
                         />
                       </div>
@@ -354,7 +354,7 @@ const NewcomerForm = () => {
               <button
                 type="submit"
                 disabled={!recaptchaValue || isSubmitting}
-                className="bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white px-10 py-4 rounded-full text-lg font-bold hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 hover:scale-105 inline-flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="bg-gradient-to-r from-blue-500  to-green-500 text-white px-10 py-4 rounded-full text-lg font-bold hover:from-purple-600 hover:via-pink-600 hover:to-blue-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 hover:scale-105 inline-flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 <Send className="h-5 w-5" />
                 <span>{isSubmitting ? 'Sending...' : "Let's Connect! 🚀"}</span>

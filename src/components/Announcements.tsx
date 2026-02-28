@@ -42,7 +42,7 @@ const Announcements = () => {
     //   location: "Alpharetta, GA",
     //   description: "Join us for a dumpling making and eating fest. Get to know each other. Praise and worship God together. Celebrate the kickoff of the English ministry.",
     //   image: "./images/poster8-9.jpg",
-    //   color: "from-orange-400 to-pink-400"
+    //   color: "from-blue-400 to-green-400"
     // },
     // {
     //   id: 2,
@@ -52,7 +52,7 @@ const Announcements = () => {
     //   location: "Duluth, GA",
     //   description: "Come celebrate a new ministry kickoff with delicious bao-zi and much more. Get to know coworkers and review program materials,from children, youth, and adult ministries. Will you come join us?",
     //   image: "./images/aug10.png",
-    //   color: "from-orange-400 to-pink-400"
+    //   color: "from-blue-400 to-green-400"
     // },
     {
       id: 3,
@@ -62,7 +62,7 @@ const Announcements = () => {
       location: "SDA Church, Duluth, GA",
       description: "Now that we have finished the book study of 'Purpose Driven Life' and scripture study on the book James. We are starting a video series on 'Basics of Faith' by Life Church Open Network. Each session includes a short video and group discussion. Come join us for fellowship, explore faith and grow spiritually together!",
       image: "https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
-      color: "from-orange-400 to-pink-400"
+      color: "from-blue-400 to-green-400"
     },
     {
       id: 4,
@@ -94,7 +94,7 @@ const Announcements = () => {
     //   location: "SDA Church, Duluth, GA",
     //   description: "Celebrate Chinse New Year with a silent skit performance! The short silent skit will explore the joy of receiving red pockets and the true meaning of joy and redemption. We are looking for actors and helpers to make this event a success. Join us for rehearsals and be part of the fun!",
     //   image: "https://images.pexels.com/photos/713149/pexels-photo-713149.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
-    //   color: "from-purple-400 to-pink-400"
+    //   color: "from-purple-400 to-green-400"
     // }
   ];
 
@@ -262,12 +262,13 @@ const Announcements = () => {
   };
 
   return (
-    <section id="announcements" className="py-20 bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50">
+    <section id="announcements" className="py-20 bg-gray-20 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            <span className="bg-gradient-to-r from-orange-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+            {/* <span className="bg-gradient-to-r from-blue-600 to-green-600  bg-clip-text text-transparent"> */}
+            <span>
               Announcements
             </span>
           </h2>
@@ -305,7 +306,7 @@ const Announcements = () => {
                 </div>
                 
                 <div className="p-6" >
-                  <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors">
+                  <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                     {event.title}
                   </h4>
                   <p className="text-gray-600 mb-4 text-sm leading-relaxed">
@@ -314,22 +315,22 @@ const Announcements = () => {
                   
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center text-sm text-gray-500">
-                      <Calendar className="h-4 w-4 mr-2 text-orange-500" />
+                      <Calendar className="h-4 w-4 mr-2 text-blue-500" />
                       <span>{event.date}</span>
                     </div>
                     <div className="flex items-center text-sm text-gray-500">
-                      <Clock className="h-4 w-4 mr-2 text-pink-500" />
+                      <Clock className="h-4 w-4 mr-2 text-green-500" />
                       <span>{event.time}</span>
                     </div>
                     <div className="flex items-center text-sm text-gray-500">
-                      <MapPin className="h-4 w-4 mr-2 text-purple-500" />
+                      <MapPin className="h-4 w-4 mr-2 text-blue-500" />
                       <span>{event.location}</span>
                     </div>
                   </div>
                  
                   {/* <button 
                     onClick={() => handleEventInterest(event)}
-                    className="pt-2 w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105"
+                    className="pt-2 w-full bg-gradient-to-r from-blue-500 to-green-500 text-white py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-green-600 transition-all duration-300 transform hover:scale-105"
                   >
                     I'm Interested! 🙋‍♀️
                   </button> */}
@@ -379,14 +380,14 @@ const Announcements = () => {
 
         {/* Call to Action */}
         {/* <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl p-8 text-white">
+          <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-2xl p-8 text-white">
             <h3 className="text-2xl font-bold mb-4">Don't Miss Out! 🎊</h3>
             <p className="text-lg mb-6 opacity-90">
               Stay updated with all our events and be part of our amazing community
             </p>
             <a 
               href="#newcomer-form" 
-              className="bg-white text-orange-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors duration-300 inline-block"
+              className="bg-white text-blue-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors duration-300 inline-block"
             >
               Join Our Community Today!
             </a>
