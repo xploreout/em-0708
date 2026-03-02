@@ -26,7 +26,7 @@ function App() {
               <Footer />
             </>
           } />
-          <Route path="/past-events" element={<PastEvents />} />
+          <Route path="/past-events" element={<><h2>hellooooo</h2><PastEvents /></>} />
            </Routes>
       </div>
      

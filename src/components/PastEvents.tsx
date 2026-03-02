@@ -94,6 +94,7 @@ const PastEvents = () => {
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Past Events</h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Hi
               Watch or listen to previous sermons and messages from our community
             </p>
           </div>
