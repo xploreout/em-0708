@@ -86,44 +86,7 @@ const HeadMain = () => {
               <FaInstagram className='h-6 w-6 text-gray' />
             </a>
           </nav>
-
-          {/* Mobile menu button */}
-          <div className='flex md:hidden justify-between'>
-            <button
-              onClick={toggleMenu}
-              className='text-gray-700 hover:text-primary-600 p-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500'
-              aria-label='Toggle menu'
-            >
-              {isOpen ? (
-                <X className='h-6 w-6' />
-              ) : (
-                <Menu className='h-6 w-6' />
-              )}
-            </button>
-          </div>
         </div>
-
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className='md:hidden border-t border-gray-200 py-4'>
-            <nav className='flex flex-col space-y-2'>
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 hover:bg-primary-50 ${
-                    location.pathname === item.href
-                      ? 'text-primary-600 bg-primary-50'
-                      : 'text-blue-700 hover:text-blue-500'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        )}
       </div>
     </header>
   )
