@@ -78,12 +78,32 @@ const Announcements = () => {
     },
      {
       id: 5,
-      title: "EM Parents and Youth Hangout",
-      date: "February 28",
-      time: "6:15 - 8:45pm",
-      location: "Alpharetta, GA",
-      description: "Come join us for a fun and relaxed evening of food, fellowship and sharing on plans for the youth this year! This is a great opportunity for parents and youth to connect with each other, share, and enjoy some quality time together. We will have delicious food and engaging activities for everyone. ",
-      image: "https://images.pexels.com/photos/7363753/pexels-photo-7363753.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      title: "Good Friday Worship Night",
+      date: "April 3rd, 2026",
+      time: "7pm",
+      location: "SDA Church, Duluth, GA",
+      description: "Join us on Good Friday to remember the cruxfiction of Jesus Christ and what it means for us. We will have a special worship night with music, scripture reading and reflection. Let's come together to reflect on the sacrifice of Jesus and the hope we have in Him!",
+      image: "https://images.pexels.com/photos/1615776/pexels-photo-1615776.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&fit=crop",
+      color: "from-green-400 to-blue-400"
+    },
+    {
+      id: 6,
+      title: "Easter Sunday Celebration",
+      date: "April 5th, 2026",
+      time: "7pm",
+      location: "SDA Church, Duluth, GA",
+      description: "Join us on Easter Sunday to celebrate the resurrection of Jesus Christ! We will have a special worship service, scripture with message of hope along with children activities. Let's come together to rejoice in the victory of Jesus over sin and death and the new life we have in Him!",
+      image: "./images/risen2.jpg",
+      color: "from-green-400 to-blue-400"
+    },
+    {
+      id: 6,
+      title: "April Outdoor Hangout",
+      date: "April 11th, 2026",
+      time: "11am - 2pm",
+      location: "TBD",
+      description: "Join us for an outdoor connection! We will have  outdoor timeto enjoy the spring and connect with others in a relaxed setting. Let's come together for a day of fun, food and fellowship! Details to be announced soon!",
+      image: "./images/hike.jpg",
       color: "from-green-400 to-blue-400"
     },
     // {
