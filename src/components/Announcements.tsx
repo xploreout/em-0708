@@ -90,7 +90,7 @@ const Announcements = () => {
       id: 6,
       title: "Easter Sunday Celebration",
       date: "April 5th, 2026",
-      time: "7pm",
+      time: "11am",
       location: "SDA Church, Duluth, GA",
       description: "Join us on Easter Sunday to celebrate the resurrection of Jesus Christ! We will have a special worship service, scripture with message of hope along with children activities. Let's come together to rejoice in the victory of Jesus over sin and death and the new life we have in Him!",
       image: "./images/risen2.jpg",
