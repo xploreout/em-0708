@@ -103,7 +103,7 @@ const Announcements = () => {
       time: "11am - 2pm",
       location: "TBD",
       description: "Join us for an outdoor connection! We will have  outdoor timeto enjoy the spring and connect with others in a relaxed setting. Let's come together for a day of fun, food and fellowship! Details to be announced soon!",
-      image: "./images/hike.jpg",
+      image: "./images/hike2.jpg",
       color: "from-green-400 to-blue-400"
     },
     // {
@@ -212,18 +212,6 @@ const Announcements = () => {
                     alt={event.title}
                     className="w-full h-48 object-cover"
                   />
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-2">
-                    <div
-                      onClick={(e) => handleHeartClick(event.id, e)}
-                      className={`transition-colors duration-200 ${
-                        likedEvents.has(event.id) 
-                          ? 'text-red-500' 
-                          : 'text-gray-400 hover:text-red-400'
-                      }`}
-                    >
-                      <Heart className={`h-4 w-4 ${likedEvents.has(event.id) ? 'fill-current' : ''}`} />
-                    </div>
-                  </div>
                 </div>
                 
                 <div className="p-6" >
