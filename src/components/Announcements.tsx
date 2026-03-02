@@ -167,103 +167,9 @@ const Announcements = () => {
     console.log('Sending confirmation emails...');
   };
 
-  const PhotoCollage = ({ images, title }: { images: string[], title: string }) => {
-    if (images.length === 1) {
-      return (
-        <img 
-          src={images[0]} 
-          alt={title}
-          className="w-full h-80 object-cover group-hover:scale-101 transition-transform duration-300"
-        />
-      );
-    }
-
-    if (images.length === 2) {
-      return (
-        <div className="grid grid-cols-2 gap-1 h-40">
-          {images.map((img, idx) => (
-            <img 
-              key={idx}
-              src={img} 
-              alt={`${title} ${idx + 1}`}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          ))}
-        </div>
-      );
-    }
-
-    if (images.length === 3) {
-      return (
-        <div className="grid grid-cols-2 gap-1 h-40">
-          <img 
-            src={images[0]} 
-            alt={`${title} 1`}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          <div className="grid grid-rows-2 gap-1">
-            <img 
-              src={images[1]} 
-              alt={`${title} 2`}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-            <img 
-              src={images[2]} 
-              alt={`${title} 3`}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-        </div>
-      );
-    }
-
-    if (images.length === 4) {
-      return (
-        <div className="grid grid-cols-2 gap-1 h-80">
-          {images.map((img, idx) => (
-            <img 
-              key={idx}
-              src={img} 
-              alt={`${title} ${idx + 1}`}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-          ))}
-        </div>
-      );
-    }
-
-    // 5+ images
-    return (
-      <div className="grid grid-cols-3 gap-1 h-40">
-        <img 
-          src={images[0]} 
-          alt={`${title} 1`}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        <img 
-          src={images[1]} 
-          alt={`${title} 2`}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        <div className="relative">
-          <img 
-            src={images[2]} 
-            alt={`${title} 3`}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          {images.length > 3 && (
-            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">+{images.length - 3}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <section id="announcements" className="py-20 bg-gray-20 ">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -272,16 +178,11 @@ const Announcements = () => {
               Announcements
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            
-          </p>
+         
         </div>
 
         {/* Upcoming Events */}
-        <div className="mb-20">
-          {/* <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            🔥 Events
-          </h3> */}
+        <div className="mb-5">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
             {upcomingEvents.map((event) => (
               <div onClick={() => handleEventInterest(event)} key={event.id} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl cursor-pointer">
@@ -337,62 +238,26 @@ const Announcements = () => {
                 </div>
               </div>
             ))}
-          </div>
+
         </div>
-
-         {/* Past Events */}
-
-        <div>
-
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-
-            📸 Recent Activities
-
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-            {pastEvents.map((event) => (
-
-              <div key={event.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group relative">
-                <div className="relative">
-                  <PhotoCollage images={event.images} title={event.title} />
-                  {/* Event Details Overlay */}
-                  <div className="absolute bottom-0 left-0 right-0   p-4">
-                    <h4 className="text-lg font-bold text-white mb-1 opacity-70">
-                      {event.title}
-                    </h4>
-                    <div className="flex items-center text-white/90 text-sm mb-1 opacity-70">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>{event.date}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <p className="text-gray-600 mb-3 text-sm">
-                    {event.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Call to Action */}
-        {/* <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-blue-500 to-green-500 rounded-2xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">Don't Miss Out! 🎊</h3>
-            <p className="text-lg mb-6 opacity-90">
-              Stay updated with all our events and be part of our amazing community
-            </p>
-            <a 
-              href="#newcomer-form" 
-              className="bg-white text-blue-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors duration-300 inline-block"
+ 
+          
+          <div className="border-t border-gray-300 flex justify-center">
+          <h5 className="text-2xl mt-10
+           md:text-2xl font-bold text-blue-900 ">
+          
+            <a
+              href="/#/past-events"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-700 hover:text-blue-400 transition-colors duration-200 font-semibold flex items-center space-x-1 "
             >
-              Join Our Community Today!
+              <span> 📸 View Past Events</span>
             </a>
-          </div>
-        </div> */}
+          </h5>
+         
+        </div>
+
       </div>
 
       <EventRegistrationModal

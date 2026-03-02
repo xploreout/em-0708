@@ -1,13 +1,8 @@
 import React from 'react';
 
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import Announcements from './components/Announcements';
-import Resources from './components/Resources';
-import NewcomerForm from './components/NewcomerForm';
-import Footer from './components/Footer';
 import PastEvents from './components/PastEvents';
+import MainPage from './components/MainPage';
 
 function App() {
   return (
@@ -15,18 +10,9 @@ function App() {
       <div className="min-h-screen">
         <Routes>
         <Route path="/" element={
-            <>
-              <Header />
-              <main>
-                <Hero />
-                <Announcements />
-                <Resources />
-                <NewcomerForm/>
-              </main>
-              <Footer />
-            </>
+            <MainPage />
           } />
-          <Route path="/past-events" element={<><h2>hellooooo</h2><PastEvents /></>} />
+          <Route path="/past-events" element={<PastEvents />} />
            </Routes>
       </div>
      
