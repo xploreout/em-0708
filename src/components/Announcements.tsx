@@ -100,9 +100,9 @@ const Announcements = () => {
       id: 6,
       title: "April Outdoor Hangout",
       date: "April 11th, 2026",
-      time: "11am - 2pm",
+      time: "10am - Noon",
       location: "TBD",
-      description: "Join us for an outdoor connection! We will have  outdoor timeto enjoy the spring and connect with others in a relaxed setting. Let's come together for a day of fun, food and fellowship! Details to be announced soon!",
+      description: "Join us for an outdoor connection! We might hike or volunteer in the  park. Details to be announced soon!",
       image: "./images/hike2.jpg",
       color: "from-green-400 to-blue-400"
     },
@@ -250,7 +250,7 @@ const Announcements = () => {
         </div>
  
           
-          <div className="border-t border-gray-300 flex justify-center">
+          <div className="flex justify-center">
           <h5 className="text-2xl mt-10
            md:text-2xl font-bold text-blue-900 ">
           

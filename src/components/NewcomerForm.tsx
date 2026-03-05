@@ -138,12 +138,12 @@ const NewcomerForm = () => {
             <span>Join Our Family</span>
           </div> */}
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            <span className="bg-gradient-to-r from-blue-600  to-green-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-gray-800  to-gray-800 bg-clip-text text-transparent">
               Let's Stay Connected
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto font-medium">
-            We'd love to learn more about you and to welcome you to our amazing adult community! 🌟
+            We'd love to learn more about you and to welcome you to our amazing adult community!
           </p>
         </div>
 

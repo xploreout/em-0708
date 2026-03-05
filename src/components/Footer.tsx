@@ -11,26 +11,26 @@ const Footer = () => {
   )}`
 
   return (
-    <footer className='bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 text-white py-12'>
+    <footer className='bg-gradient-to-br from-blue-900  to-green-900 text-white py-12'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
           {/* Church Info */}
           <div className='col-span-1 md:col-span-2'>
             <div className='flex items-center space-x-3 mb-4'>
-              <div className='bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-xl'>
+              {/* <div className='bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-xl'>
                 <Church className='h-6 w-6 text-white' />
-              </div>
+              </div> */}
               <h3 className='text-xl font-bold bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent'>
                 ACBCC English Ministry
               </h3>
             </div>
             <p className='text-gray-300 mb-4 leading-relaxed mr-10'>
-              We're a lively community of Jesus followers growing together in
+              We're a community of Jesus followers growing together in
               faith, friendship, and everyday life. Our mission is to cultivate
               a Christ-centered ministry where people across cultures and
               generations belong, believe and become lifelong disciples of Jesus
               Christ. Come join us as we joyfully serve God and our neighbors
-              with open hearts! ✨
+              with open hearts! 
             </p>
             <div className='flex space-x-4'>
               {/* <a

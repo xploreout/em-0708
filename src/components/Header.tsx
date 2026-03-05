@@ -49,7 +49,7 @@ const Header = () => {
               rel="noopener noreferrer"
               className="text-gray-700 hover:text-blue-400 transition-colors duration-200 font-semibold flex items-center space-x-1 "
             >
-              <ArrowLeft className="h-4 w-4" />
+              {/* <ArrowLeft className="h-4 w-4" /> */}
               <span>ACBCC</span>
             </a>
             {navItems.map((item) => (
