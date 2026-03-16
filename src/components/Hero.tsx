@@ -33,10 +33,10 @@ const Hero = () => {
            </span>
           </h1> */}
           
-          <p className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent text-2xl md:text-3xl font-semibold mb-6 mx-20 px-20">
+          <p className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent text-2xl md:text-3xl font-semibold mb-6 mx-20 ">
             Welcome to our Christ-centered ministry where we  build relationships, grow in faith, and serve together.  
           </p>
-          <p className="text-l md:text-xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
+          <p className="text-l md:text-xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed font-medium ">
           We are prayerfully seeking a part-time or full-time servant to join the ministry, and we also look forward to the upcoming launch of our English Worship Service. We invite you to join us during this special time as we work together to build up the body of Christ. </p>
           {/* <p className="text-l md:text-xl text-gray-500 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
           If you are interested in joining us, please reach out to us through the contact form below.
