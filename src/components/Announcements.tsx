@@ -210,7 +210,7 @@ const Announcements = () => {
         </div>
 
         {/* Upcoming Events */}
-        <div className="mb-5">
+        <div className="m-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
             {upcomingEvents.map((event) => (
               <div onClick={() => handleEventInterest(event)} key={event.id} className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl ">
