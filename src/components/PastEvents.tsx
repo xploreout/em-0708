@@ -160,8 +160,32 @@ const PastEvents = () => {
         </div>
 
         {/* Past Events */}
-
-        <div>
+        <>
+          <div className='mb-10'> 
+            <div className='p-4'>
+              <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl '>
+                <div className='aspect-video w-full'>
+                  <iframe
+                    src='https://www.youtube.com/embed/l2zWtUVklm8'
+                    title='Red Pockets & Redemption'
+                    className='w-full h-full rounded-xl'
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                {/* <p
+                  style={{ cursor: 'pointer' }}
+                  onClick={() =>
+                    window.open('https://youtu.be/l2zWtUVklm8', '_blank')
+                  }
+                  className='text-sm text-blue-400  mb-4'
+                >
+                  Red Pockets & Redemption
+                </p> */}
+              </div>
+            </div>
+          </div>
+        </>
+        <>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
             {pastEvents.map((event) => (
               <div
@@ -189,7 +213,7 @@ const PastEvents = () => {
               </div>
             ))}
           </div>
-        </div>
+        </>
       </div>
     </>
   )
