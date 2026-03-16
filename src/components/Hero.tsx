@@ -42,9 +42,9 @@ const Hero = () => {
           </p>
           <p className="text-l md:text-xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
           We are prayerfully seeking a part-time or full-time servant to join the ministry, and we also look forward to the upcoming launch of our English Worship Service. We invite you to join us during this special time as we work together to build up the body of Christ. </p>
-          <p className="text-l md:text-xl text-gray-500 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
+          {/* <p className="text-l md:text-xl text-gray-500 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
           If you are interested in joining us, please reach out to us through the contact form below.
-          </p>
+          </p> */}
             <div className="flex items-center justify-center space-x-3 text-blue-600 mb-10">
             {/* <Users className="h-6 w-6" /> */}
             <span className="text-lg font-semibold">
