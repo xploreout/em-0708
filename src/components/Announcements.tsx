@@ -98,12 +98,12 @@ const Announcements = () => {
     },
     {
       id: 6,
-      title: "April Outdoor Hangout",
+      title: "April Volunteering and Lunch Outing",
       date: "April 11th, 2026",
       time: "10am - Noon",
-      location: "TBD",
-      description: "Join us for an outdoor connection! We might hike or volunteer in the  park. Details to be announced soon!",
-      image: "./images/hike2.jpg",
+      location: "Powers Island Unit, Chattahoochee River National Recreation Area",
+      description: "Join us to cleanup at one of the park units along Chattahoochee River National Recreation Area.  We will meet at the parking lot next to the trail map sign. Things to bring/wear: reususable water bottle, closed-toed shoes, and recommended for long sleeve shirt and pants. Welcome all ages 10 and up.  We will lunch afterwards at a restaurant, details later. Welcome all to join for one or both events!",
+      image: "./images/river.jpg",
       color: "from-green-400 to-blue-400"
     },
     // {
@@ -168,8 +168,8 @@ const Announcements = () => {
   ];
 
   const handleEventInterest = (event: any) => {
-    setSelectedEvent(event);
-    setIsModalOpen(true);
+    // setSelectedEvent(event);
+    // setIsModalOpen(true);
   };
 
   const handleRegistration = (eventIds: number[], contactInfo: any) => {
@@ -182,9 +182,6 @@ const Announcements = () => {
       return updated;
     });
 
-    // Here you would typically send emails to both user and webmaster
-    console.log('Registration submitted:', { eventIds, contactInfo });
-    console.log('Sending confirmation emails...');
   };
 
   return (
