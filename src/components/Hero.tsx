@@ -33,7 +33,7 @@ const Hero = () => {
            </span>
           </h1> */}
           
-          <p className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent text-2xl md:text-3xl font-semibold mb-6 mx-20 ">
+          <p className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent text-2xl md:text-3xl font-semibold mb-6 mx-15 ">
             Welcome to our Christ-centered ministry where we  build relationships, grow in faith, and serve together.  
           </p>
           <p className="text-l md:text-xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed font-medium ">
