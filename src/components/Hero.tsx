@@ -38,10 +38,14 @@ const Hero = () => {
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
-            Welcome our Christ-centered community where we grow in faith, build relationships, and serve the community together.  ✨
+            Welcome our Christ-centered ministry where we grow in faith, build relationships, and serve the community together.  
           </p>
-          
-          <div className="flex items-center justify-center space-x-3 text-blue-600 mb-10">
+          <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
+          We are eagerly prayering for a part-time or full-time servant to join this ministry, and also for English Worship services to be launched very soon.  We pray that you will join us in building up the body of Christ! </p>
+          <p className="text-l md:text-xl text-gray-500 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
+          If you are interested in joining us, please reach out to us through the contact form below.
+          </p>
+            <div className="flex items-center justify-center space-x-3 text-blue-600 mb-10">
             {/* <Users className="h-6 w-6" /> */}
             <span className="text-lg font-semibold">
               We are a part of{' '}

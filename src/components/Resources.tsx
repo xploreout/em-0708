@@ -14,10 +14,10 @@ const Resources = () => {
   const bibleStudies = [
     {
       id: 1,
-      title: "Basics of Faith - Episode 1",
+      title: "Basics of Faith - Episode 2",
       description: "What is faith? Why is faith important? How can we grow in our faith? This video series will help us understand the basics of Christian faith and how to apply it in our daily life.",
       duration: "6 min",
-      videoPlaylistUrl: "https://www.youtube.com/watch?v=kFh3dHvAsLE&t=1s",
+      videoPlaylistUrl: "https://youtu.be/yc5DT0li4V0?si=MbR2KHKGRfhVFbke",
       image: "https://images.pexels.com/photos/66100/pexels-photo-66100.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
       isVideoSeries: true
     },
@@ -173,9 +173,9 @@ const Resources = () => {
                     study.id === 1 ? 
                     (<>
                       <p style={{ cursor: "pointer", color: "blue" }}
-                        onClick={() => window.open("/images/whatsmean1.jpg", "_blank")} className="text-sm text-blue-600 mb-4">Conversation Guide</p>
+                        onClick={() => window.open("/images/mean2.jpg", "_blank")} className="text-sm text-blue-600 mb-4">Conversation Guide</p>
                         <p style={{ cursor: "pointer", color: "blue" }}
-                        onClick={() => window.open("https://finds.life.church/myths-life-as-a-christian/", "_blank")} className="text-sm text-blue-600 mb-4">Let’s Unpack 3 Myths About Life as a Christian</p>
+                        onClick={() => window.open("https://finds.life.church/what-is-prayer/", "_blank")} className="text-sm text-blue-600 mb-4">What Is Prayer And How Do You Pray?</p>
                         <p style={{ cursor: "pointer", color: "blue" }}
                         onClick={() => window.open("https://finds.life.church/spiritual-disciplines/", "_blank")} className="text-sm text-blue-600 mb-7">Spiritual Habits</p>
                     </>) : null

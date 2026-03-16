@@ -55,18 +55,19 @@ const Announcements = () => {
     //   color: "from-blue-400 to-green-400"
     // },
     {
-      id: 3,
-      title: "Bible Study & Fellowship",
-      date: "1st and 3rd Fridays of the month  ",
-      time: "7:30pm",
+      id: 2,
+      title: "Youth Sunday School",
+      date: "Every Sunday",
+      time: "11:00am",
       location: "SDA Church, Duluth, GA",
-      description: "Now that we have finished the book study of 'Purpose Driven Life' and scripture study on the book James. We are starting a video series on 'Basics of Faith' by Life Church Open Network. Each session includes a short video and group discussion. Come join us for fellowship, explore faith and grow spiritually together!",
-      image: "https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      description: "Welcome students in grades 6–12 to join our Sunday School class! We will explore the Bible together, discuss relevant topics, and grow in faith step by step. Our Sunday School class is a great place to connect with other students, ask questions about faith, and deepen your relationship with God. Come join us for a fun and meaningful time of learning and fellowship!",
+      image: "./images/IMG_5440.jpg",
       color: "from-blue-400 to-green-400"
     },
+    
     {
-      id: 4,
-      title: "Youth Friday Night",
+      id: 3,
+      title: "Youth Friday Night Fellowship",
       date: "1st, 2nd and 3rd Fridays of the month",
       time: "7:30pm - 9:30pm",
       location: "SDA Church, Duluth, GA",
@@ -76,11 +77,21 @@ const Announcements = () => {
 
       
     },
+    {
+      id: 4,
+      title: "Friday Salt n Light (SnL) Fellowship",
+      date: "1st and 3rd Fridays of the month  ",
+      time: "7:30pm",
+      location: "SDA Church, Duluth, GA",
+      description: "Now that we have finished the book study of 'Purpose Driven Life' and scripture study on the book James. We are starting a video series on 'Basics of Faith' by Life Church Open Network. Each session includes a short video and group discussion. Come join us for fellowship, explore faith and grow spiritually together!",
+      image: "https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
+      color: "from-blue-400 to-green-400"
+    },
      {
       id: 5,
       title: "Good Friday Worship Night",
       date: "April 3rd, 2026",
-      time: "7pm",
+      time: "7:30pm",
       location: "SDA Church, Duluth, GA",
       description: "Join us on Good Friday to remember the cruxfiction of Jesus Christ and what it means for us. We will have a special worship night with music, scripture reading and reflection. Let's come together to reflect on the sacrifice of Jesus and the hope we have in Him!",
       image: "https://images.pexels.com/photos/1615776/pexels-photo-1615776.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&fit=crop",
