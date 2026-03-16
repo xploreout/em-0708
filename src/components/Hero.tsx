@@ -24,23 +24,19 @@ const Hero = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center" >
-          
-          
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+          {/* <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
               <div className="flex  justify-center animate-pulse">
               <FireworkButton/>
-            </div>
+              </div>
             <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
               Glad that you are here!
            </span>
-            <br />
-            {/* <span className="text-gray-800">you visited</span> */}
-          </h1>
+          </h1> */}
           
-          <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
-            Welcome our Christ-centered ministry where we grow in faith, build relationships, and serve the community together.  
+          <p className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent text-2xl md:text-3xl font-semibold mb-6">
+            Welcome to our Christ-centered ministry where we  build relationships, grow in faith, and serve together.  
           </p>
-          <p className="text-l md:text-xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
+          <p className="text-l md:text-xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
           We are prayerfully seeking a part-time or full-time servant to join the ministry, and we also look forward to the upcoming launch of our English Worship Service. We invite you to join us during this special time as we work together to build up the body of Christ. </p>
           {/* <p className="text-l md:text-xl text-gray-500 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
           If you are interested in joining us, please reach out to us through the contact form below.
