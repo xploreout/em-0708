@@ -41,7 +41,7 @@ const Hero = () => {
             Welcome our Christ-centered ministry where we grow in faith, build relationships, and serve the community together.  
           </p>
           <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
-          We are eagerly prayering for a part-time or full-time servant to join this ministry, and also for English Worship services to be launched very soon.  We pray that you will join us in building up the body of Christ! </p>
+          We are prayerfully seeking a part-time or full-time servant to join the ministry, and we also look forward to the upcoming launch of our English Worship Service. We invite you to join us during this special time as we work together to build up the body of Christ. </p>
           <p className="text-l md:text-xl text-gray-500 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
           If you are interested in joining us, please reach out to us through the contact form below.
           </p>
