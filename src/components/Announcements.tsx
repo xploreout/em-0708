@@ -108,7 +108,7 @@ const Announcements = () => {
       color: "from-green-400 to-blue-400"
     },
     {
-      id: 6,
+      id: 7,
       title: "April Volunteering and Lunch Outing",
       date: "April 11th, 2026",
       time: "10am - Noon",
@@ -244,7 +244,10 @@ const Announcements = () => {
                       <span>{event.location}</span>
                     </div>
                   </div>
-                 
+                 {
+                    event.id === 7 ? (<p style={{ cursor: "pointer" }}
+                        onClick={() => window.open("https://chattahoocheeparks.app.neoncrm.com/nx/portal/neonevents/events?path=%2Fportal%2Fevents%2F36703", "_blank")} className="text-sm text-blue-400  mb-4">Registration & Event Information</p>)
+                    : null}
                   {/* <button 
                     onClick={() => handleEventInterest(event)}
                     className="pt-2 w-full bg-gradient-to-r from-blue-500 to-green-500 text-white py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-green-600 transition-all duration-300 transform hover:scale-105"
