@@ -79,11 +79,11 @@ const Announcements = () => {
     },
     {
       id: 4,
-      title: "Friday Salt n Light (SnL) Fellowship",
+      title: "Salt n Light (SnL) Fellowship",
       date: "1st and 3rd Fridays of the month  ",
       time: "7:30pm",
       location: "SDA Church, Duluth, GA",
-      description: "Now that we have finished the book study of 'Purpose Driven Life' and scripture study on the book James. We are starting a video series on 'Basics of Faith' by Life Church Open Network. Each session includes a short video and group discussion. Come join us for fellowship, explore faith and grow spiritually together!",
+      description: "We have finished the book study of 'Purpose Driven Life' and scripture study on the book James. We are starting a video series on 'Basics of Faith' by Life Church Open Network. Each session includes a short video and group discussion. Come join us for fellowship, explore faith and grow spiritually together!",
       image: "https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop",
       color: "from-blue-400 to-green-400"
     },
