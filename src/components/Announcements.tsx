@@ -58,7 +58,7 @@ const Announcements = () => {
       id: 2,
       title: "Youth Sunday School",
       date: "Every Sunday",
-      time: "11:00am",
+      time: "11:00am - 12:15pm",
       location: "SDA Church, Duluth, GA",
       description: "Welcome students in grades 6–12 to join our Sunday School class! We will explore the Bible together, discuss relevant topics, and grow in faith step by step. Our Sunday School class is a great place to connect with other students, ask questions about faith, and deepen your relationship with God. Come join us for a fun and meaningful time of learning and fellowship!",
       image: "./images/IMG_5440.jpg",
