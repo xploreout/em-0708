@@ -117,6 +117,16 @@ const Announcements = () => {
       image: "./images/river.jpg",
       color: "from-green-400 to-blue-400"
     },
+    {
+      id: 8,
+      title: "April Buffet Lunch Outing",
+      date: "April 11th, 2026",
+      time: "12:30 - 1:30pm",
+      location: "Golden Corral in 2211 Cobb Pkwy, Smyrna, GA",
+      description: "Simple buffet lunch at a Golden Corral. Welcome all to join! ",
+      image: "./images/corral.jpg",
+      color: "from-green-400 to-blue-400"
+    },
     // {
     //   id: 6,
     //   title: "Calling Actors / Helpers for CNY Silent Skit",
