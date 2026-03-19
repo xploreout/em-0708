@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaInstagram } from 'react-icons/fa';
 import { Menu, X, ArrowLeft } from 'lucide-react';
@@ -11,26 +11,11 @@ const Header = () => {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   const navItems = [
-    { name: 'Announcements', href: '/#announcements' },
-    { name: 'Resources', href: '/#resources' },
-    // { name: 'Past Events', href: '/past-events' },
+    { name: 'Announcements', href: '/announcements' },
+    { name: 'Resources', href: '/resources' },
+    { name: 'Past Events', href: '/past-events' },
   ];
 
-  const handleNavClick = (href: string) => {
-    if (href.startsWith('/#')) {
-      // If we're not on the home page, navigate to home first
-      if (location.pathname !== '/') {
-        window.location.href = href;
-      } else {
-        // If we're on home page, just scroll to section
-        const element = document.querySelector(href.substring(1));
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-    }
-    setIsOpen(false);
-  };
   return (
     <header className=" bg-white shadow-lg sticky top-0 z-50 transition-all duration-300">
       <div className="  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
@@ -53,32 +38,17 @@ const Header = () => {
               <span>ACBCC</span>
             </a>
             {navItems.map((item) => (
-              item.href.startsWith('/#') ? (
-                
-                <a
-                  key={item.name}
-                  href={item.href}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick(item.href);
-                  }}
-                  className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 hover:bg-primary-50"
-                >
-                  {item.name}
-                </a>
-              ) : (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 hover:bg-primary-50 ${
-                    location.pathname === item.href
-                      ? 'text-primary-600 bg-primary-50'
-                      : 'text-gray-700 hover:text-primary-600'
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              )
+              <Link
+                key={item.name}
+                to={item.href}
+                className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 hover:bg-primary-50 ${
+                  location.pathname === item.href
+                    ? 'text-primary-600 bg-primary-50'
+                    : 'text-gray-700 hover:text-primary-600'
+                }`}
+              >
+                {item.name}
+              </Link>
             ))}
             <a
                 href="https://www.instagram.com/acbccem/"
@@ -126,32 +96,18 @@ const Header = () => {
               <span>Acbcc</span>
             </a>
               {navItems.map((item) => (
-                item.href.startsWith('/#') ? (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNavClick(item.href);
-                    }}
-                    className="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3  rounded-md text-base font-medium-sm transition-colors duration-200"
-                  >
-                    {item.name}
-                  </a>
-                ) : (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`px-3  rounded-md text-base font-medium transition-colors duration-200 hover:bg-primary-50 ${
-                      location.pathname === item.href
-                        ? 'text-primary-600 bg-primary-50'
-                        : 'text-blue-700 hover:text-blue-500'
-                    }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                )
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={`px-3 rounded-md text-base font-medium transition-colors duration-200 hover:bg-primary-50 ${
+                    location.pathname === item.href
+                      ? 'text-primary-600 bg-primary-50'
+                      : 'text-blue-700 hover:text-blue-500'
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.name}
+                </Link>
               ))}
                 <a
                 href="https://www.instagram.com/acbccem/"

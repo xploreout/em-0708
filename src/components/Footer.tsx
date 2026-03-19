@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { Mail, MapPin, Church } from 'lucide-react'
-import { FaInstagram, FaFacebook, FaYoutube } from 'react-icons/fa'
+import { Mail, MapPin } from 'lucide-react'
+import { FaInstagram } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
 
 const Footer = () => {
   const [showMap, setShowMap] = useState(false)
@@ -62,19 +63,28 @@ const Footer = () => {
             <h4 className='text-lg font-semibold mb-4'>Quick Links</h4>
             <ul className='space-y-2'>
               <li>
-                <a
-                  href='#announcements'
-                  className='text-gray-300 hover:text-pink-400 transition-colors duration-200'
-                >
+                <Link to='/announcements' className='text-gray-300 hover:text-pink-400 transition-colors duration-200'>
                   Announcements
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link to='/resources' className='text-gray-300 hover:text-orange-400 transition-colors duration-200'>
+                  Resources
+                </Link>
+              </li>
+              <li>
+                <Link to='/past-events' className='text-gray-300 hover:text-orange-400 transition-colors duration-200'>
+                  Past Events
+                </Link>
               </li>
               <li>
                 <a
-                  href='#resources'
-                  className='text-gray-300 hover:text-orange-400 transition-colors duration-200'
+                  href='https://www.acbcc.org'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-gray-300 hover:text-blue-400 transition-colors duration-200'
                 >
-                  Resources
+                  ACBCC
                 </a>
               </li>
             </ul>

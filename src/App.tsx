@@ -1,21 +1,36 @@
-import React from 'react';
-
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import PastEvents from './components/PastEvents';
 import MainPage from './components/MainPage';
+import Announcements from './components/Announcements';
+import Resources from './components/Resources';
+import Header from './components/Header';
+import Footer from './components/Footer';
+
+function Layout() {
+  return (
+    <>
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
+    </>
+  );
+}
 
 function App() {
   return (
-     <Router>
+    <Router>
       <div className="min-h-screen">
         <Routes>
-        <Route path="/" element={
-            <MainPage />
-          } />
-          <Route path="/past-events" element={<PastEvents />} />
-           </Routes>
+          <Route path="/" element={<MainPage />} />
+          <Route element={<Layout />}>
+            <Route path="/announcements" element={<Announcements />} />
+            <Route path="/resources" element={<Resources />} />
+            <Route path="/past-events" element={<PastEvents />} />
+          </Route>
+        </Routes>
       </div>
-     
     </Router>
   );
 }

@@ -1,82 +1,59 @@
-import React from 'react';
-import { Users, ArrowDown } from 'lucide-react';
-import FireworkButton from './FireworkButton';
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
   return (
-    <section className="relative bg-gradient-to-br from-blue-50 via-yellow-50 to-green-50 py-20 overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400 rounded-full blur-xl"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-yellow-100 rounded-full blur-lg"></div>
-        <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-green-400 rounded-full blur-2xl"></div>
-      </div>
-
-      {/* Hero Image */}
+    <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gray-950">
+      {/* Background image */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.pexels.com/photos/33307468/pexels-photo-33307468.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop" 
-          alt="Young adults fellowship" 
-          className="w-full h-full object-cover opacity-20"
+        <img
+          src="https://images.pexels.com/photos/33307468/pexels-photo-33307468.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
+          alt="Young adults fellowship"
+          className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-700/30 "></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-950/60 via-gray-950/40 to-gray-950/80" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center" >
-          {/* <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
-              <div className="flex  justify-center animate-pulse">
-              <FireworkButton/>
-              </div>
-            <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-              Glad that you are here!
-           </span>
-          </h1> */}
-          
-          <p className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent text-2xl md:text-3xl font-semibold mb-6 mx-15 ">
-            Welcome to our Christ-centered ministry where we  build relationships, grow in faith, and serve together.  
-          </p>
-          <p className="text-l md:text-xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed font-medium ">
-          We are prayerfully seeking a part-time or full-time servant to join the ministry, and we also look forward to the upcoming launch of our English Worship Service. We invite you to join us during this special time as we work together to build up the body of Christ. </p>
-          {/* <p className="text-l md:text-xl text-gray-500 mb-8 max-w-4xl mx-auto leading-relaxed font-medium">
-          If you are interested in joining us, please reach out to us through the contact form below.
-          </p> */}
-            <div className="flex items-center justify-center space-x-3 text-blue-600 mb-10">
-            {/* <Users className="h-6 w-6" /> */}
-            <span className="text-lg text-blue-500 font-semibold">
-              We are a part of{' '}
-              <a 
-                href="https://www.acbcc.org" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-yellow-600 transition-colors duration-200  decoration-2 underline-offset-2"
-              >
-                Atlanta Chinese Bible Community Church (ACBCC)
-              </a>
-            </span>
-          </div>
-          
-          {/* <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a 
-              href="#newcomer-form" 
-              className="bg-gradient-to-r from-blue-500 to-yellow-500 text-white px-10 py-4 rounded-full text-lg font-bold hover:from-blue-600 hover:to-yellow-600 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-2 hover:scale-105"
-            >
-              Connect With Us 🤝
-            </a>
-            <a 
-              href="#announcements" 
-              className="bg-white/90 backdrop-blur-sm text-gray-800 px-8 py-4 rounded-full text-lg font-semibold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 border border-blue-200"
-            >
-              See What's Coming Up 🎉
-            </a>
-          </div> */}
+      {/* Content */}
+      <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-10 py-24 text-center">
+        <p className="text-sm uppercase tracking-widest text-blue-400 font-semibold mb-4">
+          Atlanta Chinese Bible Community Church
+        </p>
 
-          {/* <div className="mt-12 animate-bounce">
-            <ArrowDown className="h-6 w-6 text-blue-500 mx-auto" />
-          </div> */}
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
+          ACBCC{' '}
+          <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+            English Ministry
+          </span>
+        </h1>
+
+        <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">
+          A Christ-centered community where we build relationships, grow in
+          faith, and serve together.
+        </p>
+
+        <p className="text-base text-gray-400 max-w-2xl mx-auto leading-relaxed mb-10">
+          We are prayerfully seeking a part-time or full-time servant to join
+          the ministry, and we look forward to the upcoming launch of our
+          English Worship Service. Join us during this special season.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            to="/announcements"
+            className="bg-white text-gray-900 px-8 py-3 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors duration-200 shadow-lg"
+          >
+            Announcements
+          </Link>
+          <button
+            onClick={() => document.getElementById('newcomer-form')?.scrollIntoView({ behavior: 'smooth' })}
+            className="border border-white/30 text-white px-8 py-3 rounded-full text-sm font-semibold hover:bg-white/10 transition-colors duration-200"
+          >
+            Connect With Us
+          </button>
         </div>
       </div>
     </section>
   );
 };
+
 export default Hero;

@@ -1,5 +1,4 @@
 import { Calendar } from 'lucide-react'
-import HeadMain from './HeadMain'
 
 const PastEvents = () => {
   const pastEvents = [
@@ -148,8 +147,7 @@ const PastEvents = () => {
 
   return (
     <>
-      <HeadMain />
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16'>
         {/* Header */}
         <div className='text-center mb-16 mt-50'>
           <h2 className='px-20 text-4xl md:text-4xl font-bold text-gray-900 mb-4'>
@@ -161,9 +159,9 @@ const PastEvents = () => {
 
         {/* Past Events */}
         <>
-          <div className='mb-10'> 
-            <div className='p-4'>
-              <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl '>
+          <div className='mb-10'>
+            <div className='p-4 w-2/5'>
+              <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl'>
                 <div className='aspect-video w-full'>
                   <iframe
                     src='https://www.youtube.com/embed/l2zWtUVklm8'
