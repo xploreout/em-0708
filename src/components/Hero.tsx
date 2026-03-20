@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gray-950">
+    <section className="relative min-h-[60vh] flex items-center overflow-hidden bg-gray-800">
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <img
@@ -10,7 +10,7 @@ const Hero = () => {
           alt="Young adults fellowship"
           className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-950/60 via-gray-950/40 to-gray-950/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-800/60 via-gray-800/40 to-gray-800/80" />
       </div>
 
       {/* Content */}
