@@ -160,7 +160,7 @@ const PastEvents = () => {
         {/* Past Events */}
         <>
           <div className='mb-10'>
-            <div className='p-4 w-2/5'>
+            <div className='p-4 w-full md:w-2/5'>
               <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl'>
                 <div className='aspect-video w-full'>
                   <iframe
