@@ -147,9 +147,9 @@ const PastEvents = () => {
 
   return (
     <>
-<div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16'>
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16'>
         {/* Header */}
-        <div className='mb-16 pt-16'>
+        <div className='mt-4 mb-8 pt-16'>
           <h2 className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest mb-4'>
             Past Events
           </h2>
@@ -160,7 +160,9 @@ const PastEvents = () => {
           <div className='h-px bg-gray-200 w-full' />
         </div>
         <div className='flex items-start gap-8 mb-10 pt-6'>
-          <span className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest shrink-0'>2026</span>
+          <span className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest shrink-0'>
+            2026
+          </span>
           <div className='w-1/3 p-4'>
             <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl'>
               <div className='aspect-video w-full'>
@@ -180,7 +182,9 @@ const PastEvents = () => {
           <div className='h-px bg-gray-200 w-full' />
         </div>
         <div className='flex items-start gap-8 pt-6'>
-          <span className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest shrink-0'>2025</span>
+          <span className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest shrink-0'>
+            2025
+          </span>
           <div className='flex-1'>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
               {pastEvents.map((event) => (
