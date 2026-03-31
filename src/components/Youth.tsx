@@ -32,7 +32,9 @@ const Youth = () => {
 
             {/* Youth Friday Night Fellowship card */}
             <div className='mt-4 bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-2 text-sm text-gray-500'>
-              <p className='font-semibold text-gray-700 text-base'>Youth Friday Night Fellowship</p>
+              <p className='font-semibold text-gray-700 text-base'>
+                Youth Friday Night Fellowship
+              </p>
               <div className='flex items-center gap-2'>
                 <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />
                 <span>1st, 2nd and 3rd Fridays of each month</span>
@@ -56,7 +58,9 @@ const Youth = () => {
 
             {/* Youth Sunday School card */}
             <div className='bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-2 text-sm text-gray-500'>
-              <p className='font-semibold text-gray-700 text-base'>Youth Sunday School</p>
+              <p className='font-semibold text-gray-700 text-base'>
+                Youth Sunday School
+              </p>
               <div className='flex items-center gap-2'>
                 <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />
                 <span>Every Sunday</span>
