@@ -44,7 +44,7 @@ export const upcomingEvents: Event[] = [
   {
     id: 4,
     title: 'Salt n Light (SnL) Fellowship',
-    date: 'Fridays, April 10, 17th',
+    date: 'Fridays, April 10th & 17th',
     time: '7:30pm – 9:15pm',
     location: 'SDA Church, Duluth, GA',
     description:
