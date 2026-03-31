@@ -35,7 +35,7 @@ const Resources = () => {
           <p className='text-sm uppercase tracking-widest text-gray-900 font-semibold mb-2'>
             Grow in Faith
           </p>
-          <h2 className='text-xl font-bold text-gray-900'>Resources</h2>
+          <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>Resources</h2>
         </div>
 
         {/* Bible Studies */}

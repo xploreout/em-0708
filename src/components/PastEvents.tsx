@@ -149,69 +149,67 @@ const PastEvents = () => {
     <>
 <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16'>
         {/* Header */}
-        <div className='text-left mb-16 mt-50'>
-          <h2 className='px-20 text-xl font-bold text-gray-900 mb-4'>
-            <br />
-            <span>Past Activities</span>
+        <div className='mb-16 pt-16'>
+          <h2 className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest mb-4'>
+            Past Events
           </h2>
-          <p className='text-xl text-gray-600 max-w-3xl mx-auto'></p>
         </div>
 
-        {/* Past Events */}
-        <>
-          <div className='mb-10'>
-            <div className='p-4 w-full md:w-2/5'>
-              <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl'>
-                <div className='aspect-video w-full'>
-                  <iframe
-                    src='https://www.youtube.com/embed/l2zWtUVklm8?color=white'
-                    title='Red Pockets & Redemption'
-                    className='w-full h-full rounded-xl'
-                    allowFullScreen
-                  ></iframe>
-                </div>
-                {/* <p
-                  style={{ cursor: 'pointer' }}
-                  onClick={() =>
-                    window.open('https://youtu.be/l2zWtUVklm8', '_blank')
-                  }
-                  className='text-sm text-blue-400  mb-4'
-                >
-                  Red Pockets & Redemption
-                </p> */}
+        {/* 2026 section */}
+        <div className='mb-2 -mx-4 sm:-mx-6 lg:-mx-8'>
+          <div className='h-px bg-gray-200 w-full' />
+        </div>
+        <div className='flex items-start gap-8 mb-10 pt-6'>
+          <span className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest shrink-0'>2026</span>
+          <div className='w-1/3 p-4'>
+            <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl'>
+              <div className='aspect-video w-full'>
+                <iframe
+                  src='https://www.youtube.com/embed/l2zWtUVklm8?color=white'
+                  title='Red Pockets & Redemption'
+                  className='w-full h-full rounded-xl'
+                  allowFullScreen
+                ></iframe>
               </div>
             </div>
           </div>
-        </>
-        <>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
-            {pastEvents.map((event) => (
-              <div
-                key={event.id}
-                className='bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group relative'
-              >
-                <div className='relative'>
-                  <PhotoCollage images={event.images} title={event.title} />
-                  {/* Event Details Overlay */}
-                  <div className='absolute bottom-0 left-0 right-0   p-4'>
-                    <h4 className='text-lg font-bold text-white mb-1 opacity-70'>
-                      {event.title}
-                    </h4>
-                    <div className='flex items-center text-white/90 text-sm mb-1 opacity-70'>
-                      <Calendar className='h-3 w-3 mr-1' />
-                      <span>{event.date}</span>
+        </div>
+
+        {/* 2025 section */}
+        <div className='mb-2 -mx-4 sm:-mx-6 lg:-mx-8'>
+          <div className='h-px bg-gray-200 w-full' />
+        </div>
+        <div className='flex items-start gap-8 pt-6'>
+          <span className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest shrink-0'>2025</span>
+          <div className='flex-1'>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+              {pastEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className='bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group relative'
+                >
+                  <div className='relative'>
+                    <PhotoCollage images={event.images} title={event.title} />
+                    <div className='absolute bottom-0 left-0 right-0 p-4'>
+                      <h4 className='text-lg font-bold text-white mb-1 opacity-70'>
+                        {event.title}
+                      </h4>
+                      <div className='flex items-center text-white/90 text-sm mb-1 opacity-70'>
+                        <Calendar className='h-3 w-3 mr-1' />
+                        <span>{event.date}</span>
+                      </div>
                     </div>
                   </div>
+                  <div className='p-4'>
+                    <p className='text-gray-600 mb-3 text-sm'>
+                      {event.description}
+                    </p>
+                  </div>
                 </div>
-                <div className='p-4'>
-                  <p className='text-gray-600 mb-3 text-sm'>
-                    {event.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </>
+        </div>
       </div>
     </>
   )

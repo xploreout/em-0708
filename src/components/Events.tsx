@@ -12,7 +12,7 @@ const Events = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <div className='text-left mb-12'>
-          <h2 className='text-xl font-bold text-gray-900'>What's Coming Up</h2>
+          <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>What's Coming Up</h2>
         </div>
 
         {/* Cards */}
