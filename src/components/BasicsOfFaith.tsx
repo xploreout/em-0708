@@ -30,7 +30,8 @@ const episodes = [
         url: 'https://finds.life.church/myths-life-as-a-christian/',
       },
       {
-        label: 'A guide to Spiritual Disciplines to Help You Grow Closer to God',
+        label:
+          'A guide to Spiritual Disciplines to Help You Grow Closer to God',
         url: 'https://finds.life.church/spiritual-disciplines/',
       },
     ],
@@ -68,9 +69,54 @@ const episodes = [
       },
     ],
   },
+  {
+    id: 4,
+    title: 'Basics of Faith – Episode 4',
+    description:
+      'How Does the Bible Apply to Me Today? Reading and understanding the Bible can feel intimidating. But the story of the Bible is amazing, and the impact it can have on your life is immeasurable.',
+    duration: '6 min',
+    videoUrl: 'https://youtu.be/C_LjTe-3BLs?si=4jt8cix3VPNjLGRQ',
+    links: [
+      { label: 'Conversation Guide', url: '/images/mean4.jpg' },
+      {
+        label: 'How to Get to Know God Better, Starting Today',
+        url: 'https://finds.life.church/get-to-know-god/',
+      },
+    ],
+  },
+  {
+    id: 5,
+    title: 'Basics of Faith – Episode 5',
+    description:
+      'Find Community When It Feels Ackward. Is faith just between you and God? Or do other people have something to do with it? Let’s talk about it.',
+    duration: '6 min',
+    videoUrl: 'https://youtu.be/G3uOSrGCNbU?si=SbBL58DJuOeD4yJS',
+    links: [
+      { label: 'Conversation Guide', url: '/images/mean5.jpg' },
+      {
+        label: 'Wondering How to Change Your Life? Look to God and People',
+        url: 'https://finds.life.church/how-to-change-your-life/',
+      },
+    ],
+  },
+  {
+    id: 6,
+    title: 'Basics of Faith – Episode 6',
+    description:
+      'How Slowing Down Can Bring You Closer to God? The busier life gets, the harder it can be to slow down and rest. But rest is something we all desperately need. And Jesus modeled some of the best ways for us to find it.',
+    duration: '6 min',
+    videoUrl: 'https://youtu.be/apLNoPNfwMQ?si=JpuJdF-JLd1_WGqe',
+    links: [
+      { label: 'Conversation Guide', url: '/images/mean6.jpg' },
+      {
+        label: 'Jesus Rests, So You Can Too. Here’s How to Start Slowing Down',
+        url: 'https://finds.life.church/jesus-rests/',
+      },
+    ],
+  },
 ]
 
-const VideoCard = ({ ep }: { ep: typeof episodes[0] }) => {
+const VideoCard = ({ ep }: { ep: (typeof episodes)[0] }) => {
   const [playing, setPlaying] = useState(false)
   const videoId = getVideoId(ep.videoUrl)
   const thumbnail = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
