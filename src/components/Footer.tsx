@@ -1,10 +1,19 @@
 import React, { useState } from 'react'
-import { Mail, MapPin } from 'lucide-react'
+import { ChevronDown, Mail, MapPin } from 'lucide-react'
 import { FaInstagram } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 
+const resourcesItems = [
+  { name: 'Adult Small Group', href: '/resources/adult-small-group' },
+  { name: 'Youth', href: '/resources/youth' },
+  { name: 'Children', href: '/resources/children' },
+  { name: 'Other Resources', href: '/resources/other' },
+]
+
 const Footer = () => {
   const [showMap, setShowMap] = useState(false)
+  const [eventsOpen, setEventsOpen] = useState(false)
+  const [resourcesOpen, setResourcesOpen] = useState(false)
 
   const address = '2965 Duluth Hwy, Duluth GA 30096'
   const googleMapsUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dronpxnlwSugjY&q=${encodeURIComponent(
@@ -21,7 +30,7 @@ const Footer = () => {
               {/* <div className='bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-xl'>
                 <Church className='h-6 w-6 text-white' />
               </div> */}
-              <h3 className='text-xl font-bold bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent'>
+              <h3 className='text-xl font-bold text-white'>
                 ACBCC English Ministry
               </h3>
             </div>
@@ -63,14 +72,50 @@ const Footer = () => {
             <h4 className='text-lg font-semibold mb-4'>Quick Links</h4>
             <ul className='space-y-2'>
               <li>
-                <Link to='/events' className='text-gray-300 hover:text-pink-400 transition-colors duration-200'>
+                <button
+                  onClick={() => setEventsOpen(!eventsOpen)}
+                  className='flex items-center gap-1 text-gray-300 hover:text-pink-400 transition-colors duration-200'
+                >
                   Events
-                </Link>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${eventsOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {eventsOpen && (
+                  <ul className='mt-1 ml-2 space-y-1'>
+                    <li>
+                      <Link to='/events' className='text-gray-400 hover:text-pink-400 transition-colors duration-200 text-sm'>
+                        Upcoming Events
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to='/past-events' className='text-gray-400 hover:text-pink-400 transition-colors duration-200 text-sm'>
+                        Past Events
+                      </Link>
+                    </li>
+                  </ul>
+                )}
               </li>
               <li>
-                <Link to='/resources' className='text-gray-300 hover:text-orange-400 transition-colors duration-200'>
+                <button
+                  onClick={() => setResourcesOpen(!resourcesOpen)}
+                  className='flex items-center gap-1 text-gray-300 hover:text-orange-400 transition-colors duration-200'
+                >
                   Resources
-                </Link>
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${resourcesOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {resourcesOpen && (
+                  <ul className='mt-1 ml-2 space-y-1'>
+                    {resourcesItems.map((item) => (
+                      <li key={item.name}>
+                        <Link
+                          to={item.href}
+                          className='text-gray-400 hover:text-orange-400 transition-colors duration-200 text-sm'
+                        >
+                          {item.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
               <li>
                 <a
