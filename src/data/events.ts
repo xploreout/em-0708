@@ -44,11 +44,11 @@ export const upcomingEvents: Event[] = [
   {
     id: 4,
     title: 'Salt n Light (SnL) Fellowship',
-    date: '1st & 3rd Fridays',
+    date: 'Fridays, April 10, 17th',
     time: '7:30pm – 9:15pm',
     location: 'SDA Church, Duluth, GA',
     description:
-      'Starting a video series on "Basics of Faith" by Life Church Open Network. Each session includes a short video and group discussion. Come grow spiritually together!',
+      'Starting a video series on "Basics of Faith" by Life Church Open Network. Each session includes a short video and group discussion. Join as we grow spiritually together!',
     image:
       'https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
   },
@@ -66,7 +66,7 @@ export const upcomingEvents: Event[] = [
     id: 7,
     title: 'April Volunteering & Lunch Outing',
     date: 'April 11th, 2026',
-    time: '10:00am – Noon',
+    time: '9:50am – Noon',
     location: 'Powers Island Unit, Chattahoochee River NRA',
     description:
       'Join us for a cleanup along the Chattahoochee River. Wear closed-toed shoes and bring a reusable water bottle. All ages 10+ welcome. Optional lunch after!',
