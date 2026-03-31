@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { ChevronDown, Mail, MapPin } from 'lucide-react'
-import { FaInstagram } from 'react-icons/fa'
+import { FaInstagram, FaYoutube } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 
 const resourcesItems = [
@@ -56,7 +56,17 @@ const Footer = () => {
                 aria-label='Instagram'
               >
                 <FaInstagram className='h-6 w-6' />
-              </a> <span>Follow Us</span>
+              </a>
+              <a
+                href='https://www.youtube.com/@SnL-em'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-gray-400 hover:text-red-500 transition-colors duration-200 transform hover:scale-110'
+                aria-label='YouTube'
+              >
+                <FaYoutube className='h-6 w-6' />
+              </a>
+              <span>Follow Us</span>
               {/* <a
                 href='#'
                 className='text-gray-400 hover:text-purple-400 transition-colors duration-200 transform hover:scale-110'

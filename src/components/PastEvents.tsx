@@ -159,11 +159,11 @@ const PastEvents = () => {
         <div className='mb-2 -mx-4 sm:-mx-6 lg:-mx-8'>
           <div className='h-px bg-gray-200 w-full' />
         </div>
-        <div className='flex items-start gap-8 mb-10 pt-6'>
+        <div className='flex flex-col md:flex-row md:items-start gap-4 md:gap-8 mb-10 pt-6'>
           <span className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest shrink-0'>
             2026
           </span>
-          <div className='w-1/3 p-4'>
+          <div className='w-full md:w-1/3 px-4'>
             <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl'>
               <div className='aspect-video w-full'>
                 <iframe
