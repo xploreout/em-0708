@@ -193,7 +193,7 @@ const BasicsOfFaith = () => {
         </Link>
 
         {/* Header */}
-        <div className='text-center mb-14'>
+        <div className='text-left mb-14'>
           <p className='text-sm uppercase tracking-widest text-gray-900 font-semibold mb-2'>
             Bible Study Series
           </p>

@@ -149,7 +149,7 @@ const PastEvents = () => {
     <>
 <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16'>
         {/* Header */}
-        <div className='text-center mb-16 mt-50'>
+        <div className='text-left mb-16 mt-50'>
           <h2 className='px-20 text-4xl md:text-4xl font-bold text-gray-900 mb-4'>
             <br />
             <span>Past Activities</span>

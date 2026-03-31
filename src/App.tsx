@@ -1,10 +1,14 @@
 import { HashRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import PastEvents from './components/PastEvents';
 import MainPage from './components/MainPage';
-import Announcements from './components/Announcements';
+import Events from './components/Events';
 import Resources from './components/Resources';
 import BasicsOfFaith from './components/BasicsOfFaith';
 import PurposeDrivenLife from './components/PurposeDrivenLife';
+import AdultSmallGroup from './components/AdultSmallGroup';
+import Youth from './components/Youth';
+import Children from './components/Children';
+import OtherResources from './components/OtherResources';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
@@ -27,8 +31,12 @@ function App() {
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route element={<Layout />}>
-            <Route path="/announcements" element={<Announcements />} />
+            <Route path="/events" element={<Events />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/resources/adult-small-group" element={<AdultSmallGroup />} />
+            <Route path="/resources/youth" element={<Youth />} />
+            <Route path="/resources/children" element={<Children />} />
+            <Route path="/resources/other" element={<OtherResources />} />
             <Route path="/resources/basicoffaith" element={<BasicsOfFaith />} />
             <Route path="/resources/purposedrivenlife" element={<PurposeDrivenLife />} />
             <Route path="/past-events" element={<PastEvents />} />

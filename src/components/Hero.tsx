@@ -58,7 +58,7 @@ const Hero = () => {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900">What's Coming Up</h2>
             <Link
-              to="/announcements"
+              to="/events"
               className="text-sm text-blue-500 hover:text-blue-700 transition-colors font-medium"
             >
               View all →

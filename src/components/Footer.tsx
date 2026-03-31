@@ -63,18 +63,13 @@ const Footer = () => {
             <h4 className='text-lg font-semibold mb-4'>Quick Links</h4>
             <ul className='space-y-2'>
               <li>
-                <Link to='/announcements' className='text-gray-300 hover:text-pink-400 transition-colors duration-200'>
-                  Announcements
+                <Link to='/events' className='text-gray-300 hover:text-pink-400 transition-colors duration-200'>
+                  Events
                 </Link>
               </li>
               <li>
                 <Link to='/resources' className='text-gray-300 hover:text-orange-400 transition-colors duration-200'>
                   Resources
-                </Link>
-              </li>
-              <li>
-                <Link to='/past-events' className='text-gray-300 hover:text-orange-400 transition-colors duration-200'>
-                  Past Events
                 </Link>
               </li>
               <li>
@@ -84,7 +79,7 @@ const Footer = () => {
                   rel='noopener noreferrer'
                   className='text-gray-300 hover:text-blue-400 transition-colors duration-200'
                 >
-                  ACBCC
+                  <span className='flex items-center'>ACBCC<span className='text-[9px] font-normal ml-0.5 leading-none text-gray-400 self-center' style={{ writingMode: 'vertical-rl' }}>中文</span></span>
                 </a>
               </li>
             </ul>

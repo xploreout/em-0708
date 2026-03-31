@@ -3,19 +3,16 @@ import { useState } from 'react'
 import EventRegistrationModal from './EventRegistrationModal'
 import { upcomingEvents } from '../data/events'
 
-const Announcements = () => {
+const Events = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedEvent] = useState<null>(null)
 
   return (
-    <section id='announcements' className='py-20 bg-gray-50'>
+    <section id='events' className='py-20 bg-gray-50'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
-        <div className='text-center mb-12'>
-          <p className='text-sm uppercase tracking-widest text-gray-900 font-semibold mb-2'>
-            What's Coming Up
-          </p>
-          <h2 className='text-4xl font-bold text-gray-900'>Announcements</h2>
+        <div className='text-left mb-12'>
+          <h2 className='text-4xl font-bold text-gray-900'>What's Coming Up</h2>
         </div>
 
         {/* Cards */}
@@ -48,7 +45,18 @@ const Announcements = () => {
                   </div>
                   <div className='flex items-center gap-2'>
                     <MapPin className='h-3.5 w-3.5 text-blue-400 shrink-0' />
-                    <span>{event.location}</span>
+                    {event.mapUrl ? (
+                      <a
+                        href={event.mapUrl}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='text-blue-500 hover:text-blue-700 transition-colors'
+                      >
+                        {event.location}
+                      </a>
+                    ) : (
+                      <span>{event.location}</span>
+                    )}
                   </div>
                 </div>
                 {event.registrationUrl && (
@@ -78,4 +86,4 @@ const Announcements = () => {
   )
 }
 
-export default Announcements
+export default Events
