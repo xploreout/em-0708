@@ -164,7 +164,7 @@ const PastEvents = () => {
               <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl'>
                 <div className='aspect-video w-full'>
                   <iframe
-                    src='https://www.youtube.com/embed/l2zWtUVklm8'
+                    src='https://www.youtube.com/embed/l2zWtUVklm8?color=white'
                     title='Red Pockets & Redemption'
                     className='w-full h-full rounded-xl'
                     allowFullScreen
