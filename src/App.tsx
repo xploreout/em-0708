@@ -11,6 +11,7 @@ import Children from './components/Children';
 import OtherResources from './components/OtherResources';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import PageNav from './components/PageNav';
 
 function Layout() {
   return (
@@ -19,6 +20,7 @@ function Layout() {
       <main>
         <Outlet />
       </main>
+      <PageNav />
       <Footer />
     </>
   );
