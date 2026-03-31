@@ -34,7 +34,7 @@ const PurposeDrivenLife = () => {
           <p className='text-sm uppercase tracking-widest text-gray-900 font-semibold mb-2'>
             Bible Study Series
           </p>
-          <h2 className='text-4xl font-bold text-gray-900'>
+          <h2 className='text-xl font-bold text-gray-900'>
             Purpose Driven Life
           </h2>
           <p className='text-gray-500 mt-3 max-w-xl text-sm'>

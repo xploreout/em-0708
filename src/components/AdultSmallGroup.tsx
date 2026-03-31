@@ -28,7 +28,7 @@ const AdultSmallGroup = () => {
           <p className='text-sm uppercase tracking-widest text-gray-900 font-semibold mb-2'>
             Resources
           </p>
-          <h2 className='text-4xl font-bold text-gray-900'>
+          <h2 className='text-xl font-bold text-gray-900'>
             Adult Small Group
           </h2>
 
