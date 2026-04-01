@@ -4,11 +4,11 @@ import { Link, useLocation } from 'react-router-dom'
 const pages = [
   { path: '/events', label: 'Events' },
   { path: '/past-events', label: 'Past Events' },
-  { path: '/resources', label: 'Resources' },
+  { path: '/resources', label: 'Ministries' },
   { path: '/resources/adult-small-group', label: 'Adult Small Group' },
   { path: '/resources/youth', label: 'Youth' },
   { path: '/resources/children', label: 'Children' },
-  { path: '/resources/other', label: 'Other Resources' },
+  { path: '/resources/other', label: 'Devotional Resources' },
 ]
 
 const PageNav = () => {

@@ -24,7 +24,7 @@ const Header = () => {
     { name: 'Adult Small Group', href: '/resources/adult-small-group' },
     { name: 'Youth', href: '/resources/youth' },
     { name: 'Children', href: '/resources/children' },
-    { name: 'Other Resources', href: '/resources/other' },
+    { name: 'Devotional Resources', href: '/resources/other' },
   ]
 
   const isResourcesActive = resourcesItems.some((i) =>
@@ -112,7 +112,7 @@ const Header = () => {
                     : 'text-gray-700 hover:text-primary-600'
                 }`}
               >
-                Resources
+                Ministries
                 <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${resourcesOpen ? 'rotate-180' : ''}`}
                 />
@@ -238,7 +238,7 @@ const Header = () => {
               }`}
               onClick={() => setMobileResourcesOpen(!mobileResourcesOpen)}
             >
-              Resources
+              Ministries
               <ChevronDown
                 className={`h-4 w-4 transition-transform duration-200 ${mobileResourcesOpen ? 'rotate-180' : ''}`}
               />

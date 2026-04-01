@@ -7,7 +7,7 @@ const resourcesItems = [
   { name: 'Adult Small Group', href: '/resources/adult-small-group' },
   { name: 'Youth', href: '/resources/youth' },
   { name: 'Children', href: '/resources/children' },
-  { name: 'Other Resources', href: '/resources/other' },
+  { name: 'Devotional Resources', href: '/resources/other' },
 ]
 
 const Footer = () => {
@@ -109,7 +109,7 @@ const Footer = () => {
                   onClick={() => setResourcesOpen(!resourcesOpen)}
                   className='flex items-center gap-1 text-gray-300 hover:text-orange-400 transition-colors duration-200'
                 >
-                  Resources
+                  Ministries
                   <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${resourcesOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {resourcesOpen && (
