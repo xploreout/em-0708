@@ -101,10 +101,10 @@ const AdultSmallGroup = () => {
                 className='w-full h-44 object-cover'
               />
               <div className='p-5 flex flex-col flex-1'>
-                <h4 className='text-base font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors'>
+                <h4 className='text-lg font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors'>
                   {study.title}
                 </h4>
-                <p className='text-sm text-gray-500 leading-relaxed flex-1'>
+                <p className='text-base text-gray-600 leading-relaxed flex-1'>
                   {study.description}
                 </p>
               </div>

@@ -62,18 +62,18 @@ const Children = () => {
             >
               <img src={event.image} alt={event.title} className='w-full h-32 object-cover' />
               <div className='p-4 flex flex-col flex-1'>
-                <h3 className='text-sm font-semibold text-gray-900 mb-2 leading-snug'>{event.title}</h3>
+                <h3 className='text-base font-semibold text-gray-900 mb-2 leading-snug'>{event.title}</h3>
                 <div className='space-y-1 mt-auto'>
-                  <div className='flex items-center gap-1.5 text-xs text-gray-400'>
-                    <Calendar className='h-3 w-3 shrink-0' />
+                  <div className='flex items-center gap-1.5 text-sm text-gray-600'>
+                    <Calendar className='h-3.5 w-3.5 shrink-0' />
                     <span>{event.date}</span>
                   </div>
-                  <div className='flex items-center gap-1.5 text-xs text-gray-400'>
-                    <Clock className='h-3 w-3 shrink-0' />
+                  <div className='flex items-center gap-1.5 text-sm text-gray-600'>
+                    <Clock className='h-3.5 w-3.5 shrink-0' />
                     <span>{event.time}</span>
                   </div>
-                  <div className='flex items-center gap-1.5 text-xs text-gray-400'>
-                    <MapPin className='h-3 w-3 shrink-0' />
+                  <div className='flex items-center gap-1.5 text-sm text-gray-600'>
+                    <MapPin className='h-3.5 w-3.5 shrink-0' />
                     <span>{event.location}</span>
                   </div>
                 </div>
