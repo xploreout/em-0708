@@ -36,8 +36,10 @@ const AdultSmallGroup = () => {
             </p>
             <p className='text-gray-500 leading-relaxed'>
               Come experience community and grow in faith with others. No matter
-              where you are in life, you’re welcome to join us as we walk this
-              journey together.
+              where you are in life, you’re welcome to join. We are currently
+              going through a video series on "Basics of Faith" by Life Church
+              Open Network. Each session includes a short video and group
+              discussion. Join as we grow spiritually together!
             </p>
             <div className='flex items-center gap-2'>
               <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />

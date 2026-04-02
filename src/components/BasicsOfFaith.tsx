@@ -186,10 +186,10 @@ const BasicsOfFaith = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Back link */}
         <Link
-          to='/resources'
+          to='/resources/adult-small-group'
           className='inline-flex items-center gap-1.5 text-sm text-blue-500 hover:text-blue-700 transition-colors mb-8'
         >
-          ← Back to Resources
+          ← Back to Adult Small Group
         </Link>
 
         {/* Header */}

@@ -1,5 +1,6 @@
 import { Calendar, MapPin, Clock } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import EventRegistrationModal from './EventRegistrationModal'
 import { upcomingEvents } from '../data/events'
 
@@ -18,8 +19,10 @@ const Events = () => {
         {/* Cards */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {upcomingEvents.map((event) => (
-            <div
+            <Link
               key={event.id}
+              to={event.link ?? '#'}
+              onClick={event.link ? undefined : (e) => e.preventDefault()}
               className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col'
             >
               <img
@@ -70,7 +73,7 @@ const Events = () => {
                   </a>
                 )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

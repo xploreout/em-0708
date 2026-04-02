@@ -3,7 +3,8 @@ import { Calendar, Clock, MapPin } from 'lucide-react';
 import { upcomingEvents } from '../data/events';
 
 const Hero = () => {
-  const preview = upcomingEvents.slice(0, 4);
+  const heroIds = [1, 2, 6, 4];
+  const preview = heroIds.map((id) => upcomingEvents.find((e) => e.id === id)!).filter(Boolean);
 
   return (
     <section className="bg-gray-800">
@@ -18,7 +19,7 @@ const Hero = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-gray-800/60 via-gray-800/40 to-gray-800/80" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-10 py-24 text-center">
+        <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-10 pt-24 pb-10 text-center">
           <p className="text-sm uppercase tracking-widest text-blue-400 font-semibold mb-4">
             Atlanta Chinese Bible Community Church
           </p>
@@ -67,8 +68,9 @@ const Hero = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {preview.map((event) => (
-              <div
+              <Link
                 key={event.id}
+                to={event.link ?? '/events'}
                 className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col"
               >
                 <img
@@ -95,7 +97,7 @@ const Hero = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -8,6 +8,7 @@ export interface Event {
   description: string
   image: string
   registrationUrl?: string
+  link?: string
 }
 
 export const upcomingEvents: Event[] = [
@@ -57,9 +58,10 @@ export const upcomingEvents: Event[] = [
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      'Starting a video series on "Basics of Faith" by Life Church Open Network. Each session includes a short video and group discussion. Join as we grow spiritually together!',
+      'We started a video series on "Basics of Faith" by Life Church Open Network. Each session includes a short video and group discussion. Join as we grow spiritually together!',
     image:
       'https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+    link: '/resources/basicoffaith',
   },
   {
     id: 5,
@@ -83,8 +85,7 @@ export const upcomingEvents: Event[] = [
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
       'Come join us for a special Sunday worship and celebration opportunity for those who have committed their lives to Jesus Christ.',
-    image:
-      'https://images.pexels.com/photos/34594548/pexels-photo-34594548.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&fit=crop',
+    image: './images/baptism.jpg',
   },
   {
     id: 7,
