@@ -2,34 +2,42 @@ import { Calendar, Clock, MapPin } from 'lucide-react'
 
 const Youth = () => {
   return (
-    <section className='py-10 bg-white'>
+    <section className='py-5 bg-white'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='text-left mb-14'>
           <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>
-            Youth
+            Youth Ministry
           </h2>
         </div>
 
         <div className='flex flex-col md:flex-row gap-8 items-start'>
-          {/* Video */}
-          <div className='w-full md:w-1/2 rounded-2xl overflow-hidden shadow-md aspect-video'>
-            <iframe
-              src='https://www.youtube.com/embed/l2zWtUVklm8'
-              title='Youth Ministry'
-              className='w-full h-full'
-              allowFullScreen
+          {/* Image with overlay */}
+          <div className='relative w-full md:w-1/2 rounded-2xl overflow-hidden shadow-md'>
+            <img
+              src='./images/IMG_0179.jpg'
+              alt='Youth Ministry'
+              className='w-full h-full object-cover'
             />
+            <div className='absolute inset-0 bg-black/40 flex items-start p-6'>
+              <p
+                className='text-white text-3xl leading-tight uppercase tracking-widest font-bold'
+                style={{ fontFamily: '"Roboto", sans-serif' }}
+              >
+                Empowered youth to build personal relationship with Jesus Christ
+              </p>
+            </div>
           </div>
 
           {/* Text */}
           <div className='w-full md:w-1/2 text-gray-600 leading-relaxed space-y-4'>
             <p>
-              Welcome to the Youth program, the ministry designed specifically
-              for middle &amp; high school students! It includes a lively Friday
-              nights fellowship, engaging Sunday bible studies, and fun social
-              events throughout the year. Our youth ministries are led by adults
-              committed to equipping students to navigate middle and high school
-              and develop a faith of their own.
+              Welcome to the Youth ministry that is specifically for middle
+              &amp; high schoolers! It includes a lively Friday nights
+              fellowship, engaging Sunday bible studies, serving in the
+              community on giving back, and fun social events throughout the
+              year. Our youth ministries are led by adults committed to
+              equipping students to navigate middle and high school and develop
+              a faith of their own.
             </p>
 
             {/* Youth Friday Night Fellowship card */}
