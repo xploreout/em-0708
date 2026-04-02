@@ -18,7 +18,7 @@ const Events = () => {
 
         {/* Cards */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {upcomingEvents.map((event) => (
+          {upcomingEvents.filter((e) => ![3, 4, 5, 9, 10].includes(e.id)).map((event) => (
             <Link
               key={event.id}
               to={event.link ?? '#'}

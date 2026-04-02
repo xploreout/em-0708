@@ -28,40 +28,65 @@ const AdultSmallGroup = () => {
           <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>
             Adult Small Group
           </h2>
+        </div>
 
-          {/* Adult Small Group - Salt n Light card */}
-          <div className='mt-6 inline-block bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-2 text-sm text-gray-500'>
-            <p className='font-semibold text-gray-800 text-base'>
-              Salt n Light (SnL)
-            </p>
-            <p className='text-gray-500 leading-relaxed'>
-              Come experience community and grow in faith with others. No matter
-              where you are in life, you’re welcome to join. We are currently
-              going through a video series on "Basics of Faith" by Life Church
-              Open Network. Each session includes a short video and group
-              discussion. Join as we grow spiritually together!
-            </p>
-            <div className='flex items-center gap-2'>
-              <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />
-              <span>1st &amp; 3rd Fridays of each month</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Clock className='h-3.5 w-3.5 text-emerald-400 shrink-0' />
-              <span>7:30pm – 9:15pm</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <MapPin className='h-3.5 w-3.5 text-blue-400 shrink-0' />
-              <a
-                href='https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='text-blue-500 hover:text-blue-700 transition-colors'
+        {/* Photo + description layout */}
+        <div className='flex flex-col md:flex-row gap-8 items-stretch mb-10'>
+          <div className='relative w-full md:w-1/3 rounded-2xl overflow-hidden shadow-md'>
+            <img
+              src='./images/bible.jpg'
+              alt='Adult Small Group'
+              className='w-full h-full object-cover'
+            />
+            <div className='absolute inset-0 bg-black/40 flex items-start p-6'>
+              <p
+                className='text-white text-lg leading-tight uppercase tracking-widest font-bold'
+                style={{ fontFamily: '"Roboto", sans-serif' }}
               >
-                SDA Church, Duluth, GA
-              </a>
+                A goal to foster deeper relationships while encouraging
+                spiritual growth and accountability through discussion and
+                shared experiences.
+              </p>
             </div>
           </div>
+
+          <div className='w-full md:w-1/2 space-y-4'>
+            {/* Adult Small Group - Salt n Light card */}
+            <div className='bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-2 text-sm text-gray-500'>
+              <p className='font-semibold text-gray-800 text-base'>
+                Salt n Light (SnL)
+              </p>
+              <p className='text-gray-500 leading-relaxed'>
+                Come experience community and grow in faith with others. No
+                matter where you are in life, you’re welcome to join. We are
+                currently going through a video series on "Basics of Faith" by
+                Life Church Open Network. Each session includes a short video
+                and group discussion. Join as we grow spiritually together!
+              </p>
+              <div className='flex items-center gap-2'>
+                <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />
+                <span>1st &amp; 3rd Fridays of each month</span>
+              </div>
+              <div className='flex items-center gap-2'>
+                <Clock className='h-3.5 w-3.5 text-emerald-400 shrink-0' />
+                <span>7:30pm – 9:15pm</span>
+              </div>
+              <div className='flex items-center gap-2'>
+                <MapPin className='h-3.5 w-3.5 text-blue-400 shrink-0' />
+                <a
+                  href='https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-blue-500 hover:text-blue-700 transition-colors'
+                >
+                  SDA Church, Duluth, GA
+                </a>
+              </div>
+            </div>
+          </div>
+          {/* end space-y-4 */}
         </div>
+        {/* end flex row */}
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {studies.map((study) => (

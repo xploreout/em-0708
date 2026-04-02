@@ -112,4 +112,28 @@ export const upcomingEvents: Event[] = [
     description: 'Simple buffet lunch at Golden Corral. Everyone welcome!',
     image: './images/corral.jpg',
   },
+  {
+    id: 9,
+    title: 'Children Friday Awana',
+    date: '1st, 2nd and 3rd Fridays of each month',
+    time: '7:30pm – 9:30pm',
+    location: 'SDA Church, Duluth, GA',
+    mapUrl:
+      'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
+    description:
+      'Children are discipled to know, love and serve Jesus through memorizing Bible verses, completing a Bible-based handbook, playing games, and making friends.',
+    image: './images/IMG_5814.jpg',
+  },
+  {
+    id: 10,
+    title: 'Children Sunday School',
+    date: 'Every Sunday',
+    time: '11:00am – 12:15pm',
+    location: 'SDA Church, Duluth, GA',
+    mapUrl:
+      'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
+    description:
+      'Every Sunday, children join our Sunday School class for engaging and fun Bible learning experiences focused on knowing, loving and serving Jesus.',
+    image: './images/ch.jpg',
+  },
 ]

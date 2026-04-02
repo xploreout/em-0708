@@ -5,8 +5,8 @@ const pages = [
   { path: '/events', label: 'Events' },
   { path: '/past-events', label: 'Past Events' },
   { path: '/resources/adult-small-group', label: 'Adult Small Group' },
-  { path: '/resources/youth', label: 'Youth' },
-  { path: '/resources/children', label: 'Children' },
+  { path: '/resources/youth', label: 'Youth Ministry' },
+  { path: '/resources/children', label: 'Children Ministry' },
   { path: '/resources/other', label: 'Devotional Resources' },
 ]
 

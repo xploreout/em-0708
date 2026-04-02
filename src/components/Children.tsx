@@ -1,6 +1,11 @@
 import { Calendar, Clock, MapPin } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { upcomingEvents } from '../data/events'
 
 const Children = () => {
+  const childrenIds = [9, 10]
+  const childrenEvents = childrenIds.map((id) => upcomingEvents.find((e) => e.id === id)!).filter(Boolean)
+
   return (
     <section className='py-10 bg-white'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -45,58 +50,36 @@ const Children = () => {
               engaging and fun learning experiences.
             </p>
 
-            {/* Friday Awana card */}
-            <div className='mt-4 bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-2 text-sm text-gray-500'>
-              <p className='font-semibold text-gray-700 text-base'>
-                Friday Awana
-              </p>
-              <div className='flex items-center gap-2'>
-                <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />
-                <span>1st, 2nd and 3rd Fridays of each month</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <Clock className='h-3.5 w-3.5 text-emerald-400 shrink-0' />
-                <span>7:30pm – 9:30pm</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <MapPin className='h-3.5 w-3.5 text-blue-400 shrink-0' />
-                <a
-                  href='https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='text-blue-500 hover:text-blue-700 transition-colors'
-                >
-                  SDA Church, Duluth, GA
-                </a>
-              </div>
-            </div>
-
-            {/* Children Sunday School card */}
-            <div className='bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-2 text-sm text-gray-500'>
-              <p className='font-semibold text-gray-700 text-base'>
-                Children Sunday School
-              </p>
-              <div className='flex items-center gap-2'>
-                <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />
-                <span>Every Sunday</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <Clock className='h-3.5 w-3.5 text-emerald-400 shrink-0' />
-                <span>11:00am – 12:15pm</span>
-              </div>
-              <div className='flex items-center gap-2'>
-                <MapPin className='h-3.5 w-3.5 text-blue-400 shrink-0' />
-                <a
-                  href='https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='text-blue-500 hover:text-blue-700 transition-colors'
-                >
-                  SDA Church, Duluth, GA
-                </a>
-              </div>
-            </div>
           </div>
+        </div>
+        {/* Event cards */}
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10'>
+          {childrenEvents.map((event) => (
+            <Link
+              key={event.id}
+              to={event.link ?? '/events'}
+              className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col'
+            >
+              <img src={event.image} alt={event.title} className='w-full h-32 object-cover' />
+              <div className='p-4 flex flex-col flex-1'>
+                <h3 className='text-sm font-semibold text-gray-900 mb-2 leading-snug'>{event.title}</h3>
+                <div className='space-y-1 mt-auto'>
+                  <div className='flex items-center gap-1.5 text-xs text-gray-400'>
+                    <Calendar className='h-3 w-3 shrink-0' />
+                    <span>{event.date}</span>
+                  </div>
+                  <div className='flex items-center gap-1.5 text-xs text-gray-400'>
+                    <Clock className='h-3 w-3 shrink-0' />
+                    <span>{event.time}</span>
+                  </div>
+                  <div className='flex items-center gap-1.5 text-xs text-gray-400'>
+                    <MapPin className='h-3 w-3 shrink-0' />
+                    <span>{event.location}</span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

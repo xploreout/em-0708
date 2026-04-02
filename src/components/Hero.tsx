@@ -3,7 +3,7 @@ import { Calendar, Clock, MapPin } from 'lucide-react';
 import { upcomingEvents } from '../data/events';
 
 const Hero = () => {
-  const heroIds = [1, 2, 6, 4];
+  const heroIds = [1, 2, 6, 7];
   const preview = heroIds.map((id) => upcomingEvents.find((e) => e.id === id)!).filter(Boolean);
 
   return (

@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom'
 
 const resourcesItems = [
   { name: 'Adult Small Group', href: '/resources/adult-small-group' },
-  { name: 'Youth', href: '/resources/youth' },
-  { name: 'Children', href: '/resources/children' },
+  { name: 'Youth Ministry', href: '/resources/youth' },
+  { name: 'Children Ministry', href: '/resources/children' },
   { name: 'Devotional Resources', href: '/resources/other' },
 ]
 
