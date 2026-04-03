@@ -13,6 +13,9 @@ const Children = () => {
           <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>
             Children Ministry
           </h2>
+          <p className='text-xl text-gray-500 mt-2 opacity-80'>
+            Children up to 5th Grade are welcome here.
+          </p>
         </div>
 
         <div className='flex flex-col md:flex-row gap-8 items-start'>

@@ -22,12 +22,15 @@ const AdultSmallGroup = () => {
   ]
 
   return (
-    <section className='py-10 bg-white'>
+    <section className='py-5 bg-white'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='text-left mb-10'>
+        <div className='text-left '>
           <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>
             Adult Small Group
           </h2>
+          <p className='text-xl text-gray-500 opacity-80 pb-8'>
+            A safe place to grow and strength faith
+          </p>
         </div>
 
         {/* Photo + description layout */}

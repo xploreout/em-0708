@@ -4,28 +4,33 @@ import { upcomingEvents } from '../data/events'
 
 const Youth = () => {
   const youthIds = [3, 5, 7, 8]
-  const youthEvents = youthIds.map((id) => upcomingEvents.find((e) => e.id === id)!).filter(Boolean)
+  const youthEvents = youthIds
+    .map((id) => upcomingEvents.find((e) => e.id === id)!)
+    .filter(Boolean)
 
   return (
     <section className='py-5 bg-white'>
       <div className='max-w-7xl mx-auto px-12 sm:px-16 lg:px-24'>
-        <div className='text-center mb-14'>
+        <div className='text-left mb-14'>
           <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>
             Youth Ministry
           </h2>
+          <p className='text-xl text-gray-500 opacity-80'>
+            A place where middle and high schooler belong.
+          </p>
         </div>
 
         <div className='flex flex-col md:flex-row gap-8 items-start'>
           {/* Image with overlay */}
-          <div className='relative w-full md:w-1/2 rounded-2xl overflow-hidden shadow-md'>
+          <div className='relative w-full md:w-1/2 rounded-2xl overflow-hidden shadow-md min-h-64'>
             <img
               src='./images/IMG_0179.jpg'
               alt='Youth Ministry'
-              className='w-full h-full object-cover'
+              className='w-full h-full object-cover absolute inset-0'
             />
-            <div className='absolute inset-0 bg-black/40 flex items-start p-6'>
+            <div className='relative bg-black/40 flex items-start p-6 min-h-64'>
               <p
-                className='text-white text-3xl leading-tight uppercase tracking-widest font-bold'
+                className='text-white text-xl md:text-3xl leading-tight uppercase tracking-widest font-bold'
                 style={{ fontFamily: '"Roboto", sans-serif' }}
               >
                 Empowered youth to build personal relationship with Jesus Christ
@@ -44,7 +49,6 @@ const Youth = () => {
               equipping students to navigate middle and high school and develop
               a faith of their own.
             </p>
-
           </div>
         </div>
 
@@ -56,9 +60,15 @@ const Youth = () => {
               to={event.link ?? '/events'}
               className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col'
             >
-              <img src={event.image} alt={event.title} className='w-full h-32 object-cover' />
+              <img
+                src={event.image}
+                alt={event.title}
+                className='w-full h-32 object-cover'
+              />
               <div className='p-4 flex flex-col flex-1'>
-                <h3 className='text-base font-semibold text-gray-900 mb-2 leading-snug'>{event.title}</h3>
+                <h3 className='text-base font-semibold text-gray-900 mb-2 leading-snug'>
+                  {event.title}
+                </h3>
                 <div className='space-y-1 mt-auto'>
                   <div className='flex items-center gap-1.5 text-sm text-gray-600'>
                     <Calendar className='h-3.5 w-3.5 shrink-0' />
