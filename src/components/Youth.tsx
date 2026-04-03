@@ -54,38 +54,76 @@ const Youth = () => {
 
         {/* Event cards */}
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10'>
-          {youthEvents.map((event) => (
-            <Link
-              key={event.id}
-              to={event.link ?? '/events'}
-              className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col'
-            >
-              <img
-                src={event.image}
-                alt={event.title}
-                className='w-full h-32 object-cover'
-              />
-              <div className='p-4 flex flex-col flex-1'>
-                <h3 className='text-base font-semibold text-gray-900 mb-2 leading-snug'>
-                  {event.title}
-                </h3>
-                <div className='space-y-1 mt-auto'>
-                  <div className='flex items-center gap-1.5 text-sm text-gray-600'>
-                    <Calendar className='h-3.5 w-3.5 shrink-0' />
-                    <span>{event.date}</span>
+          {youthEvents.map((event) => {
+            const cardContent = (
+              <>
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  className='w-full h-32 object-cover'
+                />
+                <div className='p-4 flex flex-col flex-1'>
+                  <h3 className='text-base font-semibold text-gray-900 mb-2 leading-snug'>
+                    {event.title}
+                  </h3>
+                  <div className='space-y-1 mt-auto'>
+                    <div className='flex items-center gap-1.5 text-sm text-gray-600'>
+                      <Calendar className='h-3.5 w-3.5 shrink-0' />
+                      <span>{event.date}</span>
+                    </div>
+                    <div className='flex items-center gap-1.5 text-sm text-gray-600'>
+                      <Clock className='h-3.5 w-3.5 shrink-0' />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className='flex items-center gap-1.5 text-sm text-gray-600'>
+                      <MapPin className='h-3.5 w-3.5 shrink-0' />
+                      {event.mapUrl ? (
+                        <a
+                          href={event.mapUrl}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          onClick={(e) => e.stopPropagation()}
+                          className='hover:text-blue-600'
+                        >
+                          {event.location}
+                        </a>
+                      ) : (
+                        <span>{event.location}</span>
+                      )}
+                    </div>
                   </div>
-                  <div className='flex items-center gap-1.5 text-sm text-gray-600'>
-                    <Clock className='h-3.5 w-3.5 shrink-0' />
-                    <span>{event.time}</span>
-                  </div>
-                  <div className='flex items-center gap-1.5 text-sm text-gray-600'>
-                    <MapPin className='h-3.5 w-3.5 shrink-0' />
-                    <span>{event.location}</span>
-                  </div>
+                  {event.registrationUrl && (
+                    <a
+                      href={event.registrationUrl}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      onClick={(e) => e.stopPropagation()}
+                      className='mt-3 inline-block text-sm text-blue-500 font-medium hover:text-blue-700 transition-colors'
+                    >
+                      Registration & Event Info →
+                    </a>
+                  )}
                 </div>
+              </>
+            )
+
+            const cardClass =
+              'bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col'
+
+            return event.link ? (
+              <Link
+                key={event.id}
+                to={event.link}
+                className={`${cardClass} hover:shadow-md transition-shadow duration-200`}
+              >
+                {cardContent}
+              </Link>
+            ) : (
+              <div key={event.id} className={cardClass}>
+                {cardContent}
               </div>
-            </Link>
-          ))}
+            )
+          })}
         </div>
       </div>
     </section>

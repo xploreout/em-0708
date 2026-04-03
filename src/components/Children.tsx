@@ -1,5 +1,4 @@
 import { Calendar, Clock, MapPin } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { upcomingEvents } from '../data/events'
 
 const Children = () => {
@@ -58,10 +57,9 @@ const Children = () => {
         {/* Event cards */}
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10'>
           {childrenEvents.map((event) => (
-            <Link
+            <div
               key={event.id}
-              to={event.link ?? '/events'}
-              className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col'
+              className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col'
             >
               <img src={event.image} alt={event.title} className='w-full h-32 object-cover' />
               <div className='p-4 flex flex-col flex-1'>
@@ -77,11 +75,22 @@ const Children = () => {
                   </div>
                   <div className='flex items-center gap-1.5 text-sm text-gray-600'>
                     <MapPin className='h-3.5 w-3.5 shrink-0' />
-                    <span>{event.location}</span>
+                    {event.mapUrl ? (
+                      <a
+                        href={event.mapUrl}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='hover:text-blue-600'
+                      >
+                        {event.location}
+                      </a>
+                    ) : (
+                      <span>{event.location}</span>
+                    )}
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>

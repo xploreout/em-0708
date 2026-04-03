@@ -96,6 +96,17 @@ const Hero = () => {
                       <span>{event.location}</span>
                     </div>
                   </div>
+                  {event.registrationUrl && (
+                    <a
+                      href={event.registrationUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="mt-3 inline-block text-xs text-blue-500 font-medium hover:text-blue-700 transition-colors"
+                    >
+                      Registration & Event Info →
+                    </a>
+                  )}
                 </div>
               </Link>
             ))}
