@@ -62,7 +62,7 @@ const Events = () => {
                     )}
                   </div>
                 </div>
-                {event.registrationUrl && (
+                {/* {event.registrationUrl && (
                   <a
                     href={event.registrationUrl}
                     target='_blank'
@@ -71,20 +71,20 @@ const Events = () => {
                   >
                     Registration & Event Info →
                   </a>
-                )}
+                )} */}
               </div>
             </Link>
           ))}
         </div>
       </div>
 
-      <EventRegistrationModal
+      {/* <EventRegistrationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         selectedEvent={selectedEvent}
         allEvents={upcomingEvents}
         onRegister={() => {}}
-      />
+      /> */}
     </section>
   )
 }

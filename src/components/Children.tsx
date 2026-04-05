@@ -64,6 +64,7 @@ const Children = () => {
               <img src={event.image} alt={event.title} className='w-full h-32 object-cover' />
               <div className='p-4 flex flex-col flex-1'>
                 <h3 className='text-base font-semibold text-gray-900 mb-2 leading-snug'>{event.title}</h3>
+                <p className='text-sm text-gray-500 leading-relaxed mb-3'>{event.description}</p>
                 <div className='space-y-1 mt-auto'>
                   <div className='flex items-center gap-1.5 text-sm text-gray-600'>
                     <Calendar className='h-3.5 w-3.5 shrink-0' />

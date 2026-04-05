@@ -78,7 +78,7 @@ export const upcomingEvents: Event[] = [
   {
     id: 6,
     title: 'Worship & Baptism Celebration',
-    date: 'April 12 Sunday',
+    date: 'April 19 Sunday',
     time: '11:00am – 12:30pm',
     location: 'SDA Church, Duluth, GA',
     mapUrl:
@@ -92,7 +92,7 @@ export const upcomingEvents: Event[] = [
     title: 'April Volunteering & Lunch Outing',
     date: 'April 11th, 2026',
     time: '9:50am – Noon',
-    location: 'Powers Island Unit, Chattahoochee River NRA',
+    location: 'TBD',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=5450+Interstate+N+Pkwy+Sandy+Springs+GA+30328',
     description:
