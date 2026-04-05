@@ -93,7 +93,7 @@ const Youth = () => {
                       )}
                     </div>
                   </div>
-                  {event.registrationUrl && (
+                  {/* {event.registrationUrl && (
                     <a
                       href={event.registrationUrl}
                       target='_blank'
@@ -103,7 +103,7 @@ const Youth = () => {
                     >
                       Registration & Event Info →
                     </a>
-                  )}
+                  )} */}
                 </div>
               </>
             )
