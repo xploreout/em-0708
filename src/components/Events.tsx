@@ -53,7 +53,8 @@ const Events = () => {
                         href={event.mapUrl}
                         target='_blank'
                         rel='noopener noreferrer'
-                        className='text-blue-500 hover:text-blue-700 transition-colors'
+                        onClick={(e) => e.stopPropagation()}
+                        className='hover:text-blue-600 transition-colors'
                       >
                         {event.location}
                       </a>
@@ -62,7 +63,7 @@ const Events = () => {
                     )}
                   </div>
                 </div>
-                {/* {event.registrationUrl && (
+                {event.registrationUrl && (
                   <a
                     href={event.registrationUrl}
                     target='_blank'
@@ -71,7 +72,7 @@ const Events = () => {
                   >
                     Registration & Event Info →
                   </a>
-                )} */}
+                )}
               </div>
             </Link>
           ))}

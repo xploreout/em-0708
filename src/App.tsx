@@ -8,6 +8,7 @@ import AdultSmallGroup from './components/AdultSmallGroup';
 import Youth from './components/Youth';
 import Children from './components/Children';
 import OtherResources from './components/OtherResources';
+import About from './components/About';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PageNav from './components/PageNav';
@@ -40,6 +41,7 @@ function App() {
             <Route path="/resources/basicoffaith" element={<BasicsOfFaith />} />
             <Route path="/resources/purposedrivenlife" element={<PurposeDrivenLife />} />
             <Route path="/past-events" element={<PastEvents />} />
+            <Route path="/about" element={<About />} />
           </Route>
         </Routes>
       </div>

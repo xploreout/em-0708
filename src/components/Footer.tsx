@@ -128,6 +128,14 @@ const Footer = () => {
                 )}
               </li>
               <li>
+                <Link
+                  to='/about'
+                  className='text-gray-300 hover:text-pink-400 transition-colors duration-200'
+                >
+                  About
+                </Link>
+              </li>
+              <li>
                 <a
                   href='https://www.acbcc.org'
                   target='_blank'

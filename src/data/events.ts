@@ -12,31 +12,8 @@ export interface Event {
 }
 
 export const upcomingEvents: Event[] = [
-  {
-    id: 1,
-    title: 'Good Friday Worship Night',
-    date: 'April 3rd, 2026',
-    time: '7:30pm – 9:00pm',
-    location: 'SDA Church, Duluth, GA',
-    mapUrl:
-      'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
-    description:
-      'A special worship night with music, scripture reading, and reflection to remember the crucifixion of Jesus Christ and the hope we have in Him.',
-    image:
-      'https://images.pexels.com/photos/1615776/pexels-photo-1615776.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&fit=crop',
-  },
-  {
-    id: 2,
-    title: 'Easter Sunday Celebration',
-    date: 'April 5th, 2026',
-    time: '11:00am – 12:15pm',
-    location: 'SDA Church, Duluth, GA',
-    mapUrl:
-      'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
-    description:
-      "Celebrate the resurrection of Jesus Christ with a special worship service, scripture, a message of hope, and children's activities.",
-    image: './images/risen2.jpg',
-  },
+ 
+  
   {
     id: 3,
     title: 'Youth Sunday School',
@@ -94,12 +71,12 @@ export const upcomingEvents: Event[] = [
     time: '9:50am – Noon',
     location: 'TBD',
     mapUrl:
-      'https://www.google.com/maps/search/?api=1&query=5450+Interstate+N+Pkwy+Sandy+Springs+GA+30328',
+      '',
     description:
       'Join us for a cleanup along the Chattahoochee River. Wear closed-toed shoes and bring a reusable water bottle. All ages 10+ welcome. Optional lunch after!',
     image: './images/river.jpg',
     registrationUrl:
-      'https://chattahoocheeparks.app.neoncrm.com/nx/portal/neonevents/events?path=%2Fportal%2Fevents%2F36703',
+      '',
   },
   {
     id: 8,

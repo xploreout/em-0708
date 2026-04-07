@@ -138,6 +138,17 @@ const Header = () => {
               )}
             </div>
 
+            <Link
+              to='/about'
+              className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 hover:bg-primary-50 ${
+                location.pathname === '/about'
+                  ? 'text-primary-600 bg-primary-50'
+                  : 'text-gray-700 hover:text-primary-600'
+              }`}
+            >
+              About
+            </Link>
+
             <a
               href='https://www.acbcc.org'
               target='_blank'
@@ -264,6 +275,18 @@ const Header = () => {
                 ))}
               </div>
             )}
+
+            <Link
+              to='/about'
+              className={`px-3 py-1 rounded-md text-base font-medium transition-colors duration-200 ${
+                location.pathname === '/about'
+                  ? 'text-primary-600'
+                  : 'text-blue-700 hover:text-blue-500'
+              }`}
+              onClick={() => setIsOpen(false)}
+            >
+              About
+            </Link>
 
             <a
               href='https://www.instagram.com/acbccem/'
