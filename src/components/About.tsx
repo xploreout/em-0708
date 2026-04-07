@@ -57,7 +57,7 @@ const About = () => {
           <div className='absolute inset-0 bg-stone-900/50' />
           <div className='absolute inset-0 p-6 sm:p-10 flex items-center justify-center text-center'>
             <p
-              className='text-white/70 text-xs sm:text-lg leading-snug uppercase tracking-wide sm:tracking-widest font-bold'
+              className='text-white/70 text-sm sm:text-lg leading-snug uppercase tracking-wide sm:tracking-widest font-bold'
               style={{ fontFamily: '"Roboto", sans-serif' }}
             >
               We are a non-denominational church established in 2021 by a group
