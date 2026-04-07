@@ -1,6 +1,18 @@
+import { useEffect, useRef, useState } from 'react'
 import { MapPin } from 'lucide-react'
 
 const About = () => {
+  const [started, setStarted] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setStarted(true) },
+      { threshold: 0.5 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
   const milestones = [
     {
       year: '2021',
@@ -23,7 +35,6 @@ const About = () => {
   return (
     <div className='bg-stone-50 min-h-screen py-10'>
       <div className='max-w-4xl mx-auto px-4 sm:px-6 space-y-8'>
-
         {/* Hero */}
         <div>
           <p className='text-xs font-medium uppercase tracking-[0.25em] text-stone-400 mb-2'>
@@ -36,7 +47,7 @@ const About = () => {
 
         {/* Photo + Intro */}
         <div
-          className='rounded-2xl border border-stone-200 shadow-sm overflow-hidden relative min-h-56 sm:min-h-72'
+          className='rounded-2xl border border-stone-200 shadow-sm overflow-hidden relative min-h-72 sm:min-h-80'
           style={{
             backgroundImage: 'url(./images/acbccgrp.jpg)',
             backgroundSize: 'cover',
@@ -44,8 +55,11 @@ const About = () => {
           }}
         >
           <div className='absolute inset-0 bg-stone-900/50' />
-          <div className='relative p-6 sm:p-10 h-full flex items-end sm:items-center'>
-            <p className='text-sm sm:text-base text-stone-200 leading-relaxed'>
+          <div className='absolute inset-0 p-6 sm:p-10 flex items-center justify-center text-center'>
+            <p
+              className='text-white/70 text-xs sm:text-lg leading-snug uppercase tracking-wide sm:tracking-widest font-bold'
+              style={{ fontFamily: '"Roboto", sans-serif' }}
+            >
               We are a non-denominational church established in 2021 by a group
               of brothers and sisters who shared a vision to build a
               Christ-centered community in our local area. What began as a small
@@ -116,16 +130,20 @@ const About = () => {
         </div>
 
         {/* Welcome */}
-        <div className='bg-stone-800 rounded-2xl p-8 text-center'>
-          <p className='text-sm text-stone-400 leading-relaxed'>
-            Whether you are new to church, returning to faith, or looking for a
-            place to belong —{' '}
-            <span className='font-semibold text-stone-200'>
-              you are always welcome here.
-            </span>
+        <div ref={ref} className='bg-stone-800 rounded-2xl p-8 sm:p-12 text-center'>
+          <p
+            className='text-stone-400 text-sm sm:text-base uppercase tracking-widest mb-4'
+            style={{ fontFamily: '"Roboto", sans-serif' }}
+          >
+            Whether you are new to church, returning to faith, or looking for a place to belong —
+          </p>
+          <p
+            className={`text-sm sm:text-base font-semibold uppercase tracking-widest text-white ${started ? 'fade-in-text' : 'opacity-0'}`}
+            style={{ fontFamily: '"Roboto", sans-serif' }}
+          >
+            You are always welcome here.
           </p>
         </div>
-
       </div>
     </div>
   )
