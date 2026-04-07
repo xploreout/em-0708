@@ -7,8 +7,10 @@ const About = () => {
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setStarted(true) },
-      { threshold: 0.5 }
+      ([entry]) => {
+        if (entry.isIntersecting) setStarted(true)
+      },
+      { threshold: 0.5 },
     )
     if (ref.current) observer.observe(ref.current)
     return () => observer.disconnect()
@@ -20,11 +22,11 @@ const About = () => {
     },
     {
       year: '2022',
-      text: 'Blessed by the arrival of Pastor Peng, whose leadership and shepherding have been a great encouragement to our church family.',
+      text: 'Blessed by the arrival of Pastor John Peng, whose leadership and shepherding have been a great encouragement to our church family.',
     },
     {
       year: '2025',
-      text: 'Our English ministry was launched with a heart to serve the next generation — strengthening faith and building meaningful relationships among youth and young adults.',
+      text: 'Our English ministry was launched with a heart to serve the next generation — strengthening faith and building meaningful relationships among youth and adults.',
     },
     {
       year: 'Now',
@@ -60,7 +62,7 @@ const About = () => {
               className='text-white/70 text-sm sm:text-lg leading-snug uppercase tracking-wide sm:tracking-widest font-bold'
               style={{ fontFamily: '"Roboto", sans-serif' }}
             >
-              We are a non-denominational church established in 2021 by a group
+              We are a non-denominational Christian church established in 2021 by a group
               of brothers and sisters who shared a vision to build a
               Christ-centered community in our local area. What began as a small
               gathering has grown into a place where people come together to
@@ -130,12 +132,16 @@ const About = () => {
         </div>
 
         {/* Welcome */}
-        <div ref={ref} className='bg-stone-800 rounded-2xl p-8 sm:p-12 text-center'>
+        <div
+          ref={ref}
+          className='bg-stone-800 rounded-2xl p-8 sm:p-12 text-center'
+        >
           <p
             className='text-stone-400 text-sm sm:text-base uppercase tracking-widest mb-4'
             style={{ fontFamily: '"Roboto", sans-serif' }}
           >
-            Whether you are new to church, returning to faith, or looking for a place to belong —
+            Whether you are new to church, returning to faith, or looking for a
+            place to belong —
           </p>
           <p
             className={`text-sm sm:text-base font-semibold uppercase tracking-widest text-white ${started ? 'fade-in-text' : 'opacity-0'}`}
