@@ -16,9 +16,7 @@ const Footer = () => {
   const [resourcesOpen, setResourcesOpen] = useState(false)
 
   const address = '2965 Duluth Hwy, Duluth GA 30096'
-  const googleMapsUrl = `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dronpxnlwSugjY&q=${encodeURIComponent(
-    address
-  )}`
+  const googleMapsUrl = `https://maps.google.com/maps?q=${encodeURIComponent(address)}&output=embed`
 
   return (
     <footer className='bg-gradient-to-br from-blue-900  to-green-900 text-white py-12'>
@@ -42,39 +40,6 @@ const Footer = () => {
               Christ. Come join us as we joyfully serve God and our neighbors
               with open hearts! 
             </p>
-            <div className='flex space-x-4'>
-              {/* <a
-                href='#'
-                className='text-gray-400 hover:text-orange-400 transition-colors duration-200 transform hover:scale-110'
-                aria-label='Facebook'
-              >
-                <FaFacebook className='h-6 w-6' />
-              </a> */}
-              <a
-                href='https://www.instagram.com/acbccem/'
-                className='text-gray-400 hover:text-pink-400 transition-colors duration-200 transform hover:scale-110'
-                aria-label='Instagram'
-              >
-                <FaInstagram className='h-6 w-6' />
-              </a>
-              <a
-                href='https://www.youtube.com/@SnL-em'
-                target='_blank'
-                rel='noopener noreferrer'
-                className='text-gray-400 hover:text-red-500 transition-colors duration-200 transform hover:scale-110'
-                aria-label='YouTube'
-              >
-                <FaYoutube className='h-6 w-6' />
-              </a>
-              <span>Follow Us</span>
-              {/* <a
-                href='#'
-                className='text-gray-400 hover:text-purple-400 transition-colors duration-200 transform hover:scale-110'
-                aria-label='YouTube'
-              >
-                <FaYoutube className='h-6 w-6' />
-              </a> */}
-            </div>
           </div>
 
           {/* Quick Links */}
@@ -176,9 +141,9 @@ const Footer = () => {
               </div> */}
               <button
                 onClick={() => setShowMap(!showMap)}
-                className='flex items-start space-x-2 text-left hover:text-orange-400 transition-colors duration-200 group'
+                className='flex items-start space-x-2 text-left group'
               >
-                <MapPin className='h-4 w-4 text-gray-400 mt-0.5' />
+                <MapPin className='h-4 w-4 text-orange-400 mt-0.5 shrink-0' />
                 <span className='text-gray-300 text-sm group-hover:text-orange-400 transition-colors duration-200'>
                   {address.split(', ').map((line, index) => (
                     <React.Fragment key={index}>
@@ -188,6 +153,27 @@ const Footer = () => {
                   ))}
                 </span>
               </button>
+              <div className='flex items-center space-x-3 pt-1'>
+                <a
+                  href='https://www.instagram.com/acbccem/'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-gray-400 hover:text-pink-400 transition-colors duration-200 transform hover:scale-110'
+                  aria-label='Instagram'
+                >
+                  <FaInstagram className='h-5 w-5' />
+                </a>
+                <a
+                  href='https://www.youtube.com/@SnL-em'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-gray-400 hover:text-red-500 transition-colors duration-200 transform hover:scale-110'
+                  aria-label='YouTube'
+                >
+                  <FaYoutube className='h-5 w-5' />
+                </a>
+                <span className='text-gray-400 text-sm'>Follow Us</span>
+              </div>
             </div>
           </div>
         </div>
