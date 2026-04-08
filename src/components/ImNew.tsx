@@ -54,9 +54,7 @@ const ImNew = () => {
             time of praise and worship, a message, and opportunities to connect
             with one another.
           </p>
-        </div>
-
-        <div className='bg-white rounded-2xl shadow-sm border border-stone-100 p-6 sm:p-8 space-y-4'>
+          <hr className='border-stone-300 w-2/3 sm:w-1/2 mx-auto' />
           <p className='text-stone-500 leading-relaxed'>
             While we do not yet have a dedicated English worship service, we are
             actively praying and preparing for one to begin soon. We have a
