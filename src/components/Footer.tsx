@@ -82,6 +82,14 @@ const Footer = () => {
             <h4 className='text-lg font-semibold mb-4'>Quick Links</h4>
             <ul className='space-y-2'>
               <li>
+                <Link
+                  to='/im-new'
+                  className='text-gray-300 hover:text-pink-400 transition-colors duration-200'
+                >
+                  I'm New Here
+                </Link>
+              </li>
+              <li>
                 <button
                   onClick={() => setEventsOpen(!eventsOpen)}
                   className='flex items-center gap-1 text-gray-300 hover:text-pink-400 transition-colors duration-200'
@@ -154,7 +162,13 @@ const Footer = () => {
             <div className='space-y-2'>
               <div className='flex items-center space-x-2'>
                 <Mail className='h-4 w-4 text-gray-400' />
-                <span className='text-gray-300 text-sm'>acbccem@gmail.com</span>
+                <Link
+                  to='/im-new'
+                  onClick={() => setTimeout(() => document.getElementById('newcomer-form')?.scrollIntoView({ behavior: 'smooth' }), 100)}
+                  className='text-gray-300 hover:text-pink-400 transition-colors duration-200 text-sm'
+                >
+                  Contact Us
+                </Link>
               </div>
               {/* <div className='flex items-center space-x-2'>
                 <Phone className='h-4 w-4 text-gray-400' />

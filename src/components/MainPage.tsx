@@ -1,6 +1,5 @@
 import Header from './Header'
 import Hero from './Hero'
-import NewcomerForm from './NewcomerForm'
 import Footer from './Footer'
 
 function MainPage() {
@@ -9,7 +8,6 @@ function MainPage() {
       <Header />
       <main>
         <Hero />
-        <NewcomerForm />
       </main>
       <Footer />
     </>

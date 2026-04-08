@@ -42,14 +42,6 @@ const Hero = () => {
             English Worship Service. Join us during this special season.
           </p>
 
-          <div className="flex justify-center">
-            <button
-              onClick={() => document.getElementById('newcomer-form')?.scrollIntoView({ behavior: 'smooth' })}
-              className="border border-white/30 text-white px-8 py-3 rounded-full text-sm font-semibold hover:bg-white/10 transition-colors duration-200"
-            >
-              I'm new here
-            </button>
-          </div>
         </div>
       </div>
 

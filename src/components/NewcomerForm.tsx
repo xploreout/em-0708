@@ -102,8 +102,8 @@ const NewcomerForm = () => {
 
   if (isSubmitted) {
     return (
-      <section id="newcomer-form" className="py-20 bg-gray-50">
-        <div className="max-w-2xl mx-auto px-4 text-center">
+      <section id="newcomer-form" className="py-8">
+        <div className="text-center">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12">
             <CheckCircle className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Thanks for reaching out!</h2>
@@ -115,13 +115,12 @@ const NewcomerForm = () => {
   }
 
   return (
-    <section id="newcomer-form" className="py-20 bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-
-        <div className="max-w-2xl mx-auto">
+    <section id="newcomer-form" className="py-8">
+      <div>
+        <div>
           {/* Header */}
           <div className="mb-10">
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 uppercase leading-tight tracking-tight mb-3">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-stone-700 leading-snug mb-3">
               We are glad you're here
             </h2>
             <p className="text-gray-500 text-sm leading-relaxed">

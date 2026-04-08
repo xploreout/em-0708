@@ -106,19 +106,21 @@ ${formData.note ? `Additional Notes: ${formData.note}` : ''}
 Please follow up with this person soon.`
     };
 
-    // Send confirmation email to user
-    await emailjs.send(
-      EMAILJS_SERVICE_ID,
-      NEWCOMER_FORM_TEMPLATE,
-      userEmailParams
-    );
-
-    // Send notification email to webmaster
+    // Send notification email to acbccem@gmail.com
     await emailjs.send(
       EMAILJS_SERVICE_ID,
       WEBMASTER_NOTIFICATION_TEMPLATE,
       webmasterEmailParams
     );
+
+    // Send confirmation email to user only if they provided an email
+    if (formData.email) {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        NEWCOMER_FORM_TEMPLATE,
+        userEmailParams
+      );
+    }
 
     console.log('Newcomer form emails sent successfully');
   } catch (error) {
