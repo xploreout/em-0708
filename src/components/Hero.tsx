@@ -3,7 +3,7 @@ import { Calendar, Clock, MapPin } from 'lucide-react';
 import { upcomingEvents } from '../data/events';
 
 const Hero = () => {
-  const heroIds = [1, 2, 6, 7];
+  const heroIds = [1, 2, 6, 7, 11];
   const preview = heroIds.map((id) => upcomingEvents.find((e) => e.id === id)!).filter(Boolean);
 
   return (
@@ -65,11 +65,22 @@ const Hero = () => {
                 to={event.link ?? '/events'}
                 className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col"
               >
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-32 object-cover"
-                />
+                {event.video ? (
+                  <video
+                    src={event.video}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-32 object-cover block"
+                  />
+                ) : (
+                  <img
+                    src={event.image}
+                    alt={event.title}
+                    className="w-full h-32 object-cover"
+                  />
+                )}
                 <div className="p-4 flex flex-col flex-1">
                   <h3 className="text-sm font-semibold text-gray-900 mb-2 leading-snug">
                     {event.title}

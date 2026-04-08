@@ -1,8 +1,14 @@
 import { Calendar, Clock, MapPin } from 'lucide-react'
 import { upcomingEvents } from '../data/events'
+import { useNavigate } from 'react-router-dom'
 
 const Children = () => {
-  const childrenIds = [9, 10]
+  const navigate = useNavigate()
+  const goToContact = () => {
+    navigate('/im-new')
+    setTimeout(() => document.getElementById('newcomer-form')?.scrollIntoView({ behavior: 'smooth' }), 100)
+  }
+  const childrenIds = [9, 10, 11]
   const childrenEvents = childrenIds.map((id) => upcomingEvents.find((e) => e.id === id)!).filter(Boolean)
 
   return (
@@ -31,27 +37,31 @@ const Children = () => {
           {/* Text */}
           <div className='w-full md:w-1/2 text-gray-600 leading-relaxed space-y-4'>
             <p>
-              Children are nutured to know, love and serve Jesus with memorizing
-              Bible verses, completing a Bible-based handbook, playing games,
-              and making friends.
+              Children are nurtured to know, love, and serve Jesus through
+              memorizing Bible verses, completing Bible-based activities, playing
+              games, and building friendships.
             </p>
             <p>
-              We focus on learning God's Word, making friends and having fun.
-              Our goal is that all children throughout the world will come to
-              know, love and serve the Lord Jesus Christ. For additional
-              information about our AWANA ministry, please feel free to{' '}
-              <a
-                href='mailto:acbccem@gmail.com'
-                className='text-gray-900 hover:text-blue-700 transition-colors'
+              We focus on learning God's Word, making friends, and having fun in
+              a safe and engaging environment. Our desire is for every child to
+              grow in their faith and come to know, love, and follow the Lord
+              Jesus Christ.
+            </p>
+            <p>
+              Our Children's Sunday School meets every Sunday and is designed to
+              provide interactive and enjoyable learning experiences.
+            </p>
+            <p>
+              For more information about our AWANA ministry or children's
+              programs, please feel free to{' '}
+              <button
+                onClick={goToContact}
+                className='text-sky-400 hover:text-sky-500 italic transition-colors duration-200'
               >
-                contact us.
-              </a>
+                contact us
+              </button>
+              .
             </p>
-            <p>
-              Children Sunday School are held every Sunday with a focus on
-              engaging and fun learning experiences.
-            </p>
-
           </div>
         </div>
         {/* Event cards */}
@@ -61,7 +71,18 @@ const Children = () => {
               key={event.id}
               className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col'
             >
-              <img src={event.image} alt={event.title} className='w-full h-32 object-cover' />
+              {event.video ? (
+                <video
+                  src={event.video}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className='w-full h-32 object-cover block'
+                />
+              ) : (
+                <img src={event.image} alt={event.title} className='w-full h-32 object-cover' />
+              )}
               <div className='p-4 flex flex-col flex-1'>
                 <h3 className='text-base font-semibold text-gray-900 mb-2 leading-snug'>{event.title}</h3>
                 <p className='text-sm text-gray-500 leading-relaxed mb-3'>{event.description}</p>

@@ -25,11 +25,22 @@ const Events = () => {
               onClick={event.link ? undefined : (e) => e.preventDefault()}
               className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col'
             >
-              <img
-                src={event.image}
-                alt={event.title}
-                className='w-full h-44 object-cover'
-              />
+              {event.video ? (
+                <video
+                  src={event.video}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className='w-full h-44 object-cover block'
+                />
+              ) : (
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  className='w-full h-44 object-cover'
+                />
+              )}
               <div className='p-5 flex flex-col flex-1'>
                 <h3 className='text-base font-semibold text-gray-900 mb-2'>
                   {event.title}

@@ -9,6 +9,7 @@ export interface Event {
   image: string
   registrationUrl?: string
   link?: string
+  video?: string
 }
 
 export const upcomingEvents: Event[] = [
@@ -92,14 +93,25 @@ export const upcomingEvents: Event[] = [
   {
     id: 9,
     title: 'Children Friday Awana',
-    date: '1st, 2nd and 3rd Fridays of each month',
+    date: '1st, 2nd & 3rd Fridays, Sept – May',
     time: '7:30pm – 9:30pm',
     location: 'SDA Church, Duluth, GA',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      'Children are discipled to know, love and serve Jesus through memorizing Bible verses, completing a Bible-based handbook, playing games, and making friends.',
+      'Children are nurtured to know, love, and serve Jesus through memorizing Bible verses, completing Bible-based activities, playing games, and building friendships.',
     image: './images/IMG_5814.jpg',
+  },
+  {
+    id: 11,
+    title: 'Summer Kids',
+    date: '1st, 2nd & 3rd Fridays, June – August',
+    time: '7:30pm – 9:30pm',
+    location: 'SDA Church, Duluth, GA',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
+    description: "This summer, we're excited to invite children to join our Summer Kids Fellowship, a fun and meaningful time designed to help children grow in faith, build friendships, and enjoy a safe, joyful community. ",
+    image: '',
+    video: '/images/fridaykids.mp4',
   },
   {
     id: 10,
