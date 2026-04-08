@@ -1,4 +1,57 @@
 import { Calendar } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+
+declare global {
+  interface Window {
+    YT: any
+    onYouTubeIframeAPIReady: () => void
+  }
+}
+
+const LoopingYouTube = ({ videoId }: { videoId: string }) => {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const playerRef = useRef<any>(null)
+
+  useEffect(() => {
+    const initPlayer = () => {
+      if (!containerRef.current) return
+      playerRef.current = new window.YT.Player(containerRef.current, {
+        videoId,
+        playerVars: {
+          autoplay: 1,
+          mute: 1,
+          controls: 0,
+          modestbranding: 1,
+          rel: 0,
+          playsinline: 1,
+        },
+        events: {
+          onStateChange: (e: any) => {
+            if (e.data === window.YT.PlayerState.ENDED) {
+              playerRef.current?.seekTo(0)
+              playerRef.current?.playVideo()
+            }
+          },
+        },
+      })
+    }
+
+    if (window.YT && window.YT.Player) {
+      initPlayer()
+    } else {
+      const tag = document.createElement('script')
+      tag.src = 'https://www.youtube.com/iframe_api'
+      document.head.appendChild(tag)
+      window.onYouTubeIframeAPIReady = initPlayer
+    }
+
+    return () => {
+      playerRef.current?.destroy()
+    }
+  }, [videoId])
+
+  return <div ref={containerRef} className='absolute inset-0 w-full h-full' />
+}
 
 const PastEvents = () => {
   const pastEvents = [
@@ -162,6 +215,25 @@ const PastEvents = () => {
         <div className='pt-6 mb-10'>
           <h3 className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest mb-6'>2026</h3>
           <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+            <a
+              href='https://youtu.be/MgOXrz-n-qw'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
+            >
+              <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
+                <LoopingYouTube videoId='MgOXrz-n-qw' />
+                <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
+                  <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
+                    He is Risen
+                  </p>
+                  <p className='text-white/80 text-center text-sm mt-1 drop-shadow'>
+                    Easter Celebration
+                  </p>
+                </div>
+              </div>
+            </a>
+
             <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl'>
               <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
                 <iframe

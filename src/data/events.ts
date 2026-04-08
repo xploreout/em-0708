@@ -81,9 +81,8 @@ export const upcomingEvents: Event[] = [
     title: 'April Volunteering & Lunch Outing',
     date: 'April 11th, 2026',
     time: '9:50am – Noon',
-    location: 'TBD',
-    mapUrl:
-      '',
+    location: '1956 Eugene Gunby Rd, Marietta, GA 30067',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=1956+Eugene+Gunby+Rd+Marietta+GA+30067',
     description:
       'Join us for a cleanup along the Chattahoochee River. Wear closed-toed shoes and bring a reusable water bottle. All ages 10+ welcome. Optional lunch after!',
     image: './images/river.jpg',

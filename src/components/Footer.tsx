@@ -158,7 +158,7 @@ const Footer = () => {
                   href='https://www.instagram.com/acbccem/'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-gray-400 hover:text-pink-400 transition-colors duration-200 transform hover:scale-110'
+                  className='text-pink-500 hover:text-pink-400 transition-colors duration-200 transform hover:scale-110'
                   aria-label='Instagram'
                 >
                   <FaInstagram className='h-5 w-5' />
@@ -167,7 +167,7 @@ const Footer = () => {
                   href='https://www.youtube.com/@SnL-em'
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-gray-400 hover:text-red-500 transition-colors duration-200 transform hover:scale-110'
+                  className='text-red-500 hover:text-red-400 transition-colors duration-200 transform hover:scale-110'
                   aria-label='YouTube'
                 >
                   <FaYoutube className='h-5 w-5' />
