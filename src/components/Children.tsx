@@ -1,6 +1,47 @@
+import { useEffect, useRef } from 'react'
 import { Calendar, Clock, MapPin } from 'lucide-react'
 import { upcomingEvents } from '../data/events'
 import { useNavigate } from 'react-router-dom'
+
+declare global {
+  interface Window { YT: any; onYouTubeIframeAPIReady: () => void }
+}
+
+const LoopingYouTube = ({ videoId }: { videoId: string }) => {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const playerRef = useRef<any>(null)
+
+  useEffect(() => {
+    const initPlayer = () => {
+      if (!containerRef.current) return
+      playerRef.current = new window.YT.Player(containerRef.current, {
+        videoId,
+        playerVars: { autoplay: 1, mute: 1, controls: 1, modestbranding: 1, rel: 0, playsinline: 1 },
+        events: {
+          onStateChange: (e: any) => {
+            if (e.data === window.YT.PlayerState.ENDED) {
+              playerRef.current?.seekTo(0)
+              playerRef.current?.playVideo()
+            }
+          },
+        },
+      })
+    }
+    if (window.YT && window.YT.Player) {
+      initPlayer()
+    } else if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+      const tag = document.createElement('script')
+      tag.src = 'https://www.youtube.com/iframe_api'
+      document.head.appendChild(tag)
+      window.onYouTubeIframeAPIReady = initPlayer
+    } else {
+      window.onYouTubeIframeAPIReady = initPlayer
+    }
+    return () => { playerRef.current?.destroy() }
+  }, [videoId])
+
+  return <div ref={containerRef} className='w-full h-full' />
+}
 
 const Children = () => {
   const navigate = useNavigate()
@@ -26,12 +67,7 @@ const Children = () => {
         <div className='flex flex-col md:flex-row gap-8 items-start'>
           {/* Video */}
           <div className='w-full md:w-1/2 rounded-2xl overflow-hidden shadow-md aspect-video'>
-            <iframe
-              src='https://www.youtube.com/embed/xHtr34Kr0j4'
-              title='Children Ministry'
-              className='w-full h-full'
-              allowFullScreen
-            />
+            <LoopingYouTube videoId='xHtr34Kr0j4' />
           </div>
 
           {/* Text */}
