@@ -79,10 +79,10 @@ ${formData.purposes.activityInterest && formData.activityDetails.activityName ? 
 ${formData.purposes.other && formData.otherPurpose ? `- Other Purpose: ${formData.otherPurpose}` : ''}
 ${formData.note ? `- Additional Notes: ${formData.note}` : ''}
 
-We're excited to welcome you to our community!
+We are delighted to welcome you.
 
 Blessings,
-ACBCC English Ministry Team`
+ACBCCEM Team`
     };
 
     // Prepare template parameters for webmaster notification
