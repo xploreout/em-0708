@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FaInstagram } from 'react-icons/fa'
 import { Menu, X, ArrowLeft, ChevronDown } from 'lucide-react'
 
 const Header = () => {
@@ -169,15 +168,6 @@ const Header = () => {
               <span>ACBCC</span><span className='text-xs font-normal ml-0.5 leading-none text-gray-400' style={{ writingMode: 'vertical-rl' }}>中文</span>
             </a>
 
-            <a
-              href='https://www.instagram.com/acbccem/'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-orange-700 hover:text-purple-400 transition-colors duration-200 font-semibold flex items-center space-x-1'
-              aria-label='Instagram'
-            >
-              <FaInstagram className='h-6 w-6 text-gray' />
-            </a>
           </nav>
 
           {/* Mobile menu button */}
@@ -308,15 +298,6 @@ const Header = () => {
               About
             </Link>
 
-            <a
-              href='https://www.instagram.com/acbccem/'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-orange-700 hover:text-purple-400 transition-colors duration-200 font-semibold flex items-center space-x-1 pl-3'
-              aria-label='Instagram'
-            >
-              <FaInstagram className='h-6 w-6 text-gray' />
-            </a>
           </nav>
         </div>
       </div>

@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar, Clock, MapPin, Globe } from 'lucide-react';
 import { upcomingEvents } from '../data/events';
 
 const Hero = () => {
-  const heroIds = [1, 2, 6, 7, 11];
+  const heroIds = [1, 6, 7, 11];
   const preview = heroIds.map((id) => upcomingEvents.find((e) => e.id === id)!).filter(Boolean);
 
   return (
@@ -98,6 +98,12 @@ const Hero = () => {
                       <MapPin className="h-3 w-3 shrink-0" />
                       <span>{event.location}</span>
                     </div>
+                    {event.note && (
+                      <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                        <Globe className="h-3 w-3 shrink-0" />
+                        <span>中文 · {event.note}</span>
+                      </div>
+                    )}
                   </div>
                   {event.registrationUrl && (
                     <a

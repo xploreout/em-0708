@@ -1,12 +1,8 @@
-import { Calendar, MapPin, Clock } from 'lucide-react'
-import { useState } from 'react'
+import { Calendar, MapPin, Clock, Globe } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import EventRegistrationModal from './EventRegistrationModal'
 import { upcomingEvents } from '../data/events'
 
 const Events = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedEvent] = useState<null>(null)
 
   return (
     <section id='events' className='py-20 bg-gray-50'>
@@ -73,6 +69,12 @@ const Events = () => {
                       <span>{event.location}</span>
                     )}
                   </div>
+                  {event.note && (
+                    <div className='flex items-center gap-1.5 text-xs text-gray-500'>
+                      <Globe className='h-3.5 w-3.5 shrink-0' />
+                      <span>中文 · {event.note}</span>
+                    </div>
+                  )}
                 </div>
                 {event.registrationUrl && (
                   <a

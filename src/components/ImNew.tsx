@@ -49,10 +49,10 @@ const ImNew = () => {
             community.
           </p>
           <p className='text-stone-500 leading-relaxed'>
-            Our current Sunday service is conducted in Mandarin, with English
-            translation available through your phone. Our gatherings include a
-            time of praise and worship, a message, and opportunities to connect
-            with one another.
+            Our Sunday services at 11:00am are in Mandarin, with English
+            translation available right on your phone. We come together for
+            praise and worship, a message, and meaningful time to connect with
+            one another.
           </p>
           <hr className='border-stone-300 w-2/3 sm:w-1/2 mx-auto' />
           <p className='text-stone-500 leading-relaxed'>

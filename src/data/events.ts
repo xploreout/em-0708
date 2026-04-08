@@ -10,11 +10,21 @@ export interface Event {
   registrationUrl?: string
   link?: string
   video?: string
+  note?: string
 }
 
 export const upcomingEvents: Event[] = [
- 
-  
+  {
+    id: 1,
+    title: 'Sunday Worship Service',
+    date: 'Every Sunday',
+    time: '11:00am – 12:30pm',
+    location: 'SDA Church, Duluth, GA',
+    mapUrl: 'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
+    description: 'We warmly invite you to join us for Sunday worship. Come experience a time of praise, a meaningful message, and genuine community. No matter where you are in your journey, you are welcome here—we look forward to seeing you!',
+    image: './images/worship1.jpeg',
+    note: 'English translation available',
+  },
   {
     id: 3,
     title: 'Youth Sunday School',
@@ -64,6 +74,7 @@ export const upcomingEvents: Event[] = [
     description:
       'Come join us for a special Sunday worship and celebration opportunity for those who have committed their lives to Jesus Christ.',
     image: './images/baptism.jpg',
+    note: 'English translation available',
   },
   {
     id: 7,
