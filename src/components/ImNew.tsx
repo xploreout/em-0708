@@ -1,7 +1,9 @@
 import NewcomerForm from './NewcomerForm'
 
 const scrollToForm = () => {
-  document.getElementById('newcomer-form')?.scrollIntoView({ behavior: 'smooth' })
+  document
+    .getElementById('newcomer-form')
+    ?.scrollIntoView({ behavior: 'smooth' })
 }
 
 const ImNew = () => {
@@ -60,12 +62,18 @@ const ImNew = () => {
           </p>
           <p className='text-stone-500 leading-relaxed'>
             If this vision resonates with you, we warmly invite you to{' '}
-            <button onClick={scrollToForm} className='text-sky-400 hover:text-sky-500 italic transition-colors duration-200'>
+            <button
+              onClick={scrollToForm}
+              className='text-sky-400 hover:text-sky-500 italic transition-colors duration-200'
+            >
               join us
-            </button>
-            {' '}as we take these first steps together. We would love to get to
-            know you and{' '}
-            <button onClick={scrollToForm} className='text-sky-400 hover:text-sky-500 italic transition-colors duration-200'>
+            </button>{' '}
+            as we take these first steps together. We would love to get to know
+            you and{' '}
+            <button
+              onClick={scrollToForm}
+              className='text-sky-400 hover:text-sky-500 italic transition-colors duration-200'
+            >
               connect
             </button>
             .
@@ -74,13 +82,25 @@ const ImNew = () => {
 
         <div className='bg-white rounded-2xl shadow-sm border border-stone-100 p-6 sm:p-8 space-y-4'>
           <h2 className='text-xl font-semibold text-stone-700'>
-            Friday Gathering
+            Join Us On Friday
           </h2>
           <p className='text-stone-500 leading-relaxed'>
             We also have an English small group that meets on Fridays—a great
             way to connect and grow in community. To learn more, please visit
             the "Ministries" section in the menu bar and explore the Adult Small
             Group and other ministry opportunities.
+          </p>
+          <p className='text-stone-500 leading-relaxed'>
+            Whether you've been following Jesus for years, are exploring faith,
+            or are simply wondering what your next step might be, we invite you
+            to take that next step and{' '}
+            <button
+              onClick={scrollToForm}
+              className='text-sky-400 hover:text-sky-500 italic transition-colors duration-200'
+            >
+              come visit us
+            </button>
+            .
           </p>
         </div>
         <NewcomerForm />
