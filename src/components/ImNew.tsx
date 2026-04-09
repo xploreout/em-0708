@@ -46,7 +46,7 @@ const ImNew = () => {
           </h2>
           <p className='text-stone-500 leading-relaxed'>
             We are a young and growing church with a diverse, multi-generational
-            community.
+            community. Our English congregation is still in its early stages, and we are excited about the journey ahead as we build a vibrant English-speaking community together.
           </p>
           <p className='text-stone-500 leading-relaxed'>
             Our Sunday services at 11:00am are in Mandarin, with English
