@@ -85,6 +85,9 @@ const Hero = () => {
                   <h3 className="text-sm font-semibold text-gray-900 mb-2 leading-snug">
                     {event.title}
                   </h3>
+                  {event.alert && (
+                    <p className="text-xs text-amber-600 font-medium mb-2">{event.alert}</p>
+                  )}
                   <div className="space-y-1 mt-auto">
                     <div className="flex items-center gap-1.5 text-xs text-gray-400">
                       <Calendar className="h-3 w-3 shrink-0" />

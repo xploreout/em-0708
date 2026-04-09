@@ -51,7 +51,7 @@ const Footer = () => {
                   to='/im-new'
                   className='text-gray-300 hover:text-pink-400 transition-colors duration-200'
                 >
-                  I'm New Here
+                  I'm New
                 </Link>
               </li>
               <li>

@@ -11,6 +11,7 @@ export interface Event {
   link?: string
   video?: string
   note?: string
+  alert?: string
 }
 
 export const upcomingEvents: Event[] = [
@@ -24,6 +25,7 @@ export const upcomingEvents: Event[] = [
     description: 'We warmly invite you to join us for Sunday worship. Come experience a time of praise, a meaningful message, and genuine community. No matter where you are in your journey, you are welcome here—we look forward to seeing you!',
     image: './images/worship1.jpeg',
     note: 'English translation available',
+    alert: 'Note: 4.12 Sunday Worship Service will be live stream only.',
   },
   {
     id: 3,

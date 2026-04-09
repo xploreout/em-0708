@@ -68,7 +68,7 @@ const Header = () => {
                   : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
               }`}
             >
-              I'm New Here
+              I'm New
             </Link>
 
             {/* Events dropdown */}
@@ -215,7 +215,7 @@ const Header = () => {
               className='px-3 py-1 rounded-full text-base font-semibold bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200 inline-block'
               onClick={() => setIsOpen(false)}
             >
-              I'm New Here
+              I'm New
             </Link>
 
             {/* Mobile Events accordion */}

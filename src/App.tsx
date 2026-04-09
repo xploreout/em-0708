@@ -1,4 +1,13 @@
-import { HashRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Outlet, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
+  return null;
+}
 import PastEvents from './components/PastEvents';
 import MainPage from './components/MainPage';
 import Events from './components/Events';
@@ -30,6 +39,7 @@ function Layout() {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-screen">
         <Routes>
           <Route path="/" element={<MainPage />} />

@@ -89,7 +89,7 @@ const ImNew = () => {
             We also have an English small group that meets on Fridays—a great
             way to connect and grow in community. To learn more, please visit
             the "Ministries" section in the menu bar and explore the Adult Small
-            Group and other ministry opportunities.
+            Group, meeting times and other ministry opportunities.
           </p>
           <p className='text-stone-500 leading-relaxed'>
             Whether you've been following Jesus for years, are exploring faith,
