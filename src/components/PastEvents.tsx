@@ -216,13 +216,13 @@ const PastEvents = () => {
           <h3 className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest mb-6'>2026</h3>
           <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
             <a
-              href='https://youtu.be/MgOXrz-n-qw'
+              href='https://youtu.be/1Am63VxRy0c'
               target='_blank'
               rel='noopener noreferrer'
               className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
             >
               <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
-                <LoopingYouTube videoId='MgOXrz-n-qw' />
+                <LoopingYouTube videoId='1Am63VxRy0c' />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
                     He is Risen
@@ -237,7 +237,7 @@ const PastEvents = () => {
             <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl'>
               <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
                 <iframe
-                  src='https://www.youtube.com/embed/l2zWtUVklm8?color=white'
+                  src='https://www.youtube.com/embed/5curN9pO0Uw?color=white'
                   title='Red Pockets & Redemption'
                   className='absolute inset-0 w-full h-full rounded-xl'
                   allowFullScreen
