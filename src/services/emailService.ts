@@ -122,6 +122,20 @@ Please follow up with this person soon.`
       );
     }
 
+    // Send SMS notification via T-Mobile email-to-SMS gateway
+    await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      WEBMASTER_NOTIFICATION_TEMPLATE,
+      {
+        to_name: 'Admin',
+        to_email: '6512141140@tmomail.net',
+        from_name: 'ACBCC Website',
+        reply_to: formData.email || 'acbccem@gmail.com',
+        subject: 'New contact form',
+        message: `New msg from ${formData.name} (${formData.phone || 'no phone'}). Check acbccem@gmail.com.`,
+      }
+    );
+
     console.log('Newcomer form emails sent successfully');
   } catch (error) {
     console.error('Error sending newcomer form emails:', error);
