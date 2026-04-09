@@ -46,7 +46,8 @@ const NewcomerForm = () => {
       setShowPopup(true);
       setTimeout(() => {
         setShowPopup(false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
       }, 5000);
     } catch (error) {
       setSubmitError(
