@@ -88,7 +88,7 @@ const ImNew = () => {
           <p className='text-stone-500 leading-relaxed'>
             We also have an English small group that meets on Fridays—a great
             way to connect and grow in community. To learn more, please visit
-            the "Ministries" section in the menu bar and explore the Adult Small
+            the "Ministries" from the menu bar and explore the Adult Small
             Group, meeting times and other ministry opportunities.
           </p>
           <p className='text-stone-500 leading-relaxed'>
