@@ -24,6 +24,7 @@ const NewcomerForm = () => {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -42,6 +43,11 @@ const NewcomerForm = () => {
     try {
       await sendNewcomerFormEmails(formData as NewcomerFormData);
       setIsSubmitted(true);
+      setShowPopup(true);
+      setTimeout(() => {
+        setShowPopup(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 5000);
     } catch (error) {
       setSubmitError(
         error instanceof Error ? error.message : 'Something went wrong. Please try again.'
@@ -102,15 +108,35 @@ const NewcomerForm = () => {
 
   if (isSubmitted) {
     return (
-      <section id="newcomer-form" className="py-8">
-        <div className="text-center">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12">
-            <CheckCircle className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Thanks for reaching out!</h2>
-            <p className="text-gray-500">We'll be in touch soon to welcome you to our community.</p>
+      <>
+        {showPopup && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div className="absolute inset-0 bg-black/40" onClick={() => setShowPopup(false)} />
+            <div className="relative bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+              <CheckCircle className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold text-stone-700 mb-3">Thank you for submitting the form.</h2>
+              <p className="text-stone-500 leading-relaxed">
+                We're glad to hear from you and look forward to connecting with you.
+              </p>
+              <button
+                onClick={() => setShowPopup(false)}
+                className="mt-6 px-6 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors duration-200"
+              >
+                Close
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
+        )}
+        <section id="newcomer-form" className="py-8">
+          <div className="text-center">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12">
+              <CheckCircle className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Thanks for reaching out!</h2>
+              <p className="text-gray-500">We'll be in touch soon to welcome you to our community.</p>
+            </div>
+          </div>
+        </section>
+      </>
     );
   }
 
