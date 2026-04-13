@@ -1,5 +1,5 @@
 import { Calendar } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 declare global {
   interface Window {
@@ -8,11 +8,33 @@ declare global {
   }
 }
 
-const LoopingYouTube = ({ videoId }: { videoId: string }) => {
+// Shared queue so multiple players don't overwrite each other's onYouTubeIframeAPIReady
+const ytPendingInits: (() => void)[] = []
+
+function registerYTPlayer(initFn: () => void) {
+  if (window.YT && window.YT.Player) {
+    initFn()
+    return
+  }
+  ytPendingInits.push(initFn)
+  if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+    const tag = document.createElement('script')
+    tag.src = 'https://www.youtube.com/iframe_api'
+    document.head.appendChild(tag)
+  }
+  window.onYouTubeIframeAPIReady = () => {
+    ytPendingInits.forEach((fn) => fn())
+    ytPendingInits.length = 0
+  }
+}
+
+const LoopingYouTube = ({ videoId, playbackRate = 1, startSeconds, maxSeconds }: { videoId: string; playbackRate?: number; startSeconds?: number; maxSeconds?: number }) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const playerRef = useRef<any>(null)
+  const playerRef = useRef<{ setPlaybackRate: (r: number) => void; seekTo: (s: number) => void; playVideo: () => void; destroy: () => void } | null>(null)
+  const [ended, setEnded] = useState(false)
 
   useEffect(() => {
+    const start = startSeconds ?? 0
     const initPlayer = () => {
       if (!containerRef.current) return
       playerRef.current = new window.YT.Player(containerRef.current, {
@@ -24,33 +46,57 @@ const LoopingYouTube = ({ videoId }: { videoId: string }) => {
           modestbranding: 1,
           rel: 0,
           playsinline: 1,
+          ...(start > 0 && { start }),
+          ...(maxSeconds !== undefined && { end: start + maxSeconds }),
         },
         events: {
-          onStateChange: (e: any) => {
+          onReady: () => {
+            playerRef.current?.setPlaybackRate(playbackRate)
+          },
+          onStateChange: (e: { data: number }) => {
             if (e.data === window.YT.PlayerState.ENDED) {
-              playerRef.current?.seekTo(0)
-              playerRef.current?.playVideo()
+              if (maxSeconds !== undefined) {
+                setEnded(true)
+              } else {
+                playerRef.current?.seekTo(start)
+                playerRef.current?.playVideo()
+              }
             }
           },
         },
       })
     }
 
-    if (window.YT && window.YT.Player) {
-      initPlayer()
-    } else {
-      const tag = document.createElement('script')
-      tag.src = 'https://www.youtube.com/iframe_api'
-      document.head.appendChild(tag)
-      window.onYouTubeIframeAPIReady = initPlayer
-    }
+    registerYTPlayer(initPlayer)
 
     return () => {
       playerRef.current?.destroy()
     }
-  }, [videoId])
+  }, [videoId, playbackRate, startSeconds, maxSeconds])
 
-  return <div ref={containerRef} className='absolute inset-0 w-full h-full' />
+  const handleReplay = () => {
+    playerRef.current?.seekTo(startSeconds ?? 0)
+    playerRef.current?.playVideo()
+    setEnded(false)
+  }
+
+  return (
+    <div className='absolute inset-0 w-full h-full'>
+      <div ref={containerRef} className='absolute inset-0 w-full h-full' />
+      {ended && (
+        <div className='absolute inset-0 flex items-center justify-center bg-black/40'>
+          <button
+            onClick={handleReplay}
+            className='bg-white/90 hover:bg-white text-gray-900 rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition'
+          >
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='w-7 h-7 ml-1'>
+              <path d='M8 5v14l11-7z' />
+            </svg>
+          </button>
+        </div>
+      )}
+    </div>
+  )
 }
 
 const PastEvents = () => {
@@ -222,7 +268,7 @@ const PastEvents = () => {
               className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
             >
               <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
-                <LoopingYouTube videoId='eRqvh6wT2aU' />
+                <LoopingYouTube videoId='eRqvh6wT2aU' maxSeconds={10} />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
                     Volunteer Day
@@ -238,7 +284,7 @@ const PastEvents = () => {
               className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
             >
               <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
-                <LoopingYouTube videoId='1Am63VxRy0c' />
+                <LoopingYouTube videoId='1Am63VxRy0c' playbackRate={0.25} maxSeconds={10} />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
                     He is Risen
@@ -250,16 +296,21 @@ const PastEvents = () => {
               </div>
             </a>
 
-            <div className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl'>
+            <a
+              href='https://youtu.be/5curN9pO0Uw'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
+            >
               <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
-                <iframe
-                  src='https://www.youtube.com/embed/5curN9pO0Uw?color=white'
-                  title='Red Pockets & Redemption'
-                  className='absolute inset-0 w-full h-full rounded-xl'
-                  allowFullScreen
-                ></iframe>
+                <LoopingYouTube videoId='5curN9pO0Uw' startSeconds={106} maxSeconds={10} />
+                <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
+                  <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
+                    Red Pockets & Redemption
+                  </p>
+                </div>
               </div>
-            </div>
+            </a>
           </div>
         </div>
 
