@@ -32,6 +32,7 @@ const LoopingYouTube = ({ videoId, playbackRate = 1, startSeconds, maxSeconds }:
   const containerRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<{ setPlaybackRate: (r: number) => void; seekTo: (s: number) => void; playVideo: () => void; destroy: () => void } | null>(null)
   const [ended, setEnded] = useState(false)
+  const [expanded, setExpanded] = useState(false)
 
   useEffect(() => {
     const start = startSeconds ?? 0
@@ -74,15 +75,38 @@ const LoopingYouTube = ({ videoId, playbackRate = 1, startSeconds, maxSeconds }:
     }
   }, [videoId, playbackRate, startSeconds, maxSeconds])
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setExpanded(false) }
+    if (expanded) document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [expanded])
+
   const handleReplay = () => {
     playerRef.current?.seekTo(startSeconds ?? 0)
     playerRef.current?.playVideo()
     setEnded(false)
   }
 
+  const expandSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&rel=0&modestbranding=1${startSeconds ? `&start=${startSeconds}` : ''}`
+
   return (
     <div className='absolute inset-0 w-full h-full'>
       <div ref={containerRef} className='absolute inset-0 w-full h-full' />
+
+      {/* Expand button — top-left to avoid YouTube logo (bottom-right) */}
+      <button
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpanded(true) }}
+        className='absolute top-2 left-2 z-10 bg-black/50 hover:bg-black/80 text-white rounded p-1 transition'
+        title='Expand video'
+      >
+        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' className='w-4 h-4'>
+          <polyline points='15 3 21 3 21 9' />
+          <polyline points='9 21 3 21 3 15' />
+          <line x1='21' y1='3' x2='14' y2='10' />
+          <line x1='3' y1='21' x2='10' y2='14' />
+        </svg>
+      </button>
+
       {ended && (
         <div className='absolute inset-0 flex items-center justify-center bg-black/40'>
           <button
@@ -93,6 +117,34 @@ const LoopingYouTube = ({ videoId, playbackRate = 1, startSeconds, maxSeconds }:
               <path d='M8 5v14l11-7z' />
             </svg>
           </button>
+        </div>
+      )}
+
+      {/* Expanded modal — fixed overlay, stays within the page */}
+      {expanded && (
+        <div
+          className='fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4'
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpanded(false) }}
+        >
+          <div
+            className='relative w-full max-w-5xl'
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpanded(false) }}
+              className='absolute -top-9 right-0 text-white/80 hover:text-white text-sm font-medium transition'
+            >
+              ✕ Close
+            </button>
+            <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
+              <iframe
+                src={expandSrc}
+                className='absolute inset-0 w-full h-full rounded-xl'
+                allowFullScreen
+                allow='autoplay; fullscreen'
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>
