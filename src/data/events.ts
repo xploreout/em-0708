@@ -25,7 +25,6 @@ export const upcomingEvents: Event[] = [
     description: 'We warmly invite you to join us for Sunday worship. Come experience a time of praise, a meaningful message, and genuine community. No matter where you are in your journey, you are welcome here—we look forward to seeing you!',
     image: './images/worship1.jpeg',
     note: 'English translation available',
-    alert: 'Note: 4.12 Sunday Worship Service will be live stream only.',
   },
   {
     id: 3,
@@ -77,30 +76,6 @@ export const upcomingEvents: Event[] = [
       'Come join us for a special Sunday worship and celebration opportunity for those who have committed their lives to Jesus Christ.',
     image: './images/baptism.jpg',
     note: 'English translation available',
-  },
-  {
-    id: 7,
-    title: 'April Volunteering & Lunch Outing',
-    date: 'April 11th, 2026',
-    time: '9:50am – Noon',
-    location: '1956 Eugene Gunby Rd, Marietta, GA 30067',
-    mapUrl: 'https://www.google.com/maps/search/?api=1&query=1956+Eugene+Gunby+Rd+Marietta+GA+30067',
-    description:
-      'Join us for a cleanup along the Chattahoochee River. Wear closed-toed shoes and bring a reusable water bottle. All ages 10+ welcome. Optional lunch after!',
-    image: './images/river.jpg',
-    registrationUrl:
-      '',
-  },
-  {
-    id: 8,
-    title: 'April Buffet Lunch Outing',
-    date: 'April 11th, 2026',
-    time: '12:30pm – 1:30pm',
-    location: 'Golden Corral, 2211 Cobb Pkwy, Smyrna, GA',
-    mapUrl:
-      'https://www.google.com/maps/search/?api=1&query=2211+Cobb+Pkwy+Smyrna+GA',
-    description: 'Simple buffet lunch at Golden Corral. Everyone welcome!',
-    image: './images/corral.jpg',
   },
   {
     id: 9,
