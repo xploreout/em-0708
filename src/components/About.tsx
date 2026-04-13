@@ -26,7 +26,7 @@ const About = () => {
     },
     {
       year: '2025',
-      text: 'Our English ministry was launched with a heart to serve the next generation — strengthening faith and building meaningful relationships among youth and adults.',
+      text: 'Our English ministry was launched with a heart to serve the next generation, strengthening faith and building meaningful relationships among youth and adults.',
     },
     {
       year: 'Now',
@@ -62,8 +62,8 @@ const About = () => {
               className='text-white/70 text-sm sm:text-lg leading-snug uppercase tracking-wide sm:tracking-widest font-bold'
               style={{ fontFamily: '"Roboto", sans-serif' }}
             >
-              We are a non-denominational Christian church established in 2021 by a group
-              of brothers and sisters who shared a vision to build a
+              We are a non-denominational Christian church established in 2021
+              by a group of brothers and sisters who shared a vision to build a
               Christ-centered community in our local area. What began as a small
               gathering has grown into a place where people come together to
               worship, connect, and grow in faith.
@@ -98,7 +98,7 @@ const About = () => {
             </p>
             <p className='text-sm text-stone-600 leading-relaxed'>
               We are a multi-generational and multicultural church, seeking to
-              create a space where everyone — no matter their background — can
+              create a space where everyone, no matter their background, can
               explore faith, grow spiritually, and experience genuine community.
             </p>
           </div>
@@ -141,7 +141,7 @@ const About = () => {
             style={{ fontFamily: '"Roboto", sans-serif' }}
           >
             Whether you are new to church, returning to faith, or looking for a
-            place to belong —
+            place to belong
           </p>
           <p
             className={`text-sm sm:text-base font-semibold uppercase tracking-widest text-white ${started ? 'fade-in-text' : 'opacity-0'}`}
