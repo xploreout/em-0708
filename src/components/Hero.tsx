@@ -7,52 +7,55 @@ const Hero = () => {
   const preview = heroIds.map((id) => upcomingEvents.find((e) => e.id === id)!).filter(Boolean);
 
   return (
-    <section className="bg-gray-800">
-      {/* Top — dark hero banner */}
-      <div className="relative overflow-hidden">
+    <section className="bg-white">
+      {/* Top — bright hero banner */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-teal-50 to-emerald-100">
+        {/* Decorative blobs */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-200/40 rounded-full blur-3xl" />
+        <div className="absolute -bottom-16 -left-16 w-80 h-80 bg-emerald-200/40 rounded-full blur-3xl" />
+
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.pexels.com/photos/33307468/pexels-photo-33307468.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
             alt="Young adults fellowship"
-            className="w-full h-full object-cover opacity-30"
+            className="w-full h-full object-cover opacity-25"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-800/60 via-gray-800/40 to-gray-800/80" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-10 pt-24 pb-10 text-center">
-          <p className="text-sm uppercase tracking-widest text-blue-400 font-semibold mb-4">
+        <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-10 pt-24 pb-14 text-center">
+          <span className="inline-flex items-center gap-2 text-blue-700 text-sm font-semibold uppercase tracking-widest px-4 py-1.5 mb-6">
             Atlanta Chinese Bible Community Church
-          </p>
+          </span>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
             ACBCC{' '}
-            <span className="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-700 to-teal-600 bg-clip-text text-transparent">
               English Ministry
             </span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed mb-6">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-5">
             A Christ-centered community where we build relationships, grow in
             faith, and serve together.
           </p>
 
-          <p className="text-base text-gray-400 max-w-2xl mx-auto leading-relaxed mb-10">
+          {/* <p className="text-base text-gray-500 max-w-2xl mx-auto leading-relaxed mb-10">
             We are prayerfully seeking a part-time or full-time servant to join
             the ministry, and we look forward to the upcoming launch of our
             English Worship Service. Join us during this special season.
-          </p>
+          </p> */}
 
         </div>
       </div>
 
-      {/* Bottom — top 4 announcement cards */}
-      <div className="bg-gray-50 py-12">
+      {/* Bottom — upcoming event cards */}
+      <div className="bg-white py-12 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-gray-900">What's Coming Up</h2>
             <Link
               to="/events"
-              className="text-sm text-blue-500 hover:text-blue-700 transition-colors font-medium"
+              className="text-sm text-teal-600 hover:text-teal-800 transition-colors font-medium"
             >
               View all →
             </Link>
