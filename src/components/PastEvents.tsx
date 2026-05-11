@@ -17,7 +17,9 @@ function registerYTPlayer(initFn: () => void) {
     return
   }
   ytPendingInits.push(initFn)
-  if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+  if (
+    !document.querySelector('script[src="https://www.youtube.com/iframe_api"]')
+  ) {
     const tag = document.createElement('script')
     tag.src = 'https://www.youtube.com/iframe_api'
     document.head.appendChild(tag)
@@ -28,9 +30,24 @@ function registerYTPlayer(initFn: () => void) {
   }
 }
 
-const LoopingYouTube = ({ videoId, playbackRate = 1, startSeconds, maxSeconds }: { videoId: string; playbackRate?: number; startSeconds?: number; maxSeconds?: number }) => {
+const LoopingYouTube = ({
+  videoId,
+  playbackRate = 1,
+  startSeconds,
+  maxSeconds,
+}: {
+  videoId: string
+  playbackRate?: number
+  startSeconds?: number
+  maxSeconds?: number
+}) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const playerRef = useRef<{ setPlaybackRate: (r: number) => void; seekTo: (s: number) => void; playVideo: () => void; destroy: () => void } | null>(null)
+  const playerRef = useRef<{
+    setPlaybackRate: (r: number) => void
+    seekTo: (s: number) => void
+    playVideo: () => void
+    destroy: () => void
+  } | null>(null)
   const [ended, setEnded] = useState(false)
   const [expanded, setExpanded] = useState(false)
 
@@ -76,7 +93,9 @@ const LoopingYouTube = ({ videoId, playbackRate = 1, startSeconds, maxSeconds }:
   }, [videoId, playbackRate, startSeconds, maxSeconds])
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setExpanded(false) }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setExpanded(false)
+    }
     if (expanded) document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [expanded])
@@ -95,11 +114,24 @@ const LoopingYouTube = ({ videoId, playbackRate = 1, startSeconds, maxSeconds }:
 
       {/* Expand button — top-left to avoid YouTube logo (bottom-right) */}
       <button
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpanded(true) }}
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          setExpanded(true)
+        }}
         className='absolute top-2 left-2 z-10 bg-black/50 hover:bg-black/80 text-white rounded p-1 transition'
         title='Expand video'
       >
-        <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' className='w-4 h-4'>
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          viewBox='0 0 24 24'
+          fill='none'
+          stroke='currentColor'
+          strokeWidth='2'
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          className='w-4 h-4'
+        >
           <polyline points='15 3 21 3 21 9' />
           <polyline points='9 21 3 21 3 15' />
           <line x1='21' y1='3' x2='14' y2='10' />
@@ -113,7 +145,12 @@ const LoopingYouTube = ({ videoId, playbackRate = 1, startSeconds, maxSeconds }:
             onClick={handleReplay}
             className='bg-white/90 hover:bg-white text-gray-900 rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition'
           >
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='w-7 h-7 ml-1'>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              viewBox='0 0 24 24'
+              fill='currentColor'
+              className='w-7 h-7 ml-1'
+            >
               <path d='M8 5v14l11-7z' />
             </svg>
           </button>
@@ -124,19 +161,30 @@ const LoopingYouTube = ({ videoId, playbackRate = 1, startSeconds, maxSeconds }:
       {expanded && (
         <div
           className='fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4'
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpanded(false) }}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            setExpanded(false)
+          }}
         >
           <div
             className='relative w-full max-w-5xl'
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setExpanded(false) }}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setExpanded(false)
+              }}
               className='absolute -top-9 right-0 text-white/80 hover:text-white text-sm font-medium transition'
             >
               ✕ Close
             </button>
-            <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
+            <div
+              className='relative w-full'
+              style={{ paddingBottom: '56.25%' }}
+            >
               <iframe
                 src={expandSrc}
                 className='absolute inset-0 w-full h-full rounded-xl'
@@ -311,15 +359,56 @@ const PastEvents = () => {
           <div className='h-px bg-gray-200 w-full' />
         </div>
         <div className='pt-6 mb-10'>
-          <h3 className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest mb-6'>2026</h3>
+          <h3 className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest mb-6'>
+            2026
+          </h3>
           <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+            <a
+              href='https://youtu.be/wnSQjWvxbyg'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
+            >
+              <div
+                className='relative w-full'
+                style={{ paddingBottom: '56.25%' }}
+              >
+                <LoopingYouTube videoId='wnSQjWvxbyg' maxSeconds={10} />
+                <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
+                  <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
+                    Flowers for Mothers
+                  </p>
+                </div>
+              </div>
+            </a>
+            <a
+              href='https://youtu.be/4Q3r1nfy0K0'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
+            >
+              <div
+                className='relative w-full'
+                style={{ paddingBottom: '56.25%' }}
+              >
+                <LoopingYouTube videoId='4Q3r1nfy0K0' maxSeconds={10} />
+                <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
+                  <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
+                    Happy Mother's Day
+                  </p>
+                </div>
+              </div>
+            </a>
             <a
               href='https://youtu.be/eRqvh6wT2aU'
               target='_blank'
               rel='noopener noreferrer'
               className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
             >
-              <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
+              <div
+                className='relative w-full'
+                style={{ paddingBottom: '56.25%' }}
+              >
                 <LoopingYouTube videoId='eRqvh6wT2aU' maxSeconds={10} />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
@@ -328,15 +417,21 @@ const PastEvents = () => {
                 </div>
               </div>
             </a>
-
             <a
               href='https://youtu.be/1Am63VxRy0c'
               target='_blank'
               rel='noopener noreferrer'
               className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
             >
-              <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
-                <LoopingYouTube videoId='1Am63VxRy0c' playbackRate={0.25} maxSeconds={10} />
+              <div
+                className='relative w-full'
+                style={{ paddingBottom: '56.25%' }}
+              >
+                <LoopingYouTube
+                  videoId='1Am63VxRy0c'
+                  playbackRate={0.25}
+                  maxSeconds={10}
+                />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
                     He is Risen
@@ -354,8 +449,15 @@ const PastEvents = () => {
               rel='noopener noreferrer'
               className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
             >
-              <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
-                <LoopingYouTube videoId='5curN9pO0Uw' startSeconds={106} maxSeconds={10} />
+              <div
+                className='relative w-full'
+                style={{ paddingBottom: '56.25%' }}
+              >
+                <LoopingYouTube
+                  videoId='5curN9pO0Uw'
+                  startSeconds={106}
+                  maxSeconds={10}
+                />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
                     Red Pockets & Redemption
@@ -371,7 +473,9 @@ const PastEvents = () => {
           <div className='h-px bg-gray-200 w-full' />
         </div>
         <div className='pt-6'>
-          <h3 className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest mb-6'>2025</h3>
+          <h3 className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest mb-6'>
+            2025
+          </h3>
           <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
             {pastEvents.map((event) => (
               <div
@@ -391,9 +495,7 @@ const PastEvents = () => {
                   </div>
                 </div>
                 <div className='p-3'>
-                  <p className='text-gray-600 text-xs'>
-                    {event.description}
-                  </p>
+                  <p className='text-gray-600 text-xs'>{event.description}</p>
                 </div>
               </div>
             ))}

@@ -21,8 +21,10 @@ export const upcomingEvents: Event[] = [
     date: 'Every Sunday',
     time: '11:00am – 12:30pm',
     location: 'SDA Church, Duluth, GA',
-    mapUrl: 'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
-    description: 'We warmly invite you to join us for Sunday worship. Come experience a time of praise, a meaningful message, and genuine community. No matter where you are in your journey, you are welcome here—we look forward to seeing you!',
+    mapUrl:
+      'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
+    description:
+      'We warmly invite you to join us for Sunday worship. Come experience a time of praise, a meaningful message, and genuine community. No matter where you are in your journey, you are welcome here—we look forward to seeing you!',
     image: './images/worship1.jpeg',
     note: 'English translation available',
   },
@@ -66,16 +68,16 @@ export const upcomingEvents: Event[] = [
   },
   {
     id: 6,
-    title: 'Worship & Baptism Celebration',
-    date: 'April 19 Sunday',
-    time: '11:00am – 12:30pm',
-    location: 'SDA Church, Duluth, GA',
+    title: 'EM Pre-summer BBQ',
+    date: 'May 23, Saturday',
+    time: '11:30am – 2:30pm',
+    location: 'Details after Rsvp',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      'Come join us for a special Sunday worship and celebration opportunity for those who have committed their lives to Jesus Christ.',
-    image: './images/baptism.jpg',
-    note: 'English translation available',
+      "Summer's almost here and we're kicking it off early — come hang with us for an afternoon of good food, cold drinks, and poolside vibes! We're firing up the grill and opening up the backyard, so bring your swimsuit, sunscreen, and your appetite. Hope to see you all!",
+    image:
+      'https://images.pexels.com/photos/29259327/pexels-photo-29259327.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
   },
   {
     id: 9,
@@ -95,8 +97,10 @@ export const upcomingEvents: Event[] = [
     date: '1st, 2nd & 3rd Fridays, June – August',
     time: '7:30pm – 9:30pm',
     location: 'SDA Church, Duluth, GA',
-    mapUrl: 'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
-    description: "This summer, we're excited to invite children to join our Summer Kids Fellowship, a fun and meaningful time designed to help children grow in faith, build friendships, and enjoy a safe, joyful community. ",
+    mapUrl:
+      'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
+    description:
+      "This summer, we're excited to invite children to join our Summer Kids Fellowship, a fun and meaningful time designed to help children grow in faith, build friendships, and enjoy a safe, joyful community. ",
     image: '',
     video: '/images/fridaykids.mp4',
   },
