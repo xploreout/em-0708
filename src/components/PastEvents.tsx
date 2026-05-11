@@ -364,7 +364,7 @@ const PastEvents = () => {
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
             <a
-              href='https://youtu.be/wnSQjWvxbyg'
+              href='https://youtu.be/n9toPMxF8Yw'
               target='_blank'
               rel='noopener noreferrer'
               className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
@@ -373,7 +373,7 @@ const PastEvents = () => {
                 className='relative w-full'
                 style={{ paddingBottom: '56.25%' }}
               >
-                <LoopingYouTube videoId='wnSQjWvxbyg' maxSeconds={10} />
+                <LoopingYouTube videoId='n9toPMxF8Yw' maxSeconds={20} />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
                     Flowers for Mothers
@@ -382,7 +382,7 @@ const PastEvents = () => {
               </div>
             </a>
             <a
-              href='https://youtu.be/4Q3r1nfy0K0'
+              href='https://youtu.be/ouhQ2YjhBQQ'
               target='_blank'
               rel='noopener noreferrer'
               className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
@@ -391,7 +391,7 @@ const PastEvents = () => {
                 className='relative w-full'
                 style={{ paddingBottom: '56.25%' }}
               >
-                <LoopingYouTube videoId='4Q3r1nfy0K0' maxSeconds={10} />
+                <LoopingYouTube videoId='ouhQ2YjhBQQ' maxSeconds={3} />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
                     Happy Mother's Day
@@ -409,7 +409,7 @@ const PastEvents = () => {
                 className='relative w-full'
                 style={{ paddingBottom: '56.25%' }}
               >
-                <LoopingYouTube videoId='eRqvh6wT2aU' maxSeconds={10} />
+                <LoopingYouTube videoId='eRqvh6wT2aU' maxSeconds={3} />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
                     Volunteer Day
@@ -430,7 +430,7 @@ const PastEvents = () => {
                 <LoopingYouTube
                   videoId='1Am63VxRy0c'
                   playbackRate={0.25}
-                  maxSeconds={10}
+                  maxSeconds={1}
                 />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
@@ -456,7 +456,7 @@ const PastEvents = () => {
                 <LoopingYouTube
                   videoId='5curN9pO0Uw'
                   startSeconds={106}
-                  maxSeconds={10}
+                  maxSeconds={3}
                 />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
