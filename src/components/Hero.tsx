@@ -18,12 +18,12 @@ const Hero = () => {
           <img
             src="https://images.pexels.com/photos/33307468/pexels-photo-33307468.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
             alt="Young adults fellowship"
-            className="w-full h-full object-cover opacity-25"
+            className="w-full h-full object-cover opacity-40"
           />
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-10 pt-24 pb-14 text-center">
-          <span className="inline-flex items-center gap-2 text-blue-700 text-sm font-semibold uppercase tracking-widest px-4 py-1.5 mb-6">
+          <span className="inline-flex items-center gap-2 text-blue-600 text-[10px] sm:text-xs font-bold uppercase tracking-widest px-4 py-1.5 mb-6" style={{ fontFamily: "'Julius Sans One', sans-serif" }}>
             Atlanta Chinese Bible Community Church
           </span>
 
