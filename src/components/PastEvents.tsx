@@ -376,7 +376,7 @@ const PastEvents = () => {
                 <LoopingYouTube videoId='n9toPMxF8Yw' maxSeconds={20} />
                 <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
                   <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
-                    Flowers for Mothers
+                    Flowers for mothers
                   </p>
                 </div>
               </div>
