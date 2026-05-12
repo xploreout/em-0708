@@ -57,7 +57,7 @@ const Header = () => {
       <div className='  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 '>
         <div className='flex justify-between items-center py-4 '>
           <a href='#' rel='noopener noreferrer'>
-            <h1 className='text-xl font-bold text-gray-900'>ACBCCEM</h1>
+            <h1 className='text-xl font-bold brush-title-inline'>ACBCCEM</h1>
           </a>
           <nav className='hidden md:flex space-x-8 items-center'>
             <Link
@@ -196,7 +196,7 @@ const Header = () => {
         >
           <nav className='flex flex-col space-y-2'>
             <a href='#' rel='noopener noreferrer'>
-              <h1 className='text-xl font-bold text-gray-900'>
+              <h1 className='text-xl font-bold brush-title-inline'>
                 ACBCC English Ministry
               </h1>
             </a>

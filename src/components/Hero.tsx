@@ -1,72 +1,72 @@
-import { Link } from 'react-router-dom';
-import { Calendar, Clock, MapPin, Globe } from 'lucide-react';
-import { upcomingEvents } from '../data/events';
+import { Link } from 'react-router-dom'
+import { Calendar, Clock, MapPin, Globe } from 'lucide-react'
+import { upcomingEvents } from '../data/events'
 
 const Hero = () => {
-  const heroIds = [1, 6, 11];
-  const preview = heroIds.map((id) => upcomingEvents.find((e) => e.id === id)!).filter(Boolean);
+  const heroIds = [1, 6, 11]
+  const preview = heroIds
+    .map((id) => upcomingEvents.find((e) => e.id === id)!)
+    .filter(Boolean)
 
   return (
-    <section className="bg-white">
+    <section className='bg-white'>
       {/* Top — bright hero banner */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-teal-50 to-emerald-100">
+      <div className='relative overflow-hidden bg-gradient-to-br from-blue-50 via-teal-50 to-emerald-100'>
         {/* Decorative blobs */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-200/40 rounded-full blur-3xl" />
-        <div className="absolute -bottom-16 -left-16 w-80 h-80 bg-emerald-200/40 rounded-full blur-3xl" />
+        <div className='absolute -top-24 -right-24 w-96 h-96 bg-blue-200/40 rounded-full blur-3xl' />
+        <div className='absolute -bottom-16 -left-16 w-80 h-80 bg-emerald-200/40 rounded-full blur-3xl' />
 
-        <div className="absolute inset-0 z-0">
+        <div className='absolute inset-0 z-0'>
           <img
-            src="https://images.pexels.com/photos/33307468/pexels-photo-33307468.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
-            alt="Young adults fellowship"
-            className="w-full h-full object-cover opacity-40"
+            src='https://images.pexels.com/photos/33307468/pexels-photo-33307468.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop'
+            alt='Young adults fellowship'
+            className='w-full h-full object-cover opacity-40'
           />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-6 sm:px-10 pt-24 pb-14 text-center">
-          <span className="inline-flex items-center gap-2 text-blue-600 text-[10px] sm:text-xs font-bold uppercase tracking-widest px-4 py-1.5 mb-6" style={{ fontFamily: "'Julius Sans One', sans-serif" }}>
+        <div className='relative z-10 max-w-4xl mx-auto px-6 sm:px-10 pt-24 pb-14 text-center'>
+          <span
+            className='inline-flex items-center gap-2 text-blue-600 text-[10px] sm:text-xs uppercase tracking-widest px-4 py-1.5 mb-6'
+            style={{
+              fontFamily: "'Julius Sans One', sans-serif",
+              WebkitTextStroke: '0.8px currentColor',
+            }}
+          >
             Atlanta Chinese Bible Community Church
           </span>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-6">
-            ACBCC{' '}
-            <span className="bg-gradient-to-r from-blue-700 to-teal-600 bg-clip-text text-transparent">
-              English Ministry
-            </span>
+          <h1 className='text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6'>
+            <span className='brush-title'>ACBCC English Ministry</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-5">
+          <p className='text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-5'>
             A Christ-centered community where we build relationships, grow in
             faith, and serve together.
           </p>
-
-          {/* <p className="text-base text-gray-500 max-w-2xl mx-auto leading-relaxed mb-10">
-            We are prayerfully seeking a part-time or full-time servant to join
-            the ministry, and we look forward to the upcoming launch of our
-            English Worship Service. Join us during this special season.
-          </p> */}
-
         </div>
       </div>
 
       {/* Bottom — upcoming event cards */}
-      <div className="bg-white py-12 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">What's Coming Up</h2>
+      <div className='bg-white py-12 border-t border-gray-100'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+          <div className='flex items-center justify-between mb-6'>
+            <h2 className='text-lg font-semibold text-gray-900'>
+              What's Coming Up
+            </h2>
             <Link
-              to="/events"
-              className="text-sm text-teal-600 hover:text-teal-800 transition-colors font-medium"
+              to='/events'
+              className='text-sm text-teal-600 hover:text-teal-800 transition-colors font-medium'
             >
               View all →
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
             {preview.map((event) => (
               <Link
                 key={event.id}
                 to={event.link ?? '/events'}
-                className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col"
+                className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col'
               >
                 {event.video ? (
                   <video
@@ -75,38 +75,40 @@ const Hero = () => {
                     loop
                     muted
                     playsInline
-                    className="w-full h-32 object-cover block"
+                    className='w-full h-32 object-cover block'
                   />
                 ) : (
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="w-full h-32 object-cover"
+                    className='w-full h-32 object-cover'
                   />
                 )}
-                <div className="p-4 flex flex-col flex-1">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2 leading-snug">
+                <div className='p-4 flex flex-col flex-1'>
+                  <h3 className='text-sm font-semibold text-gray-900 mb-2 leading-snug'>
                     {event.title}
                   </h3>
                   {event.alert && (
-                    <p className="text-xs text-amber-600 font-medium mb-2">{event.alert}</p>
+                    <p className='text-xs text-amber-600 font-medium mb-2'>
+                      {event.alert}
+                    </p>
                   )}
-                  <div className="space-y-1 mt-auto">
-                    <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                      <Calendar className="h-3 w-3 shrink-0" />
+                  <div className='space-y-1 mt-auto'>
+                    <div className='flex items-center gap-1.5 text-xs text-gray-400'>
+                      <Calendar className='h-3 w-3 shrink-0' />
                       <span>{event.date}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                      <Clock className="h-3 w-3 shrink-0" />
+                    <div className='flex items-center gap-1.5 text-xs text-gray-400'>
+                      <Clock className='h-3 w-3 shrink-0' />
                       <span>{event.time}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                      <MapPin className="h-3 w-3 shrink-0" />
+                    <div className='flex items-center gap-1.5 text-xs text-gray-400'>
+                      <MapPin className='h-3 w-3 shrink-0' />
                       <span>{event.location}</span>
                     </div>
                     {event.note && (
-                      <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                        <Globe className="h-3 w-3 shrink-0" />
+                      <div className='flex items-center gap-1.5 text-xs text-gray-400'>
+                        <Globe className='h-3 w-3 shrink-0' />
                         <span>中文 · {event.note}</span>
                       </div>
                     )}
@@ -114,10 +116,10 @@ const Hero = () => {
                   {event.registrationUrl && (
                     <a
                       href={event.registrationUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target='_blank'
+                      rel='noopener noreferrer'
                       onClick={(e) => e.stopPropagation()}
-                      className="mt-3 inline-block text-xs text-blue-500 font-medium hover:text-blue-700 transition-colors"
+                      className='mt-3 inline-block text-xs text-blue-500 font-medium hover:text-blue-700 transition-colors'
                     >
                       Registration & Event Info →
                     </a>
@@ -129,7 +131,7 @@ const Hero = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default Hero;
+export default Hero
