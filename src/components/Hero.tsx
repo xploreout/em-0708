@@ -26,7 +26,7 @@ const Hero = () => {
 
         <div className='relative z-10 max-w-4xl mx-auto px-6 sm:px-10 pt-24 pb-14 text-center'>
           <span
-            className='inline-flex items-center gap-2 text-blue-600 text-[30px] sm:text-xs uppercase tracking-widest px-4 py-1.5 mb-4'
+            className='inline-flex items-center gap-2 text-blue-600 text-[20px] sm:text-xxs uppercase tracking-widest px-4 py-1.5 mb-4'
             style={{
               fontFamily: "'Julius Sans One', sans-serif",
               WebkitTextStroke: '0.8px currentColor',
@@ -39,7 +39,7 @@ const Hero = () => {
             <span className='brush-title'>ACBCC English Ministry</span>
           </h1>
 
-          <p className='text-xs sm:text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-5'>
+          <p className='text-[18px] sm:text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-5'>
             A Christ-centered community where we build relationships, grow in
             faith, and serve together.
           </p>
