@@ -199,7 +199,37 @@ const LoopingYouTube = ({
   )
 }
 
+type Video2026 = {
+  id: string
+  title: string
+  subtitle?: string
+  maxSeconds?: number
+  playbackRate?: number
+  startSeconds?: number
+}
+
+const videos2026: Video2026[] = [
+  { id: 'n9toPMxF8Yw', title: 'Flowers for Mothers', maxSeconds: 20 },
+  { id: 'ouhQ2YjhBQQ', title: "Happy Mother's Day", maxSeconds: 3 },
+  { id: 'eRqvh6wT2aU', title: 'Volunteer Day', maxSeconds: 3 },
+  {
+    id: '1Am63VxRy0c',
+    title: 'He is Risen',
+    subtitle: 'Easter Celebration',
+    playbackRate: 0.25,
+    maxSeconds: 1,
+  },
+  {
+    id: '5curN9pO0Uw',
+    title: 'Red Pockets & Redemption',
+    startSeconds: 106,
+    maxSeconds: 3,
+  },
+]
+
 const PastEvents = () => {
+  const [featured, setFeatured] = useState<Video2026>(videos2026[0])
+
   const pastEvents = [
     {
       id: 1,
@@ -362,109 +392,75 @@ const PastEvents = () => {
           <h3 className='px-4 text-xl font-bold text-gray-900 uppercase tracking-widest mb-6'>
             2026
           </h3>
-          <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
-            <a
-              href='https://youtu.be/n9toPMxF8Yw'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
-            >
-              <div
-                className='relative w-full'
-                style={{ paddingBottom: '56.25%' }}
+          <div className='flex flex-col md:flex-row gap-4'>
+            {/* Featured video — ~1/3 page width */}
+            <div className='md:w-1/3 shrink-0'>
+              <a
+                href={`https://youtu.be/${featured.id}`}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
               >
-                <LoopingYouTube videoId='n9toPMxF8Yw' maxSeconds={20} />
-                <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
-                  <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
-                    Flowers for mothers
-                  </p>
+                <div
+                  className='relative w-full'
+                  style={{ paddingBottom: '56.25%' }}
+                >
+                  <LoopingYouTube
+                    key={featured.id}
+                    videoId={featured.id}
+                    maxSeconds={featured.maxSeconds}
+                    playbackRate={featured.playbackRate}
+                    startSeconds={featured.startSeconds}
+                  />
+                  <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
+                    <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
+                      {featured.title}
+                    </p>
+                    {featured.subtitle && (
+                      <p className='text-white/80 text-center text-sm mt-1 drop-shadow'>
+                        {featured.subtitle}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </a>
-            <a
-              href='https://youtu.be/ouhQ2YjhBQQ'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
-            >
-              <div
-                className='relative w-full'
-                style={{ paddingBottom: '56.25%' }}
-              >
-                <LoopingYouTube videoId='ouhQ2YjhBQQ' maxSeconds={3} />
-                <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
-                  <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
-                    Happy Mother's Day
-                  </p>
-                </div>
-              </div>
-            </a>
-            <a
-              href='https://youtu.be/eRqvh6wT2aU'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
-            >
-              <div
-                className='relative w-full'
-                style={{ paddingBottom: '56.25%' }}
-              >
-                <LoopingYouTube videoId='eRqvh6wT2aU' maxSeconds={3} />
-                <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
-                  <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
-                    Volunteer Day
-                  </p>
-                </div>
-              </div>
-            </a>
-            <a
-              href='https://youtu.be/1Am63VxRy0c'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
-            >
-              <div
-                className='relative w-full'
-                style={{ paddingBottom: '56.25%' }}
-              >
-                <LoopingYouTube
-                  videoId='1Am63VxRy0c'
-                  playbackRate={0.25}
-                  maxSeconds={1}
-                />
-                <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
-                  <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
-                    He is Risen
-                  </p>
-                  <p className='text-white/80 text-center text-sm mt-1 drop-shadow'>
-                    Easter Celebration
-                  </p>
-                </div>
-              </div>
-            </a>
+              </a>
+            </div>
 
-            <a
-              href='https://youtu.be/5curN9pO0Uw'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
-            >
-              <div
-                className='relative w-full'
-                style={{ paddingBottom: '56.25%' }}
-              >
-                <LoopingYouTube
-                  videoId='5curN9pO0Uw'
-                  startSeconds={106}
-                  maxSeconds={3}
-                />
-                <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
-                  <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
-                    Red Pockets & Redemption
-                  </p>
-                </div>
-              </div>
-            </a>
+            {/* Side thumbnails — click to feature */}
+            <div className='flex-1 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-2 gap-2 content-start'>
+              {videos2026
+                .filter((v) => v.id !== featured.id)
+                .map((video) => (
+                  <button
+                    key={video.id}
+                    onClick={() => setFeatured(video)}
+                    className='relative w-full rounded-xl overflow-hidden shadow hover:shadow-md transition-shadow group'
+                  >
+                    <div
+                      className='relative w-full'
+                      style={{ paddingBottom: '56.25%' }}
+                    >
+                      <img
+                        src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
+                        alt={video.title}
+                        className='absolute inset-0 w-full h-full object-cover'
+                      />
+                      <div className='absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center'>
+                        <svg
+                          viewBox='0 0 24 24'
+                          fill='white'
+                          className='w-8 h-8 opacity-80'
+                        >
+                          <path d='M8 5v14l11-7z' />
+                        </svg>
+                      </div>
+                      <p className='absolute bottom-0 left-0 right-0 text-white text-[10px] font-semibold text-center px-1 pb-1 drop-shadow leading-tight'>
+                        {video.title}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+            </div>
           </div>
         </div>
 
