@@ -70,7 +70,7 @@ export const upcomingEvents: Event[] = [
     id: 6,
     title: 'EM Pre-summer BBQ',
     date: 'May 23, Saturday',
-    time: '11:30am – 2:30pm',
+    time: '4:00pm – 7:30pm',
     location: 'Details after Rsvp',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
