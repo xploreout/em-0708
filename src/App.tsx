@@ -8,6 +8,8 @@ function ScrollToTop() {
   }, [pathname]);
   return null;
 }
+import EmFeud from './components/EmFeud';
+import EmFeudForm from './components/EmFeudForm';
 import PastEvents from './components/PastEvents';
 import MainPage from './components/MainPage';
 import Events from './components/Events';
@@ -55,6 +57,8 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/im-new" element={<ImNew />} />
           </Route>
+          <Route path="/games/emfeud" element={<EmFeud />} />
+          <Route path="/games/emfeud/form" element={<EmFeudForm />} />
         </Routes>
       </div>
     </Router>
