@@ -227,15 +227,24 @@ function SetupScreen({ onStart }: { onStart: (names: [string, string]) => void }
       {/* Logo */}
       <div className="relative text-center" style={{ animation: 'popIn 0.6s cubic-bezier(0.22,1,0.36,1) both' }}>
         <div
-          className="text-8xl font-black tracking-[0.3em]"
+          className="inline-block px-12 py-8"
           style={{
-            background: 'linear-gradient(135deg,#f9a8d4,#ec4899,#38bdf8)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 30px rgba(251,146,60,0.5))',
+            border: '5px solid #f97316',
+            borderRadius: '50%',
+            boxShadow: '0 0 24px rgba(249,115,22,0.45)',
           }}
         >
-          EM FEUD
+          <div
+            className="text-8xl font-black tracking-[0.3em]"
+            style={{
+              background: 'linear-gradient(135deg,#f9a8d4,#ec4899,#38bdf8)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              filter: 'drop-shadow(0 0 30px rgba(251,146,60,0.5))',
+            }}
+          >
+            EM FEUD
+          </div>
         </div>
         <div className="mt-2 text-sm font-bold tracking-[0.4em] uppercase text-white/40">
           English Ministry Family Feud
