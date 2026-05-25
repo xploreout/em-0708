@@ -206,9 +206,11 @@ type Video2026 = {
   maxSeconds?: number
   playbackRate?: number
   startSeconds?: number
+  isShort?: boolean
 }
 
 const videos2026: Video2026[] = [
+  { id: 'bQ4hU9M1uc8', title: 'EM Feud', subtitle: 'Latest', isShort: true },
   { id: 'n9toPMxF8Yw', title: 'Flowers for Mothers', maxSeconds: 20 },
   { id: 'ouhQ2YjhBQQ', title: "Happy Mother's Day", maxSeconds: 3 },
   { id: 'eRqvh6wT2aU', title: 'Volunteer Day', maxSeconds: 3 },
@@ -394,36 +396,63 @@ const PastEvents = () => {
           </h3>
           <div className='flex flex-col md:flex-row gap-4'>
             {/* Featured video — ~1/3 page width */}
-            <div className='md:w-1/3 shrink-0'>
-              <a
-                href={`https://youtu.be/${featured.id}`}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group'
-              >
+            <div className='md:w-1/3 shrink-0 flex justify-center md:justify-start'>
+              {featured.isShort ? (
+                /* Portrait Short — fills frame edge-to-edge, no letterbox */
                 <div
-                  className='relative w-full'
-                  style={{ paddingBottom: '56.25%' }}
+                  className='relative rounded-2xl overflow-hidden shadow-xl bg-black'
+                  style={{ width: '260px', height: '462px' }}
                 >
-                  <LoopingYouTube
+                  <iframe
                     key={featured.id}
-                    videoId={featured.id}
-                    maxSeconds={featured.maxSeconds}
-                    playbackRate={featured.playbackRate}
-                    startSeconds={featured.startSeconds}
+                    src={`https://www.youtube.com/embed/${featured.id}?autoplay=1&mute=1&loop=1&playlist=${featured.id}&rel=0&modestbranding=1&playsinline=1`}
+                    className='absolute inset-0 w-full h-full border-0'
+                    allow='autoplay; fullscreen'
+                    allowFullScreen
                   />
-                  <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
-                    <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
-                      {featured.title}
-                    </p>
+                  <div className='absolute bottom-0 left-0 right-0 px-3 pb-3 pointer-events-none' style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' }}>
+                    <p className='text-white font-bold text-sm drop-shadow'>{featured.title}</p>
                     {featured.subtitle && (
-                      <p className='text-white/80 text-center text-sm mt-1 drop-shadow'>
-                        {featured.subtitle}
-                      </p>
+                      <p className='text-white/70 text-xs drop-shadow'>{featured.subtitle}</p>
                     )}
                   </div>
+                  <a
+                    href={`https://youtube.com/shorts/${featured.id}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='absolute top-2 right-2 bg-black/50 hover:bg-black/80 text-white text-[10px] font-bold px-2 py-1 rounded-full transition'
+                  >
+                    ↗ Open
+                  </a>
                 </div>
-              </a>
+              ) : (
+                <a
+                  href={`https://youtu.be/${featured.id}`}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group w-full'
+                >
+                  <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
+                    <LoopingYouTube
+                      key={featured.id}
+                      videoId={featured.id}
+                      maxSeconds={featured.maxSeconds}
+                      playbackRate={featured.playbackRate}
+                      startSeconds={featured.startSeconds}
+                    />
+                    <div className='absolute inset-0 bg-black/30 flex flex-col items-center justify-center p-4 pointer-events-none'>
+                      <p className='text-white text-center font-bold text-xl leading-snug drop-shadow'>
+                        {featured.title}
+                      </p>
+                      {featured.subtitle && (
+                        <p className='text-white/80 text-center text-sm mt-1 drop-shadow'>
+                          {featured.subtitle}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </a>
+              )}
             </div>
 
             {/* Side thumbnails — click to feature */}
@@ -454,6 +483,11 @@ const PastEvents = () => {
                           <path d='M8 5v14l11-7z' />
                         </svg>
                       </div>
+                      {video.isShort && (
+                        <span className='absolute top-1 right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none tracking-wide'>
+                          SHORT
+                        </span>
+                      )}
                       <p className='absolute bottom-0 left-0 right-0 text-white text-[10px] font-semibold text-center px-1 pb-1 drop-shadow leading-tight'>
                         {video.title}
                       </p>
