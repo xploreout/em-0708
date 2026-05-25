@@ -68,16 +68,16 @@ export const upcomingEvents: Event[] = [
   },
   {
     id: 6,
-    title: 'EM Pre-summer BBQ',
-    date: 'May 23, Saturday',
+    title: 'EM Summer Sport Day',
+    date: 'July Saturday TBD',
     time: '4:00pm – 7:30pm',
     location: 'Details after Rsvp',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      "Summer's almost here and we're kicking it off early — come hang with us for an afternoon of good food, cold drinks, and poolside vibes! We're firing up the grill and opening up the backyard, so bring your swimsuit, sunscreen, and your appetite. Hope to see you all!",
+      "Join us for a fun-filled Summer Sport Day! We'll have exciting games, delicious food, and great fellowship. It's a perfect opportunity to connect with others and enjoy the summer vibes together. Don't miss out on the fun!",
     image:
-      'https://images.pexels.com/photos/29259327/pexels-photo-29259327.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+      'https://images.pexels.com/photos/17206408/pexels-photo-17206408.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
   },
   {
     id: 9,
