@@ -210,7 +210,7 @@ type Video2026 = {
 }
 
 const videos2026: Video2026[] = [
-  { id: 'bQ4hU9M1uc8', title: 'EM Feud', subtitle: 'Latest', isShort: true },
+  { id: 'sGDQJdupD1c', title: 'EM Feud', subtitle: 'Latest', isShort: true },
   { id: 'n9toPMxF8Yw', title: 'Flowers for Mothers', maxSeconds: 20 },
   { id: 'ouhQ2YjhBQQ', title: "Happy Mother's Day", maxSeconds: 3 },
   { id: 'eRqvh6wT2aU', title: 'Volunteer Day', maxSeconds: 3 },
@@ -417,7 +417,7 @@ const PastEvents = () => {
                     )}
                   </div>
                   <a
-                    href={`https://youtube.com/shorts/${featured.id}`}
+                    href={`https://youtube.com/shorts/${featured.id}?si=o5SxndGgdj-1zDfk`}
                     target='_blank'
                     rel='noopener noreferrer'
                     className='absolute top-2 right-2 bg-black/50 hover:bg-black/80 text-white text-[10px] font-bold px-2 py-1 rounded-full transition'
