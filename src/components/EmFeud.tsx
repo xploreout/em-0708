@@ -554,6 +554,7 @@ export default function EmFeud() {
   const [activeTeam, setActiveTeam] = useState<0 | 1>(0)
   const [editingTeam, setEditingTeam] = useState<number | null>(null)
   const [muted, setMuted] = useState(false)
+  const [strikeFlash, setStrikeFlash] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
   const round = rounds[qIdx]
@@ -590,6 +591,13 @@ export default function EmFeud() {
     if (round.strikes >= 3 || round.awarded) return
     const next = round.strikes + 1
     updateRound({ strikes: next, stealMode: next >= 3 })
+    // Buzzer sound
+    const buzzer = new Audio('/audio/buzzersound.mp3')
+    buzzer.volume = 0.85
+    buzzer.play().catch(() => {})
+    // Red X overlay for 2 seconds
+    setStrikeFlash(true)
+    setTimeout(() => setStrikeFlash(false), 2000)
   }
 
   // Award accumulated points to teamIdx; marks round done; carries score forward
@@ -649,6 +657,27 @@ export default function EmFeud() {
           className="min-h-screen flex flex-col select-none relative overflow-hidden"
           style={{ background: 'linear-gradient(145deg,#500724 0%,#831843 35%,#1e3a8a 100%)', fontFamily: '"Georgia",serif' }}
         >
+          {/* Strike flash overlay — huge red X for 2s */}
+          {strikeFlash && (
+            <div
+              className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
+              style={{ background: 'rgba(180,0,0,0.18)', animation: 'popIn 0.15s cubic-bezier(0.22,1,0.36,1) both' }}
+            >
+              <span
+                style={{
+                  fontSize: 'clamp(10rem, 30vw, 18rem)',
+                  fontWeight: 900,
+                  color: '#ef4444',
+                  lineHeight: 1,
+                  textShadow: '0 0 60px rgba(239,68,68,0.8), 0 0 120px rgba(239,68,68,0.4)',
+                  animation: 'popIn 0.15s cubic-bezier(0.22,1,0.36,1) both',
+                }}
+              >
+                ✕
+              </span>
+            </div>
+          )}
+
           {/* Floating background blobs */}
           {[
             { s: 340, t: '-100px', l: '-100px', c: '#f9a8d432', d: '0s' },
