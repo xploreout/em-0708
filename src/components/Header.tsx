@@ -213,10 +213,10 @@ const Header = () => {
               </div>
             ) : (
               <div className='relative' onMouseEnter={handleLoginMouseEnter} onMouseLeave={handleLoginMouseLeave}>
-                <button className='flex items-center gap-1 px-3 py-2 rounded-md text-l font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors duration-200'>
+                <button className='flex items-center gap-1.5 px-2 py-1.5 text-gray-400 hover:text-gray-600 transition-colors duration-200'>
                   <LogIn className='w-4 h-4' />
-                  Login
-                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${loginDropdown ? 'rotate-180' : ''}`} />
+                  <span className='text-xs font-medium'>Login</span>
+                  <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${loginDropdown ? 'rotate-180' : ''}`} />
                 </button>
                 {loginDropdown && (
                   <div className='absolute top-full right-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
@@ -379,12 +379,12 @@ const Header = () => {
               ) : (
                 <>
                   <button
-                    className='w-full px-3 py-1 text-left rounded-md text-base font-medium text-blue-700 flex items-center gap-1'
+                    className='w-full px-3 py-1 text-left flex items-center gap-1.5 text-gray-400 hover:text-gray-600 transition-colors duration-200'
                     onClick={() => setMobileLoginOpen(!mobileLoginOpen)}
                   >
                     <LogIn className='w-4 h-4' />
-                    Login
-                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mobileLoginOpen ? 'rotate-180' : ''}`} />
+                    <span className='text-sm font-medium'>Login</span>
+                    <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${mobileLoginOpen ? 'rotate-180' : ''}`} />
                   </button>
                   {mobileLoginOpen && (
                     <div className='pl-6 flex flex-col space-y-1'>

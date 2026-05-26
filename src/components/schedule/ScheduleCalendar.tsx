@@ -1,15 +1,17 @@
-import { useState, useEffect, useRef } from 'react'
-import { Loader2, Plus, Pencil, Check, X, Trash2 } from 'lucide-react'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { Loader2, Plus, Pencil, Check, X, Trash2, Search } from 'lucide-react'
 import { RequireAuth, useAuth } from '../../context/AuthContext'
 
 type Entry   = { eventName: string; personOnDuty: string }
 type Schedule = Record<string, Entry[]>
+type ViewMode = '12' | '3'
 
 interface WeekRow { fri: Date | null; sat: Date | null; sun: Date | null }
 
 const MONTH_NAMES = ['January','February','March','April','May','June',
   'July','August','September','October','November','December']
 const MON_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+const DOW_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 
 function dateKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
@@ -43,6 +45,23 @@ function get12Months() {
     const d = new Date(now.getFullYear(), now.getMonth() + i, 1)
     return { year: d.getFullYear(), month: d.getMonth() }
   })
+}
+
+// Wrap matched substring in a yellow highlight
+function highlight(text: string, query: string): React.ReactNode {
+  if (!query) return text
+  const q = query.toLowerCase()
+  const idx = text.toLowerCase().indexOf(q)
+  if (idx === -1) return text
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark className="bg-yellow-200 text-yellow-900 rounded px-0.5 not-italic">
+        {text.slice(idx, idx + query.length)}
+      </mark>
+      {text.slice(idx + query.length)}
+    </>
+  )
 }
 
 const BTN_SAVE   = "flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-500 text-white text-sm md:text-xs font-semibold hover:bg-blue-600 transition"
@@ -188,9 +207,7 @@ function DayCell({ date, entries, onSave, saving, asTd = true }: {
       <div className="flex items-center justify-center gap-1.5 -mx-3 px-3 py-1.5 mb-2 bg-gray-100/80 border-b border-gray-200/60">
         <span className={`text-xs font-bold whitespace-nowrap px-2 py-0.5 rounded-full ${
           isToday ? 'bg-blue-500 text-white' : 'text-gray-500'
-        }`}>
-          {dateLabel}
-        </span>
+        }`}>{dateLabel}</span>
         {saving && <Loader2 className="w-3 h-3 animate-spin text-gray-300 shrink-0" />}
       </div>
 
@@ -268,12 +285,20 @@ function CalendarContent() {
   const [loading,     setLoading]    = useState(true)
   const [savingKeys,  setSavingKeys] = useState<Set<string>>(new Set())
   const [activeMonth, setActiveMonth] = useState(0)
+  const [viewMode,    setViewMode]   = useState<ViewMode>('12')
+  const [monthOffset, setMonthOffset] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const monthRefs = useRef<(HTMLDivElement | null)[]>([])
   const pillRefs  = useRef<(HTMLButtonElement | null)[]>([])
+  const searchRef = useRef<HTMLInputElement>(null)
 
-  const months = get12Months()
+  const months    = get12Months()
   const firstYear = months[0].year
+
+  const visibleMonths = viewMode === '3'
+    ? months.slice(monthOffset, monthOffset + 3)
+    : months
 
   useEffect(() => {
     authFetch('/api/schedule')
@@ -282,9 +307,9 @@ function CalendarContent() {
       .catch(() => setLoading(false))
   }, [])
 
-  // Highlight the month pill whose section top is highest on screen
+  // Track active month pill via scroll (12-month mode only)
   useEffect(() => {
-    if (loading) return
+    if (loading || viewMode !== '12') return
     function onScroll() {
       let active = 0
       monthRefs.current.forEach((el, idx) => {
@@ -293,23 +318,55 @@ function CalendarContent() {
       setActiveMonth(active)
     }
     window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll() // set initial active
+    onScroll()
     return () => window.removeEventListener('scroll', onScroll)
-  }, [loading])
+  }, [loading, viewMode])
 
-  // Keep the active pill visible in the pill bar
+  // Keep active pill scrolled into view in the pill bar
   useEffect(() => {
-    pillRefs.current[activeMonth]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
-  }, [activeMonth])
+    const idx = viewMode === '3' ? monthOffset : activeMonth
+    pillRefs.current[idx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  }, [activeMonth, monthOffset, viewMode])
+
+  function handleSetViewMode(mode: ViewMode) {
+    setSearchQuery('')
+    setViewMode(mode)
+    if (mode === '3') setMonthOffset(Math.min(activeMonth, months.length - 3))
+    if (mode === '12') window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   function scrollToMonth(idx: number) {
+    if (viewMode === '3') {
+      setMonthOffset(Math.min(idx, months.length - 3))
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     const el = monthRefs.current[idx]
     if (!el) return
-    // Offset = sticky header (~64px) + sticky month nav (~48px) + gap
-    const offset = 120
-    const top = el.getBoundingClientRect().top + window.scrollY - offset
-    window.scrollTo({ top, behavior: 'smooth' })
+    const offset = 160 // sticky header + nav height
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - offset, behavior: 'smooth' })
   }
+
+  // Search across all 12 months of schedule data
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return null
+    const q = searchQuery.trim().toLowerCase()
+    const allDates: Date[] = months.flatMap(({ year, month }) =>
+      getWeekRows(year, month).flatMap(row =>
+        [row.fri, row.sat, row.sun].filter((d): d is Date => d !== null)
+      )
+    )
+    return allDates
+      .map(date => {
+        const key = dateKey(date)
+        const matched = (schedule[key] ?? []).filter(e =>
+          e.eventName.toLowerCase().includes(q) ||
+          e.personOnDuty.toLowerCase().includes(q)
+        )
+        return { date, key, matched }
+      })
+      .filter(r => r.matched.length > 0)
+  }, [searchQuery, schedule])
 
   async function handleSave(key: string, entries: Entry[]) {
     setSchedule(prev => {
@@ -340,23 +397,71 @@ function CalendarContent() {
 
   return (
     <>
-      {/* ── Sticky month pill nav ── */}
-      <div className="sticky top-16 z-40 -mx-4 px-4 py-2 bg-white/95 backdrop-blur-sm border-b border-gray-100 mb-6">
-        <div className="flex gap-1.5 overflow-x-auto pb-0.5"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}>
+      {/* ── Sticky nav: toolbar + month pills ── */}
+      <div className="sticky top-16 z-40 -mx-4 px-4 bg-white/95 backdrop-blur-sm border-b border-gray-100 mb-6">
+
+        {/* Toolbar row */}
+        <div className="flex items-center gap-2 pt-2 pb-1.5">
+          {/* View toggle */}
+          <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-semibold shrink-0">
+            <button
+              onClick={() => handleSetViewMode('12')}
+              className={`px-2.5 py-1.5 transition-colors ${
+                viewMode === '12' ? 'bg-blue-500 text-white' : 'text-gray-500 hover:bg-gray-50'
+              }`}
+            >
+              12 Mo
+            </button>
+            <button
+              onClick={() => handleSetViewMode('3')}
+              className={`px-2.5 py-1.5 border-l border-gray-200 transition-colors whitespace-nowrap ${
+                viewMode === '3' ? 'bg-blue-500 text-white' : 'text-gray-500 hover:bg-gray-50'
+              }`}
+            >
+              3 Mo Glance
+            </button>
+          </div>
+
+          {/* Search input */}
+          <div className="flex-1 relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="Search events or names…"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-7 py-1.5 text-sm border border-gray-200 rounded-lg outline-none focus:border-blue-300 focus:ring-1 focus:ring-blue-100 bg-white"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => { setSearchQuery(''); searchRef.current?.focus() }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Month pills */}
+        <div
+          className="flex gap-1.5 overflow-x-auto pb-2"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
+        >
           {months.map(({ year, month }, idx) => {
-            const label = year !== firstYear
-              ? `${MON_SHORT[month]} '${String(year).slice(2)}`
-              : MON_SHORT[month]
+            const label    = year !== firstYear ? `${MON_SHORT[month]} '${String(year).slice(2)}` : MON_SHORT[month]
+            const isPrimary = viewMode === '3' ? idx === monthOffset : activeMonth === idx
+            const isInView  = viewMode === '3' && idx > monthOffset && idx < monthOffset + 3
             return (
               <button
                 key={idx}
                 ref={el => { pillRefs.current[idx] = el }}
                 onClick={() => scrollToMonth(idx)}
                 className={`shrink-0 px-3 py-1 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
-                  activeMonth === idx
-                    ? 'bg-blue-500 text-white shadow-sm'
-                    : 'bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600'
+                  isPrimary ? 'bg-blue-500 text-white shadow-sm'
+                  : isInView  ? 'bg-blue-100 text-blue-600'
+                  : 'bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600'
                 }`}
               >
                 {label}
@@ -366,77 +471,138 @@ function CalendarContent() {
         </div>
       </div>
 
-      {/* ── Month sections — one shared wrapper per month for both mobile & desktop ── */}
-      <div className="flex flex-col gap-10">
-        {months.map(({ year, month }, idx) => {
-          const rows = getWeekRows(year, month)
-          return (
-            <div key={`${year}-${month}`} ref={el => { monthRefs.current[idx] = el }}>
-              {/* Month heading */}
-              <div className="flex items-center gap-3 mb-3">
-                <h2 className="text-base font-bold text-gray-700 whitespace-nowrap">
-                  {MONTH_NAMES[month]} {year}
-                </h2>
-                <div className="flex-1 h-px bg-gray-200" />
+      {/* ── Search results view ── */}
+      {searchResults ? (
+        <div className="flex flex-col gap-3">
+          <p className="text-sm text-gray-500">
+            {searchResults.length === 0
+              ? <span>No results for <strong>"{searchQuery}"</strong></span>
+              : <span><strong>{searchResults.length}</strong> date{searchResults.length !== 1 ? 's' : ''} matching <strong>"{searchQuery}"</strong></span>
+            }
+          </p>
+          {searchResults.map(({ date, matched }) => (
+            <div key={dateKey(date)} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              {/* Date header */}
+              <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-100">
+                <span className="text-xs font-bold text-gray-700">
+                  {DOW_SHORT[date.getDay()]}, {MONTH_NAMES[date.getMonth()]} {date.getDate()}, {date.getFullYear()}
+                </span>
+                <button
+                  onClick={() => {
+                    setSearchQuery('')
+                    const mIdx = months.findIndex(m => m.year === date.getFullYear() && m.month === date.getMonth())
+                    if (mIdx === -1) return
+                    if (viewMode === '3') {
+                      setMonthOffset(Math.min(mIdx, months.length - 3))
+                      window.scrollTo({ top: 0, behavior: 'smooth' })
+                    } else {
+                      setTimeout(() => scrollToMonth(mIdx), 50)
+                    }
+                  }}
+                  className="text-xs text-blue-500 hover:text-blue-700 font-semibold transition"
+                >
+                  View in calendar →
+                </button>
               </div>
-
-              {/* Mobile: vertical day cards */}
-              <div className="md:hidden flex flex-col gap-5">
-                {rows.map((row, wi) => {
-                  const days = [row.fri, row.sat, row.sun]
-                  if (!days.some(Boolean)) return null
-                  return (
-                    <div key={wi}>
-                      <div className="text-xs font-semibold text-gray-400 mb-2 px-0.5">Week {wi + 1}</div>
-                      <div className="flex flex-col gap-2">
-                        {days.map((date, di) =>
-                          date ? (
-                            <DayCell key={di} date={date}
-                              entries={schedule[dateKey(date)] ?? []}
-                              onSave={handleSave} saving={savingKeys.has(dateKey(date))}
-                              asTd={false} />
-                          ) : null
-                        )}
+              {/* Matching entries */}
+              <div className="px-3 py-2 flex flex-col gap-2">
+                {matched.map((e, i) => (
+                  <div key={i}>
+                    {e.eventName && (
+                      <div className="text-xs font-semibold text-gray-800">
+                        {highlight(e.eventName, searchQuery)}
                       </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              {/* Desktop: 3-column table */}
-              <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
-                <table className="min-w-full text-sm border-collapse">
-                  <thead>
-                    <tr className="bg-blue-50 text-blue-700 text-xs border-b border-blue-100">
-                      <th className="px-3 py-2.5 text-left font-semibold w-10">#</th>
-                      <th className="px-4 py-2.5 text-center font-semibold">Friday</th>
-                      <th className="px-4 py-2.5 text-center font-semibold">Saturday</th>
-                      <th className="px-4 py-2.5 text-center font-semibold">Sunday</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row, wi) => {
-                      const days = [row.fri, row.sat, row.sun]
-                      return (
-                        <tr key={wi} className={wi % 2 === 0 ? 'bg-white' : 'bg-gray-50/70'}>
-                          <td className="px-3 py-3 text-gray-300 font-bold text-xs align-top pt-4">{wi + 1}</td>
-                          {days.map((date, di) =>
-                            date
-                              ? <DayCell key={di} date={date}
-                                  entries={schedule[dateKey(date)] ?? []}
-                                  onSave={handleSave} saving={savingKeys.has(dateKey(date))} />
-                              : <td key={di} className="px-3 py-3 border-l border-gray-100" />
-                          )}
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
+                    )}
+                    {e.personOnDuty && (
+                      <div className="flex flex-wrap gap-1 mt-0.5">
+                        {e.personOnDuty.split(',').map(p => p.trim()).filter(Boolean).map((p, pi) => (
+                          <span key={pi} className="text-xs bg-purple-100 text-purple-700 font-medium rounded-full px-2 py-0.5">
+                            {highlight(p, searchQuery)}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
-          )
-        })}
-      </div>
+          ))}
+        </div>
+
+      ) : (
+        /* ── Calendar view ── */
+        <div className="flex flex-col gap-10">
+          {visibleMonths.map(({ year, month }) => {
+            const origIdx = months.findIndex(m => m.year === year && m.month === month)
+            const rows    = getWeekRows(year, month)
+            return (
+              <div key={`${year}-${month}`} ref={el => { monthRefs.current[origIdx] = el }}>
+                {/* Month heading */}
+                <div className="flex items-center gap-3 mb-3">
+                  <h2 className="text-base font-bold text-gray-700 whitespace-nowrap">
+                    {MONTH_NAMES[month]} {year}
+                  </h2>
+                  <div className="flex-1 h-px bg-gray-200" />
+                </div>
+
+                {/* Mobile: vertical day cards */}
+                <div className="md:hidden flex flex-col gap-5">
+                  {rows.map((row, wi) => {
+                    const days = [row.fri, row.sat, row.sun]
+                    if (!days.some(Boolean)) return null
+                    return (
+                      <div key={wi}>
+                        <div className="text-xs font-semibold text-gray-400 mb-2 px-0.5">Week {wi + 1}</div>
+                        <div className="flex flex-col gap-2">
+                          {days.map((date, di) =>
+                            date ? (
+                              <DayCell key={di} date={date}
+                                entries={schedule[dateKey(date)] ?? []}
+                                onSave={handleSave} saving={savingKeys.has(dateKey(date))}
+                                asTd={false} />
+                            ) : null
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Desktop: 3-column table */}
+                <div className="hidden md:block overflow-x-auto rounded-2xl border border-gray-200 shadow-sm">
+                  <table className="min-w-full text-sm border-collapse">
+                    <thead>
+                      <tr className="bg-blue-50 text-blue-700 text-xs border-b border-blue-100">
+                        <th className="px-3 py-2.5 text-left font-semibold w-10">#</th>
+                        <th className="px-4 py-2.5 text-center font-semibold">Friday</th>
+                        <th className="px-4 py-2.5 text-center font-semibold">Saturday</th>
+                        <th className="px-4 py-2.5 text-center font-semibold">Sunday</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map((row, wi) => {
+                        const days = [row.fri, row.sat, row.sun]
+                        return (
+                          <tr key={wi} className={wi % 2 === 0 ? 'bg-white' : 'bg-gray-50/70'}>
+                            <td className="px-3 py-3 text-gray-300 font-bold text-xs align-top pt-4">{wi + 1}</td>
+                            {days.map((date, di) =>
+                              date
+                                ? <DayCell key={di} date={date}
+                                    entries={schedule[dateKey(date)] ?? []}
+                                    onSave={handleSave} saving={savingKeys.has(dateKey(date))} />
+                                : <td key={di} className="px-3 py-3 border-l border-gray-100" />
+                            )}
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </>
   )
 }
@@ -450,7 +616,7 @@ export default function ScheduleCalendar() {
         <div className="mb-4">
           <h1 className="text-2xl font-bold text-gray-900">CoWorker Calendar</h1>
           <p className="text-gray-500 text-sm mt-1">
-            12-month rolling view · Fri, Sat & Sun · tap <strong>+</strong> to add an entry
+            Fri, Sat & Sun · tap <strong>+</strong> to add an entry
           </p>
         </div>
         <CalendarContent />
