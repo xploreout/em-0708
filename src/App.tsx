@@ -10,6 +10,11 @@ function ScrollToTop() {
 }
 import EmFeud from './components/EmFeud';
 import EmFeudForm from './components/EmFeudForm';
+import { AuthProvider } from './context/AuthContext';
+import ScheduleCalendar from './components/schedule/ScheduleCalendar';
+import PraiseTeam from './components/schedule/PraiseTeam';
+import Worship from './components/schedule/Worship';
+import AdminPanel from './components/schedule/AdminPanel';
 import PastEvents from './components/PastEvents';
 import MainPage from './components/MainPage';
 import Events from './components/Events';
@@ -41,6 +46,7 @@ function Layout() {
 function App() {
   return (
     <Router>
+      <AuthProvider>
       <ScrollToTop />
       <div className="min-h-screen">
         <Routes>
@@ -59,8 +65,15 @@ function App() {
           </Route>
           <Route path="/games/emfeud" element={<EmFeud />} />
           <Route path="/games/emfeud/form" element={<EmFeudForm />} />
+          <Route element={<Layout />}>
+            <Route path="/schedule/calendar"    element={<ScheduleCalendar />} />
+            <Route path="/schedule/praise-team" element={<PraiseTeam />} />
+            <Route path="/schedule/worship"     element={<Worship />} />
+            <Route path="/schedule/admin"       element={<AdminPanel />} />
+          </Route>
         </Routes>
       </div>
+      </AuthProvider>
     </Router>
   );
 }

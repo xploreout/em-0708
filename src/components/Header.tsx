@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, ArrowLeft, ChevronDown } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Menu, X, ArrowLeft, ChevronDown, LogIn, LogOut } from 'lucide-react'
+import { useAuth, Role, ROLE_LABELS, ROLE_ROUTES } from '../context/AuthContext'
+import LoginModal from './LoginModal'
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -8,11 +10,39 @@ const Header = () => {
   const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false)
   const [eventsOpen, setEventsOpen] = useState(false)
   const [mobileEventsOpen, setMobileEventsOpen] = useState(false)
+  const [loginOpen, setLoginOpen] = useState(false)
+  const [loginDropdown, setLoginDropdown] = useState(false)
+  const [mobileLoginOpen, setMobileLoginOpen] = useState(false)
+  const [loginRole, setLoginRole] = useState<Role | undefined>()
+  const loginTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const location = useLocation()
+  const navigate = useNavigate()
+  const { role, logout } = useAuth()
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const eventsHoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const toggleMenu = () => setIsOpen(!isOpen)
+  const toggleMenu = () => {
+    setIsOpen(prev => {
+      if (prev) setMobileLoginOpen(false)
+      return !prev
+    })
+  }
+
+  const loginItems: Role[] = ['calendar', 'praiseTeam', 'worship', 'admin']
+
+  function openLogin(r: Role) {
+    setLoginRole(r)
+    setLoginOpen(true)
+    setLoginDropdown(false)
+  }
+
+  function handleLoginMouseEnter() {
+    if (loginTimeout.current) clearTimeout(loginTimeout.current)
+    setLoginDropdown(true)
+  }
+  function handleLoginMouseLeave() {
+    loginTimeout.current = setTimeout(() => setLoginDropdown(false), 150)
+  }
 
   const eventsItems = [
     { name: 'Upcoming Events', href: '/events' },
@@ -168,6 +198,42 @@ const Header = () => {
               <span>ACBCC</span><span className='text-xs font-normal ml-0.5 leading-none text-gray-400' style={{ writingMode: 'vertical-rl' }}>中文</span>
             </a>
 
+            {/* Login / user badge */}
+            {role ? (
+              <div className='flex items-center gap-2'>
+                <button
+                  onClick={() => navigate(ROLE_ROUTES[role])}
+                  className='text-xs font-bold px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition'
+                >
+                  {ROLE_LABELS[role]}
+                </button>
+                <button onClick={() => { logout(); navigate('/') }} title='Logout' className='text-gray-400 hover:text-gray-600 transition'>
+                  <LogOut className='w-4 h-4' />
+                </button>
+              </div>
+            ) : (
+              <div className='relative' onMouseEnter={handleLoginMouseEnter} onMouseLeave={handleLoginMouseLeave}>
+                <button className='flex items-center gap-1 px-3 py-2 rounded-md text-l font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors duration-200'>
+                  <LogIn className='w-4 h-4' />
+                  Login
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${loginDropdown ? 'rotate-180' : ''}`} />
+                </button>
+                {loginDropdown && (
+                  <div className='absolute top-full right-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
+                    {loginItems.map(r => (
+                      <button
+                        key={r}
+                        onClick={() => openLogin(r)}
+                        className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors'
+                      >
+                        {ROLE_LABELS[r]}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
           </nav>
 
           {/* Mobile menu button */}
@@ -298,9 +364,50 @@ const Header = () => {
               About
             </Link>
 
+            {/* Mobile login / logout */}
+            <div className='pt-1 border-t border-gray-100'>
+              {role ? (
+                <div className='flex items-center justify-between px-3 py-1'>
+                  <button
+                    onClick={() => { navigate(ROLE_ROUTES[role]); setIsOpen(false) }}
+                    className='text-sm font-semibold text-blue-700'
+                  >
+                    {ROLE_LABELS[role]}
+                  </button>
+                  <button onClick={() => { logout(); setIsOpen(false); navigate('/') }} className='text-xs text-gray-500 hover:text-red-500 font-semibold transition'>Logout</button>
+                </div>
+              ) : (
+                <>
+                  <button
+                    className='w-full px-3 py-1 text-left rounded-md text-base font-medium text-blue-700 flex items-center gap-1'
+                    onClick={() => setMobileLoginOpen(!mobileLoginOpen)}
+                  >
+                    <LogIn className='w-4 h-4' />
+                    Login
+                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mobileLoginOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {mobileLoginOpen && (
+                    <div className='pl-6 flex flex-col space-y-1'>
+                      {loginItems.map(r => (
+                        <button
+                          key={r}
+                          onClick={() => { openLogin(r); setIsOpen(false); setMobileLoginOpen(false) }}
+                          className='px-3 py-1 text-left text-sm font-medium text-blue-700 hover:text-blue-500 transition-colors'
+                        >
+                          {ROLE_LABELS[r]}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
           </nav>
         </div>
       </div>
+
+      {loginOpen && <LoginModal initialRole={loginRole} onClose={() => setLoginOpen(false)} />}
     </header>
   )
 }
