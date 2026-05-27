@@ -6,4 +6,5 @@ node_modules
 server/.env
 server/passwords.json
 server/schedule.json
+server/congregation.json
 *notes*

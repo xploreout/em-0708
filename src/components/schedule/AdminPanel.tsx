@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Eye, EyeOff, CheckCircle } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { RequireAuth, useAuth, Role, ROLE_LABELS } from '../../context/AuthContext'
 
 const ROLES: Role[] = ['calendar', 'praiseTeam', 'worship', 'admin']
@@ -92,7 +93,18 @@ export default function AdminPanel() {
           {ROLES.map(r => <PasswordRow key={r} role={r} />)}
         </div>
 
-        <div className="mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-700">
+        <Link
+          to="/schedule/congregation"
+          className="mt-6 flex items-center gap-3 px-5 py-4 bg-blue-50 border border-blue-200 rounded-2xl hover:bg-blue-100 transition group"
+        >
+          <Users className="w-5 h-5 text-blue-500 shrink-0" />
+          <div>
+            <div className="text-sm font-semibold text-blue-700 group-hover:underline">Congregation Database</div>
+            <div className="text-xs text-blue-500 mt-0.5">Manage members and send monthly duty reminders</div>
+          </div>
+        </Link>
+
+        <div className="mt-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-xs text-amber-700">
           <strong>Note:</strong> Passwords are hashed and stored securely on the server. Default passwords are set in <code>server/.env</code> and take effect only on first run.
         </div>
 

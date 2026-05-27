@@ -14,7 +14,8 @@ import { AuthProvider } from './context/AuthContext';
 import ScheduleCalendar from './components/schedule/ScheduleCalendar';
 import PraiseTeam from './components/schedule/PraiseTeam';
 import Worship from './components/schedule/Worship';
-import AdminPanel from './components/schedule/AdminPanel';
+import AdminPanel from './components/schedule/AdminPanel'
+import CongregationPage from './components/congregation/CongregationPage';
 import PastEvents from './components/PastEvents';
 import MainPage from './components/MainPage';
 import Events from './components/Events';
@@ -69,7 +70,8 @@ function App() {
             <Route path="/schedule/calendar"    element={<ScheduleCalendar />} />
             <Route path="/schedule/praise-team" element={<PraiseTeam />} />
             <Route path="/schedule/worship"     element={<Worship />} />
-            <Route path="/schedule/admin"       element={<AdminPanel />} />
+            <Route path="/schedule/admin"        element={<AdminPanel />} />
+            <Route path="/schedule/congregation" element={<CongregationPage />} />
           </Route>
         </Routes>
       </div>
