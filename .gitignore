@@ -8,3 +8,4 @@ server/passwords.json
 server/schedule.json
 server/congregation.json
 *notes*
+netlify.toml
