@@ -9,8 +9,9 @@ type Props = {
 }
 
 const ROLE_OPTIONS: { role: Role; label: string }[] = [
-  { role: 'calendar', label: 'Coworker' },
-  { role: 'admin',    label: 'Admin' },
+  { role: 'attendance', label: 'Arrival Checkin' },
+  { role: 'calendar',   label: 'Coworker' },
+  { role: 'admin',      label: 'Admin' },
 ]
 
 export default function LoginModal({ onClose }: Props) {
@@ -64,7 +65,7 @@ export default function LoginModal({ onClose }: Props) {
         </div>
 
         {/* Role selector */}
-        <div className='flex gap-2 mb-5'>
+        <div className='flex flex-wrap gap-2 mb-5'>
           {ROLE_OPTIONS.map(({ role, label }) => (
             <button
               key={role}

@@ -4,16 +4,18 @@ import { useNavigate } from 'react-router-dom'
 const IDLE_TIMEOUT_MS = 40 * 60 * 1000
 const IDLE_EVENTS = ['mousemove', 'keydown', 'pointerdown', 'scroll', 'touchstart'] as const
 
-export type Role = 'calendar' | 'admin'
+export type Role = 'calendar' | 'admin' | 'attendance'
 
 export const ROLE_LABELS: Record<Role, string> = {
-  calendar: 'Coworker',
-  admin:    'Admin',
+  calendar:   'Coworker',
+  admin:      'Admin',
+  attendance: 'Arrival Checkin',
 }
 
 export const ROLE_ROUTES: Record<Role, string> = {
-  calendar: '/schedule/calendar',
-  admin:    '/schedule/admin',
+  calendar:   '/schedule/calendar',
+  admin:      '/schedule/admin',
+  attendance: '/attendance',
 }
 
 type AuthCtx = {

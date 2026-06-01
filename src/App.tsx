@@ -13,6 +13,8 @@ import EmFeudForm from './components/EmFeudForm';
 import { AuthProvider } from './context/AuthContext';
 import ScheduleCalendar from './components/schedule/ScheduleCalendar';
 import AdminPanel from './components/schedule/AdminPanel'
+import AttendancePage from './components/attendance/AttendancePage'
+import ClassDetailPage from './components/attendance/ClassDetailPage'
 import CongregationPage from './components/congregation/CongregationPage';
 import PastEvents from './components/PastEvents';
 import MainPage from './components/MainPage';
@@ -68,6 +70,8 @@ function App() {
             <Route path="/schedule/calendar" element={<ScheduleCalendar />} />
             <Route path="/schedule/admin"    element={<AdminPanel />} />
             <Route path="/schedule/congregation" element={<CongregationPage />} />
+            <Route path="/attendance"              element={<AttendancePage />} />
+            <Route path="/attendance/class/:id"    element={<ClassDetailPage />} />
           </Route>
         </Routes>
       </div>

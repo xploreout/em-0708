@@ -13,7 +13,7 @@ dotenv.config()
 const { Pool } = pg
 const JWT_SECRET  = process.env.JWT_SECRET
 const JWT_EXPIRES = '8h'
-const ROLES = ['calendar', 'admin']
+const ROLES = ['calendar', 'admin', 'attendance']
 const MONTH_NAMES = ['January','February','March','April','May','June',
   'July','August','September','October','November','December']
 
@@ -74,19 +74,64 @@ async function initDB() {
         role VARCHAR(50) PRIMARY KEY,
         hash TEXT        NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS classes (
+        id                 SERIAL PRIMARY KEY,
+        name               VARCHAR(200) NOT NULL UNIQUE,
+        lead_name          VARCHAR(200) DEFAULT '',
+        lead_email         VARCHAR(200) DEFAULT '',
+        description        TEXT         DEFAULT '',
+        location           TEXT         DEFAULT '',
+        meeting_day        VARCHAR(20)  DEFAULT '',
+        meeting_time       VARCHAR(20)  DEFAULT '',
+        recurrence         VARCHAR(20)  DEFAULT 'none',
+        end_date           DATE,
+        lead_password_hash TEXT         DEFAULT '',
+        created_at         TIMESTAMPTZ  DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS class_sessions (
+        id           SERIAL PRIMARY KEY,
+        class_id     INTEGER NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+        session_date DATE NOT NULL,
+        topic        TEXT DEFAULT '',
+        notes        TEXT DEFAULT '',
+        created_at   TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE(class_id, session_date)
+      );
+
+      CREATE TABLE IF NOT EXISTS class_attendance (
+        id             SERIAL PRIMARY KEY,
+        session_id     INTEGER NOT NULL REFERENCES class_sessions(id) ON DELETE CASCADE,
+        person_name    VARCHAR(200) NOT NULL,
+        phone          VARCHAR(50)  DEFAULT '',
+        attendee_notes TEXT DEFAULT '',
+        checked_in_at  TIMESTAMPTZ DEFAULT NOW()
+      );
     `)
+
+    // Migration: add columns to classes table for existing installations
+    for (const ddl of [
+      `ALTER TABLE classes ADD COLUMN IF NOT EXISTS location TEXT DEFAULT ''`,
+      `ALTER TABLE classes ADD COLUMN IF NOT EXISTS meeting_day VARCHAR(20) DEFAULT ''`,
+      `ALTER TABLE classes ADD COLUMN IF NOT EXISTS meeting_time VARCHAR(20) DEFAULT ''`,
+      `ALTER TABLE classes ADD COLUMN IF NOT EXISTS recurrence VARCHAR(20) DEFAULT 'none'`,
+      `ALTER TABLE classes ADD COLUMN IF NOT EXISTS end_date DATE`,
+      `ALTER TABLE classes ADD COLUMN IF NOT EXISTS lead_password_hash TEXT DEFAULT ''`,
+    ]) { await client.query(ddl) }
 
     // Seed default passwords for any missing roles
     const defaults = {
-      calendar: process.env.PASSWORD_CALENDAR || 'calendar123',
-      admin:    process.env.PASSWORD_ADMIN    || 'admin123',
+      calendar:   process.env.PASSWORD_CALENDAR   || 'calendar123',
+      admin:      process.env.PASSWORD_ADMIN      || 'admin123',
+      attendance: process.env.PASSWORD_ATTENDANCE || 'attend123',
     }
     for (const [role, pass] of Object.entries(defaults)) {
-      const { rows } = await client.query('SELECT 1 FROM passwords WHERE role=$1', [role])
-      if (rows.length === 0) {
-        await client.query('INSERT INTO passwords(role,hash) VALUES($1,$2)',
-          [role, bcrypt.hashSync(pass, 10)])
-      }
+      await client.query(
+        `INSERT INTO passwords(role,hash) VALUES($1,$2)
+         ON CONFLICT (role) DO UPDATE SET hash=EXCLUDED.hash`,
+        [role, bcrypt.hashSync(pass, 10)]
+      )
     }
 
     console.log('✓ Database ready')
@@ -331,6 +376,16 @@ app.put('/api/congregation/:id', requireAuth('admin'), wrap(async (req, res) => 
   res.json(toMember(rows[0]))
 }))
 
+app.get('/api/congregation/:id/in-use', requireAuth('admin'), wrap(async (req, res) => {
+  const { rows: [contact] } = await pool.query('SELECT name FROM contacts WHERE id=$1', [req.params.id])
+  if (!contact) return res.status(404).json({ error: 'Not found' })
+  const { rows: [{ count }] } = await pool.query(
+    'SELECT COUNT(*) FROM event_persons WHERE LOWER(TRIM(person_name)) = LOWER(TRIM($1))',
+    [contact.name]
+  )
+  res.json({ name: contact.name, count: parseInt(count) })
+}))
+
 app.delete('/api/congregation/:id', requireAuth('admin'), wrap(async (req, res) => {
   const { rowCount } = await pool.query('DELETE FROM contacts WHERE id=$1', [req.params.id])
   if (rowCount === 0) return res.status(404).json({ error: 'Member not found' })
@@ -434,6 +489,288 @@ app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
 
   res.json({ sent, skipped, errors })
 })
+
+// ── Cross-class attendance search ─────────────────────────────────────────────
+app.get('/api/attendance/search', requireAuth('attendance'), wrap(async (req, res) => {
+  const q = (req.query.q || '').trim()
+  if (q.length < 2) return res.json([])
+  const pattern = `%${q}%`
+  const { rows } = await pool.query(`
+    WITH matches AS (
+      SELECT
+        c.id            AS class_id,
+        c.name          AS class_name,
+        c.lead_name,
+        c.lead_email,
+        c.location,
+        c.meeting_day,
+        c.meeting_time,
+        ca.person_name,
+        ca.phone,
+        COUNT(DISTINCT cs.id)::int AS session_count,
+        MAX(cs.session_date)       AS last_seen
+      FROM class_attendance ca
+      JOIN class_sessions cs ON cs.id = ca.session_id
+      JOIN classes c         ON c.id  = cs.class_id
+      WHERE ca.person_name ILIKE $1 OR ca.phone ILIKE $1
+      GROUP BY c.id, c.name, c.lead_name, c.lead_email, c.location, c.meeting_day, c.meeting_time, ca.person_name, ca.phone
+    )
+    SELECT m.*,
+      EXISTS(
+        SELECT 1 FROM class_sessions cs2
+        JOIN class_attendance ca2 ON ca2.session_id = cs2.id
+        WHERE cs2.class_id = m.class_id
+          AND cs2.session_date = CURRENT_DATE
+          AND LOWER(TRIM(ca2.person_name)) = LOWER(TRIM(m.person_name))
+      ) AS checked_in_today
+    FROM matches m
+    ORDER BY last_seen DESC
+    LIMIT 30
+  `, [pattern])
+
+  // One entry per class (keep highest session_count if name matched multiple spellings)
+  const byClass = new Map()
+  for (const r of rows) {
+    const ex = byClass.get(r.class_id)
+    if (!ex || r.session_count > ex.session_count) {
+      byClass.set(r.class_id, {
+        classId: r.class_id, className: r.class_name,
+        leadName: r.lead_name || '', leadEmail: r.lead_email || '',
+        location: r.location || '', meetingDay: r.meeting_day || '', meetingTime: r.meeting_time || '',
+        personName: r.person_name, phone: r.phone || '',
+        sessionCount: r.session_count,
+        lastSeen: r.last_seen ? new Date(r.last_seen).toISOString().slice(0, 10) : null,
+        checkedInToday: r.checked_in_today === true || r.checked_in_today === 't',
+      })
+    }
+  }
+  res.json([...byClass.values()])
+}))
+
+// ── Classes ───────────────────────────────────────────────────────────────────
+app.get('/api/classes', requireAuth('attendance'), wrap(async (_req, res) => {
+  const { rows } = await pool.query('SELECT * FROM classes ORDER BY name')
+  res.json(rows.map(toClass))
+}))
+
+app.get('/api/classes/:id', requireAuth('attendance'), wrap(async (req, res) => {
+  const { rows } = await pool.query('SELECT * FROM classes WHERE id=$1', [req.params.id])
+  if (rows.length === 0) return res.status(404).json({ error: 'Not found' })
+  res.json(toClass(rows[0]))
+}))
+
+const toClass = r => ({
+  id: r.id, name: r.name, lead_name: r.lead_name || '', lead_email: r.lead_email || '',
+  description: r.description || '', location: r.location || '',
+  meeting_day: r.meeting_day || '', meeting_time: r.meeting_time || '',
+  recurrence: r.recurrence || 'none',
+  end_date: r.end_date ? new Date(r.end_date).toISOString().slice(0, 10) : null,
+  has_lead_password: !!(r.lead_password_hash),
+})
+
+app.post('/api/classes', requireAuth('admin'), wrap(async (req, res) => {
+  const { name, lead_name='', lead_email='', description='', location='', meeting_day='', meeting_time='', recurrence='none', end_date=null, lead_password='' } = req.body ?? {}
+  if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
+  const hash = lead_password ? bcrypt.hashSync(lead_password, 10) : ''
+  const { rows: [cls] } = await pool.query(
+    `INSERT INTO classes(name,lead_name,lead_email,description,location,meeting_day,meeting_time,recurrence,end_date,lead_password_hash)
+     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+    [name.trim(), lead_name.trim(), lead_email.trim(), description.trim(), location.trim(), meeting_day.trim(), meeting_time.trim(), recurrence, end_date || null, hash]
+  ).catch(err => {
+    if (err.code === '23505') { res.status(409).json({ error: 'Class already exists' }); return { rows: [] } }
+    throw err
+  })
+  if (cls) res.json(toClass(cls))
+}))
+
+app.put('/api/classes/:id', requireAuth('attendance'), wrap(async (req, res) => {
+  const { name, lead_name='', lead_email='', description='', location='', meeting_day='', meeting_time='', recurrence='none', end_date=null, lead_password } = req.body ?? {}
+  if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
+  const base = [name.trim(), lead_name.trim(), lead_email.trim(), description.trim(), location.trim(), meeting_day.trim(), meeting_time.trim(), recurrence, end_date || null]
+  let rows, rowCount
+  if (lead_password !== undefined) {
+    const hash = lead_password ? bcrypt.hashSync(lead_password, 10) : ''
+    ;({ rows, rowCount } = await pool.query(
+      `UPDATE classes SET name=$1,lead_name=$2,lead_email=$3,description=$4,location=$5,meeting_day=$6,meeting_time=$7,recurrence=$8,end_date=$9,lead_password_hash=$10 WHERE id=$11 RETURNING *`,
+      [...base, hash, req.params.id]
+    ))
+  } else {
+    ;({ rows, rowCount } = await pool.query(
+      `UPDATE classes SET name=$1,lead_name=$2,lead_email=$3,description=$4,location=$5,meeting_day=$6,meeting_time=$7,recurrence=$8,end_date=$9 WHERE id=$10 RETURNING *`,
+      [...base, req.params.id]
+    ))
+  }
+  if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
+  res.json(toClass(rows[0]))
+}))
+
+app.patch('/api/classes/:id/lead-password', requireAuth('admin'), wrap(async (req, res) => {
+  const { password } = req.body ?? {}
+  if (!password) return res.status(400).json({ error: 'Password required' })
+  const { rowCount } = await pool.query(
+    'UPDATE classes SET lead_password_hash=$1 WHERE id=$2',
+    [bcrypt.hashSync(password, 10), req.params.id]
+  )
+  if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
+  res.json({ success: true })
+}))
+
+app.post('/api/classes/:id/lead-verify', requireAuth('attendance'), wrap(async (req, res) => {
+  const { password } = req.body ?? {}
+  if (!password) return res.json({ ok: false })
+  const { rows } = await pool.query('SELECT lead_password_hash FROM classes WHERE id=$1', [req.params.id])
+  if (rows.length === 0) return res.status(404).json({ error: 'Not found' })
+  const hash = rows[0].lead_password_hash
+  if (!hash) return res.status(422).json({ error: 'No lead password set for this class' })
+  res.json({ ok: bcrypt.compareSync(password, hash) })
+}))
+
+app.delete('/api/classes/:id', requireAuth('admin'), wrap(async (req, res) => {
+  const { rowCount } = await pool.query('DELETE FROM classes WHERE id=$1', [req.params.id])
+  if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
+  res.json({ success: true })
+}))
+
+// ── Class Sessions ─────────────────────────────────────────────────────────────
+app.get('/api/classes/:id/sessions', requireAuth('attendance'), wrap(async (req, res) => {
+  const { rows } = await pool.query(
+    `SELECT cs.id, to_char(cs.session_date,'YYYY-MM-DD') AS session_date, cs.topic, cs.notes,
+      COALESCE(json_agg(
+        json_build_object(
+          'id', ca.id, 'person_name', ca.person_name, 'phone', ca.phone,
+          'attendee_notes', ca.attendee_notes, 'checked_in_at', ca.checked_in_at
+        ) ORDER BY ca.checked_in_at
+      ) FILTER (WHERE ca.id IS NOT NULL), '[]') AS attendees
+    FROM class_sessions cs
+    LEFT JOIN class_attendance ca ON ca.session_id = cs.id
+    WHERE cs.class_id = $1
+    GROUP BY cs.id, cs.session_date, cs.topic, cs.notes
+    ORDER BY cs.session_date DESC`,
+    [req.params.id]
+  )
+  res.json(rows)
+}))
+
+app.post('/api/classes/:id/sessions', requireAuth('attendance'), wrap(async (req, res) => {
+  const { topic = '', notes = '', date } = req.body ?? {}
+  const sessionDate = date || new Date().toISOString().slice(0, 10)
+  const { rows: [session] } = await pool.query(
+    `INSERT INTO class_sessions(class_id,session_date,topic,notes) VALUES($1,$2,$3,$4)
+     ON CONFLICT (class_id,session_date) DO UPDATE SET topic=EXCLUDED.topic, notes=EXCLUDED.notes
+     RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes`,
+    [req.params.id, sessionDate, topic, notes]
+  )
+  res.json(session)
+}))
+
+app.put('/api/classes/:classId/sessions/:sid', requireAuth('attendance'), wrap(async (req, res) => {
+  const { topic = '', notes = '' } = req.body ?? {}
+  const { rows, rowCount } = await pool.query(
+    `UPDATE class_sessions SET topic=$1,notes=$2 WHERE id=$3 AND class_id=$4
+     RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes`,
+    [topic, notes, req.params.sid, req.params.classId]
+  )
+  if (rowCount === 0) return res.status(404).json({ error: 'Session not found' })
+  res.json(rows[0])
+}))
+
+// ── Class Attendance ───────────────────────────────────────────────────────────
+app.get('/api/classes/:id/search', requireAuth('attendance'), wrap(async (req, res) => {
+  const q = (req.query.q || '').trim()
+  if (q.length < 1) return res.json([])
+  const pattern = `%${q}%`
+  const { rows: prev } = await pool.query(
+    `SELECT DISTINCT ON (lower(trim(ca.person_name)))
+      ca.person_name AS name, ca.phone, MAX(cs.session_date) AS last_seen
+    FROM class_attendance ca
+    JOIN class_sessions cs ON cs.id = ca.session_id
+    WHERE cs.class_id=$1 AND (ca.person_name ILIKE $2 OR ca.phone ILIKE $2)
+    GROUP BY ca.person_name, ca.phone
+    ORDER BY lower(trim(ca.person_name)), last_seen DESC
+    LIMIT 8`,
+    [req.params.id, pattern]
+  )
+  const { rows: contacts } = await pool.query(
+    'SELECT name, phone FROM contacts WHERE name ILIKE $1 OR phone ILIKE $1 LIMIT 8',
+    [pattern]
+  )
+  const seen = new Set()
+  const results = []
+  for (const r of prev) {
+    const key = r.name.toLowerCase().trim()
+    if (!seen.has(key)) { seen.add(key); results.push({ name: r.name, phone: r.phone || '', lastSeen: r.last_seen, inSystem: true }) }
+  }
+  for (const r of contacts) {
+    const key = r.name.toLowerCase().trim()
+    if (!seen.has(key)) { seen.add(key); results.push({ name: r.name, phone: r.phone || '', lastSeen: null, inSystem: true }) }
+  }
+  res.json(results.slice(0, 10))
+}))
+
+app.post('/api/classes/:id/checkin', requireAuth('attendance'), wrap(async (req, res) => {
+  const { person_name, phone = '' } = req.body ?? {}
+  if (!person_name?.trim()) return res.status(400).json({ error: 'Name is required' })
+  const today = new Date().toISOString().slice(0, 10)
+  const { rows: [session] } = await pool.query(
+    `INSERT INTO class_sessions(class_id,session_date) VALUES($1,$2)
+     ON CONFLICT (class_id,session_date) DO UPDATE SET class_id=EXCLUDED.class_id
+     RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date`,
+    [req.params.id, today]
+  )
+  const { rows: existing } = await pool.query(
+    `SELECT id FROM class_attendance WHERE session_id=$1 AND lower(trim(person_name))=lower(trim($2))`,
+    [session.id, person_name]
+  )
+  if (existing.length > 0) return res.status(409).json({ error: 'Already checked in today' })
+  const { rows: [record] } = await pool.query(
+    'INSERT INTO class_attendance(session_id,person_name,phone) VALUES($1,$2,$3) RETURNING *',
+    [session.id, person_name.trim(), phone.trim()]
+  )
+  res.json(record)
+}))
+
+app.put('/api/classes/:classId/attendance/:aid', requireAuth('attendance'), wrap(async (req, res) => {
+  const { attendee_notes = '' } = req.body ?? {}
+  const { rows, rowCount } = await pool.query(
+    `UPDATE class_attendance SET attendee_notes=$1 WHERE id=$2
+     AND session_id IN (SELECT id FROM class_sessions WHERE class_id=$3)
+     RETURNING *`,
+    [attendee_notes, req.params.aid, req.params.classId]
+  )
+  if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
+  res.json(rows[0])
+}))
+
+app.delete('/api/classes/:classId/attendance/:aid', requireAuth('attendance'), wrap(async (req, res) => {
+  const { rowCount } = await pool.query(
+    `DELETE FROM class_attendance WHERE id=$1
+     AND session_id IN (SELECT id FROM class_sessions WHERE class_id=$2)`,
+    [req.params.aid, req.params.classId]
+  )
+  if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
+  res.json({ success: true })
+}))
+
+app.post('/api/classes/:id/notify-lead', requireAuth('attendance'), wrap(async (req, res) => {
+  const { person_name, phone = '' } = req.body ?? {}
+  if (!person_name?.trim()) return res.status(400).json({ error: 'Name is required' })
+  const { rows } = await pool.query('SELECT name, lead_email FROM classes WHERE id=$1', [req.params.id])
+  if (rows.length === 0) return res.status(404).json({ error: 'Class not found' })
+  const cls = rows[0]
+  if (!cls.lead_email) return res.status(422).json({ error: 'Class leader has no email on file' })
+  let mailer
+  try { mailer = createMailer() } catch (err) {
+    return res.status(503).json({ error: err.message })
+  }
+  await mailer.sendMail({
+    from: process.env.EMAIL_FROM || `ACBCC Attendance <${process.env.EMAIL_USER}>`,
+    to: cls.lead_email,
+    subject: `[Attendance] ${person_name} is not in the system — ${cls.name}`,
+    html: `<p><strong>${person_name}</strong>${phone ? ` (${phone})` : ''} tried to check in to <strong>${cls.name}</strong> but was not found in the system.</p><p>Please verify their identity or add them to the class roster.</p>`,
+    text: `${person_name}${phone ? ` (${phone})` : ''} tried to check in to ${cls.name} but was not found. Please verify or add them.`,
+  })
+  res.json({ success: true })
+}))
 
 // ── Global error handler ──────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {

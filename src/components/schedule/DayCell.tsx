@@ -66,11 +66,16 @@ export function DayDetailModal({ date, entries, onSave, onClose, shared, readOnl
               </div>
               {entry.persons?.length > 0 && (
                 <div className="flex flex-col gap-1">
-                  {entry.persons.map((p, pi) => (
-                    <span key={pi} className="block w-full text-sm bg-purple-100 text-purple-700 font-medium rounded px-2.5 py-1">
-                      {p.name}{p.task ? <span className="text-purple-400"> · {p.task}</span> : null}
-                    </span>
-                  ))}
+                  {entry.persons.map((p, pi) => {
+                    const unknown = shared.congregation.length > 0 &&
+                      !shared.congregation.some(m => m.name.toLowerCase().trim() === p.name.toLowerCase().trim())
+                    return (
+                      <span key={pi} className="flex items-center gap-1 w-full text-sm bg-purple-100 text-purple-700 font-medium rounded px-2.5 py-1">
+                        {unknown && <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" title="Not in contacts" />}
+                        <span className="truncate">{p.name}{p.task ? <span className="text-purple-400"> · {p.task}</span> : null}</span>
+                      </span>
+                    )
+                  })}
                 </div>
               )}
               {!readOnly && (
@@ -167,11 +172,16 @@ export function DayCell({ date, entries, onSave, saving, asTd = true, shared, re
           </div>
           {entry.persons?.length > 0 && (
             <div className="flex flex-col gap-0.5 mt-0.5">
-              {entry.persons.map((p, pi) => (
-                <span key={pi} className="block w-full text-xs bg-purple-100 text-purple-700 font-medium rounded px-2 py-0.5 truncate">
-                  {p.name}{p.task ? <span className="text-purple-400"> · {p.task}</span> : null}
-                </span>
-              ))}
+              {entry.persons.map((p, pi) => {
+                const unknown = shared.congregation.length > 0 &&
+                  !shared.congregation.some(m => m.name.toLowerCase().trim() === p.name.toLowerCase().trim())
+                return (
+                  <span key={pi} className="flex items-center gap-1 w-full text-xs bg-purple-100 text-purple-700 font-medium rounded px-2 py-0.5">
+                    {unknown && <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" title="Not in contacts" />}
+                    <span className="truncate">{p.name}{p.task ? <span className="text-purple-400"> · {p.task}</span> : null}</span>
+                  </span>
+                )
+              })}
             </div>
           )}
           {!readOnly && (

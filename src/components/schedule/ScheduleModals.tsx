@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { Plus, X, ChevronDown } from 'lucide-react'
+import { Plus, X, ChevronDown, Upload, Loader2 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import type { Entry, Person, FormShared, EventType, Team, CongMember } from './scheduleTypes'
 import { INPUT_SM } from './scheduleConstants'
@@ -114,11 +114,33 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
   onClose: () => void
 }) {
   const { authFetch } = useAuth()
-  const [name,   setName]   = useState(initialName)
-  const [phone,  setPhone]  = useState('')
-  const [email,  setEmail]  = useState('')
-  const [saving, setSaving] = useState(false)
-  const [error,  setError]  = useState('')
+  const [name,      setName]      = useState(initialName)
+  const [phone,     setPhone]     = useState('')
+  const [email,     setEmail]     = useState('')
+  const [photoUrl,  setPhotoUrl]  = useState('')
+  const [uploading, setUploading] = useState(false)
+  const [saving,    setSaving]    = useState(false)
+  const [error,     setError]     = useState('')
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    setError('')
+    try {
+      const fd = new FormData()
+      fd.append('photo', file)
+      const res  = await authFetch('/api/congregation/upload-photo', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setPhotoUrl(data.url)
+    } catch (e: any) {
+      setError(e.message ?? 'Photo upload failed')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   async function handleSave() {
     if (!name.trim()) { setError('Name is required'); return }
@@ -128,7 +150,7 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
       const res = await authFetch('/api/congregation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), phone: phone.trim(), email: email.trim(), photoUrl: '' }),
+        body: JSON.stringify({ name: name.trim(), phone: phone.trim(), email: email.trim(), photoUrl }),
       })
       const m = await res.json()
       if (!res.ok) throw new Error(m.error)
@@ -142,6 +164,22 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
   return (
     <MiniModal title="New Contact" onClose={onClose}>
       <div className="flex flex-col gap-3">
+        {/* Photo upload */}
+        <div className="flex flex-col items-center gap-1.5">
+          <div
+            onClick={() => fileRef.current?.click()}
+            className="w-16 h-16 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 overflow-hidden flex items-center justify-center cursor-pointer hover:border-blue-400 transition">
+            {uploading ? <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+              : photoUrl ? <img src={photoUrl} alt="Photo" className="w-full h-full object-cover" />
+              : <Upload className="w-5 h-5 text-gray-400" />}
+          </div>
+          <button type="button" onClick={() => fileRef.current?.click()}
+            className="text-xs text-blue-500 hover:text-blue-700 font-medium transition" disabled={uploading}>
+            {uploading ? 'Uploading…' : 'Upload photo'}
+          </button>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
+        </div>
+
         <input autoFocus type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Full name *"
           className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400" />
         <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone"
@@ -150,7 +188,7 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
           className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400" />
         {error && <p className="text-red-500 text-xs">{error}</p>}
         <div className="flex gap-2 mt-1">
-          <button onClick={handleSave} disabled={saving}
+          <button onClick={handleSave} disabled={saving || uploading}
             className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
             {saving ? 'Saving…' : 'Add Contact'}
           </button>
@@ -178,6 +216,18 @@ export function EventNameSelect({ value, onChange, eventTypes, onCreated }: {
     ? eventTypes.filter(et => et.name.toLowerCase().includes(value.toLowerCase()))
     : eventTypes
   ).slice(0, 8)
+
+  const isNew = value.trim() && !eventTypes.some(et => et.name.toLowerCase() === value.toLowerCase().trim())
+
+  async function createInline() {
+    const res = await authFetch('/api/event-types', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: value.trim(), recurring: false }),
+    })
+    const et = await res.json()
+    if (res.ok) { onCreated(et); onChange(et.name) }
+    setOpen(false)
+  }
 
   useEffect(() => {
     function handler(e: MouseEvent) {
@@ -208,10 +258,17 @@ export function EventNameSelect({ value, onChange, eventTypes, onCreated }: {
               {et.recurring && <span className="text-xs text-gray-400 shrink-0 ml-2">recurring</span>}
             </button>
           ))}
+          {isNew && (
+            <button type="button"
+              onMouseDown={e => { e.preventDefault(); createInline() }}
+              className="w-full text-left px-3 py-2 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 font-medium flex items-center gap-1 border-t border-gray-100">
+              <Plus className="w-3 h-3" /> Add "{value.trim()}"
+            </button>
+          )}
           <button type="button"
             onMouseDown={e => { e.preventDefault(); setShowNew(true); setOpen(false) }}
-            className="w-full text-left px-3 py-2 text-xs text-blue-500 hover:bg-blue-50 font-semibold flex items-center gap-1 border-t border-gray-100">
-            <Plus className="w-3 h-3" /> New event type…
+            className="w-full text-left px-3 py-2 text-xs text-gray-400 hover:bg-gray-50 font-semibold flex items-center gap-1 border-t border-gray-100">
+            <Plus className="w-3 h-3" /> New event type with options…
           </button>
         </div>
       )}
@@ -236,7 +293,7 @@ export function EventNameSelect({ value, onChange, eventTypes, onCreated }: {
   )
 }
 
-// ── Team select ───────────────────────────────────────────────────────────────
+// ── Team combobox ─────────────────────────────────────────────────────────────
 
 export function TeamSelect({ teamId, onChange, teams, onCreated }: {
   teamId: number | null
@@ -245,35 +302,72 @@ export function TeamSelect({ teamId, onChange, teams, onCreated }: {
   onCreated: (t: Team) => void
 }) {
   const { authFetch } = useAuth()
-  const [showNew, setShowNew] = useState(false)
+  const [open,     setOpen]     = useState(false)
+  const [inputVal, setInputVal] = useState(() => teams.find(t => t.id === teamId)?.name ?? '')
+  const wrapRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setInputVal(teamId ? (teams.find(t => t.id === teamId)?.name ?? '') : '')
+  }, [teamId, teams])
+
+  const filtered = (inputVal.trim()
+    ? teams.filter(t => t.name.toLowerCase().includes(inputVal.toLowerCase().trim()))
+    : teams
+  ).slice(0, 8)
+
+  const isNew = inputVal.trim() && !teams.some(t => t.name.toLowerCase() === inputVal.toLowerCase().trim())
+
+  async function createInline() {
+    const res = await authFetch('/api/teams', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: inputVal.trim() }),
+    })
+    const t = await res.json()
+    if (res.ok) { onCreated(t); onChange(t.id); setInputVal(t.name) }
+    setOpen(false)
+  }
+
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
 
   return (
-    <div className="relative flex-1">
-      <select value={teamId ?? ''}
-        onChange={e => {
-          if (e.target.value === '__new__') { setShowNew(true); return }
-          onChange(e.target.value ? Number(e.target.value) : null)
-        }}
-        className={`${INPUT_SM} border-gray-200`}>
-        <option value="">Team…</option>
-        {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-        <option value="__new__">+ New team…</option>
-      </select>
-      {showNew && (
-        <NewTeamModal
-          onSave={async name => {
-            const res = await authFetch('/api/teams', {
-              method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name }),
-            })
-            const t = await res.json()
-            if (!res.ok) throw new Error(t.error)
-            onCreated(t)
-            onChange(t.id)
-            setShowNew(false)
-          }}
-          onClose={() => setShowNew(false)}
-        />
+    <div ref={wrapRef} className="relative flex-1">
+      <input type="text" value={inputVal} placeholder="Team…"
+        onChange={e => { setInputVal(e.target.value); onChange(null); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        className={`${INPUT_SM} pr-8 border-gray-200`} />
+      <button type="button" tabIndex={-1}
+        onMouseDown={e => { e.preventDefault(); setOpen(v => !v) }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 transition">
+        <ChevronDown className={`w-4 h-4 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-0.5 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+          <button type="button"
+            onMouseDown={e => { e.preventDefault(); onChange(null); setInputVal(''); setOpen(false) }}
+            className="w-full text-left px-3 py-2 text-sm text-gray-400 hover:bg-gray-50 border-b border-gray-100">
+            — no team —
+          </button>
+          {filtered.map(t => (
+            <button key={t.id} type="button"
+              onMouseDown={e => { e.preventDefault(); onChange(t.id); setInputVal(t.name); setOpen(false) }}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-gray-50 last:border-0">
+              {t.name}
+            </button>
+          ))}
+          {isNew && (
+            <button type="button"
+              onMouseDown={e => { e.preventDefault(); createInline() }}
+              className="w-full text-left px-3 py-2 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 font-medium flex items-center gap-1 border-t border-gray-100">
+              <Plus className="w-3 h-3" /> Add "{inputVal.trim()}"
+            </button>
+          )}
+        </div>
       )}
     </div>
   )
@@ -298,6 +392,8 @@ export function NameInput({ value, onChange, congregation, onContactCreated, pla
     ? congregation.filter(m => m.name.toLowerCase().includes(value.toLowerCase().trim()))
     : congregation
   ).slice(0, 6)
+
+  const isNew = value.trim() && !congregation.some(m => m.name.toLowerCase() === value.toLowerCase().trim())
 
   useEffect(() => {
     function handler(e: MouseEvent) {
@@ -328,11 +424,20 @@ export function NameInput({ value, onChange, congregation, onContactCreated, pla
               {m.name}
             </button>
           ))}
-          <button type="button"
-            onMouseDown={e => { e.preventDefault(); setShowNew(true); setOpen(false) }}
-            className="w-full text-left px-3 py-2 text-xs text-blue-500 hover:bg-blue-50 font-semibold flex items-center gap-1 border-t border-gray-100">
-            <Plus className="w-3 h-3" /> New contact…
-          </button>
+          {isNew && (
+            <button type="button"
+              onMouseDown={e => { e.preventDefault(); setShowNew(true); setOpen(false) }}
+              className="w-full text-left px-3 py-2 text-sm text-purple-600 bg-purple-50 hover:bg-purple-100 font-medium flex items-center gap-1 border-t border-gray-100">
+              <Plus className="w-3 h-3" /> Add "{value.trim()}"
+            </button>
+          )}
+          {!isNew && (
+            <button type="button"
+              onMouseDown={e => { e.preventDefault(); setShowNew(true); setOpen(false) }}
+              className="w-full text-left px-3 py-2 text-xs text-gray-400 hover:bg-gray-50 font-semibold flex items-center gap-1 border-t border-gray-100">
+              <Plus className="w-3 h-3" /> New contact…
+            </button>
+          )}
         </div>
       )}
       {showNew && (
@@ -397,9 +502,9 @@ export function TaskInput({ value, onChange, tasks, onTaskCreated }: {
           )}
           {isNew && (
             <button type="button"
-              onMouseDown={e => { e.preventDefault(); onTaskCreated(value.trim()); setOpen(false) }}
-              className="w-full text-left px-3 py-2 text-xs text-blue-500 hover:bg-blue-50 font-semibold flex items-center gap-1 border-t border-gray-100">
-              <Plus className="w-3 h-3" /> Save "{value.trim()}" as reusable task
+              onMouseDown={e => { e.preventDefault(); onChange(value.trim()); onTaskCreated(value.trim()); setOpen(false) }}
+              className="w-full text-left px-3 py-2 text-sm text-blue-600 bg-blue-50 hover:bg-blue-100 font-medium flex items-center gap-1 border-t border-gray-100">
+              <Plus className="w-3 h-3" /> Add "{value.trim()}"
             </button>
           )}
         </div>
