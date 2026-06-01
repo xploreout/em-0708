@@ -62,6 +62,13 @@ async function initDB() {
         sort_order  INTEGER      DEFAULT 0
       );
 
+      CREATE TABLE IF NOT EXISTS event_types (
+        id         SERIAL PRIMARY KEY,
+        name       VARCHAR(200) NOT NULL UNIQUE,
+        recurring  BOOLEAN      DEFAULT TRUE,
+        created_at TIMESTAMPTZ  DEFAULT NOW()
+      );
+
       CREATE TABLE IF NOT EXISTS passwords (
         role VARCHAR(50) PRIMARY KEY,
         hash TEXT        NOT NULL
@@ -259,6 +266,31 @@ app.post('/api/teams', requireAuth('admin'), async (req, res) => {
 app.delete('/api/teams/:id', requireAuth('admin'), async (req, res) => {
   const { rowCount } = await pool.query('DELETE FROM teams WHERE id=$1', [req.params.id])
   if (rowCount === 0) return res.status(404).json({ error: 'Team not found' })
+  res.json({ success: true })
+})
+
+// ── Event Types ───────────────────────────────────────────────────────────────
+app.get('/api/event-types', requireAuth(), async (_req, res) => {
+  const { rows } = await pool.query('SELECT id, name, recurring FROM event_types ORDER BY name')
+  res.json(rows)
+})
+
+app.post('/api/event-types', requireAuth(), async (req, res) => {
+  const { name, recurring = true } = req.body ?? {}
+  if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
+  try {
+    const { rows: [et] } = await pool.query(
+      'INSERT INTO event_types(name, recurring) VALUES($1,$2) RETURNING *', [name.trim(), recurring])
+    res.json(et)
+  } catch (err) {
+    if (err.code === '23505') return res.status(409).json({ error: 'Event type already exists' })
+    throw err
+  }
+})
+
+app.delete('/api/event-types/:id', requireAuth('admin'), async (req, res) => {
+  const { rowCount } = await pool.query('DELETE FROM event_types WHERE id=$1', [req.params.id])
+  if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
   res.json({ success: true })
 })
 
