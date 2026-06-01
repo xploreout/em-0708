@@ -335,13 +335,14 @@ app.post('/api/congregation/upload-photo', requireAuth('admin'), upload.single('
   if (!process.env.CLOUDINARY_CLOUD_NAME) return res.status(503).json({ error: 'Cloudinary not configured' })
   const result = await new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { folder: 'acbcc-congregation', resource_type: 'image',
-        transformation: [{ width: 300, height: 300, crop: 'fill', gravity: 'face' }] },
+      { folder: 'acbcc-congregation', resource_type: 'image' },
       (err, r) => err ? reject(err) : resolve(r)
     )
     stream.end(req.file.buffer)
   })
-  res.json({ url: result.secure_url })
+  // Apply crop/face-detection via delivery URL (no signing required)
+  const url = result.secure_url.replace('/upload/', '/upload/w_300,h_300,c_fill,g_face/')
+  res.json({ url })
 }))
 
 // ── Send reminders ────────────────────────────────────────────────────────────
