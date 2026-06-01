@@ -147,13 +147,16 @@ const toMember = r => ({
   phone: r.phone || '', email: r.email || '', photoUrl: r.photo_url || '',
 })
 
+// Wraps async route handlers so unhandled rejections reach the error handler
+const wrap = fn => (req, res, next) => fn(req, res, next).catch(next)
+
 // ── App ───────────────────────────────────────────────────────────────────────
 const app = express()
 app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:5173' }))
 app.use(express.json())
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', wrap(async (req, res) => {
   const { role, password } = req.body ?? {}
   if (!role || !password || !ROLES.includes(role)) return res.status(400).json({ error: 'Invalid request' })
   const { rows } = await pool.query('SELECT hash FROM passwords WHERE role=$1', [role])
@@ -162,20 +165,20 @@ app.post('/api/login', async (req, res) => {
   }
   const token = jwt.sign({ role }, JWT_SECRET, { expiresIn: JWT_EXPIRES })
   res.json({ token, role })
-})
+}))
 
 app.get('/api/me', requireAuth(), (req, res) => res.json({ role: req.user.role }))
 
-app.post('/api/admin/change-password', requireAuth('admin'), async (req, res) => {
+app.post('/api/admin/change-password', requireAuth('admin'), wrap(async (req, res) => {
   const { role, newPassword } = req.body ?? {}
   if (!role || !newPassword || !ROLES.includes(role)) return res.status(400).json({ error: 'Invalid request' })
   if (newPassword.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' })
   await pool.query('UPDATE passwords SET hash=$1 WHERE role=$2', [bcrypt.hashSync(newPassword, 10), role])
   res.json({ success: true })
-})
+}))
 
 // ── Schedule ──────────────────────────────────────────────────────────────────
-app.get('/api/schedule', requireAuth(), async (_req, res) => {
+app.get('/api/schedule', requireAuth(), wrap(async (_req, res) => {
   const { rows } = await pool.query(`
     SELECT
       to_char(e.event_date, 'YYYY-MM-DD') AS date,
@@ -189,7 +192,6 @@ app.get('/api/schedule', requireAuth(), async (_req, res) => {
     LEFT JOIN event_persons ep ON ep.event_id = e.id
     ORDER BY e.event_date, e.created_at, ep.sort_order, ep.id
   `)
-
   const schedule = {}
   const eventMap = {}
   for (const row of rows) {
@@ -204,9 +206,9 @@ app.get('/api/schedule', requireAuth(), async (_req, res) => {
     }
   }
   res.json(schedule)
-})
+}))
 
-app.put('/api/schedule/:date', requireAuth(), async (req, res) => {
+app.put('/api/schedule/:date', requireAuth(), wrap(async (req, res) => {
   const { date } = req.params
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return res.status(400).json({ error: 'Invalid date format' })
   const { entries } = req.body ?? {}
@@ -216,7 +218,6 @@ app.put('/api/schedule/:date', requireAuth(), async (req, res) => {
   try {
     await client.query('BEGIN')
     await client.query('DELETE FROM events WHERE event_date=$1', [date])
-
     for (const entry of entries.filter(e => e?.eventName || e?.personOnDuty)) {
       const { rows: [ev] } = await client.query(
         'INSERT INTO events(event_date,event_name,team_id) VALUES($1,$2,$3) RETURNING id',
@@ -232,7 +233,6 @@ app.put('/api/schedule/:date', requireAuth(), async (req, res) => {
         )
       }
     }
-
     await client.query('COMMIT')
     res.json({ success: true })
   } catch (err) {
@@ -242,70 +242,68 @@ app.put('/api/schedule/:date', requireAuth(), async (req, res) => {
   } finally {
     client.release()
   }
-})
+}))
 
 // ── Teams ─────────────────────────────────────────────────────────────────────
-app.get('/api/teams', requireAuth(), async (_req, res) => {
+app.get('/api/teams', requireAuth(), wrap(async (_req, res) => {
   const { rows } = await pool.query('SELECT id, name FROM teams ORDER BY name')
   res.json(rows)
-})
+}))
 
-app.post('/api/teams', requireAuth('admin'), async (req, res) => {
+app.post('/api/teams', requireAuth('admin'), wrap(async (req, res) => {
   const { name } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
-  try {
-    const { rows: [team] } = await pool.query(
-      'INSERT INTO teams(name) VALUES($1) RETURNING *', [name.trim()])
-    res.json(team)
-  } catch (err) {
-    if (err.code === '23505') return res.status(409).json({ error: 'Team already exists' })
-    throw err
-  }
-})
+  const { rows: [team] } = await pool.query(
+    'INSERT INTO teams(name) VALUES($1) RETURNING *', [name.trim()])
+    .catch(err => {
+      if (err.code === '23505') { res.status(409).json({ error: 'Team already exists' }); return { rows: [] } }
+      throw err
+    })
+  if (team) res.json(team)
+}))
 
-app.delete('/api/teams/:id', requireAuth('admin'), async (req, res) => {
+app.delete('/api/teams/:id', requireAuth('admin'), wrap(async (req, res) => {
   const { rowCount } = await pool.query('DELETE FROM teams WHERE id=$1', [req.params.id])
   if (rowCount === 0) return res.status(404).json({ error: 'Team not found' })
   res.json({ success: true })
-})
+}))
 
 // ── Event Types ───────────────────────────────────────────────────────────────
-app.get('/api/event-types', requireAuth(), async (_req, res) => {
+app.get('/api/event-types', requireAuth(), wrap(async (_req, res) => {
   const { rows } = await pool.query('SELECT id, name, recurring FROM event_types ORDER BY name')
   res.json(rows)
-})
+}))
 
-app.post('/api/event-types', requireAuth(), async (req, res) => {
+app.post('/api/event-types', requireAuth(), wrap(async (req, res) => {
   const { name, recurring = true } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
-  try {
-    const { rows: [et] } = await pool.query(
-      'INSERT INTO event_types(name, recurring) VALUES($1,$2) RETURNING *', [name.trim(), recurring])
-    res.json(et)
-  } catch (err) {
-    if (err.code === '23505') return res.status(409).json({ error: 'Event type already exists' })
-    throw err
-  }
-})
+  const { rows: [et] } = await pool.query(
+    'INSERT INTO event_types(name, recurring) VALUES($1,$2) RETURNING *', [name.trim(), recurring])
+    .catch(err => {
+      if (err.code === '23505') { res.status(409).json({ error: 'Event type already exists' }); return { rows: [] } }
+      throw err
+    })
+  if (et) res.json(et)
+}))
 
-app.delete('/api/event-types/:id', requireAuth('admin'), async (req, res) => {
+app.delete('/api/event-types/:id', requireAuth('admin'), wrap(async (req, res) => {
   const { rowCount } = await pool.query('DELETE FROM event_types WHERE id=$1', [req.params.id])
   if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
   res.json({ success: true })
-})
+}))
 
 // ── Congregation ──────────────────────────────────────────────────────────────
-app.get('/api/congregation/names', requireAuth(), async (_req, res) => {
+app.get('/api/congregation/names', requireAuth(), wrap(async (_req, res) => {
   const { rows } = await pool.query('SELECT id, name FROM contacts ORDER BY name')
   res.json(rows)
-})
+}))
 
-app.get('/api/congregation', requireAuth('admin'), async (_req, res) => {
+app.get('/api/congregation', requireAuth('admin'), wrap(async (_req, res) => {
   const { rows } = await pool.query('SELECT * FROM contacts ORDER BY name')
   res.json(rows.map(toMember))
-})
+}))
 
-app.post('/api/congregation', requireAuth('admin'), async (req, res) => {
+app.post('/api/congregation', requireAuth('admin'), wrap(async (req, res) => {
   const { name, phone, email, photoUrl } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
   const { rows: [m] } = await pool.query(
@@ -313,9 +311,9 @@ app.post('/api/congregation', requireAuth('admin'), async (req, res) => {
     [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '']
   )
   res.json(toMember(m))
-})
+}))
 
-app.put('/api/congregation/:id', requireAuth('admin'), async (req, res) => {
+app.put('/api/congregation/:id', requireAuth('admin'), wrap(async (req, res) => {
   const { name, phone, email, photoUrl } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
   const { rows, rowCount } = await pool.query(
@@ -324,33 +322,28 @@ app.put('/api/congregation/:id', requireAuth('admin'), async (req, res) => {
   )
   if (rowCount === 0) return res.status(404).json({ error: 'Member not found' })
   res.json(toMember(rows[0]))
-})
+}))
 
-app.delete('/api/congregation/:id', requireAuth('admin'), async (req, res) => {
+app.delete('/api/congregation/:id', requireAuth('admin'), wrap(async (req, res) => {
   const { rowCount } = await pool.query('DELETE FROM contacts WHERE id=$1', [req.params.id])
   if (rowCount === 0) return res.status(404).json({ error: 'Member not found' })
   res.json({ success: true })
-})
+}))
 
 // ── Photo upload ──────────────────────────────────────────────────────────────
-app.post('/api/congregation/upload-photo', requireAuth('admin'), upload.single('photo'), async (req, res) => {
+app.post('/api/congregation/upload-photo', requireAuth('admin'), upload.single('photo'), wrap(async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' })
   if (!process.env.CLOUDINARY_CLOUD_NAME) return res.status(503).json({ error: 'Cloudinary not configured' })
-  try {
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: 'acbcc-congregation', resource_type: 'image',
-          transformation: [{ width: 300, height: 300, crop: 'fill', gravity: 'face' }] },
-        (err, r) => err ? reject(err) : resolve(r)
-      )
-      stream.end(req.file.buffer)
-    })
-    res.json({ url: result.secure_url })
-  } catch (err) {
-    console.error('Cloudinary upload error:', err)
-    res.status(500).json({ error: 'Photo upload failed' })
-  }
-})
+  const result = await new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'acbcc-congregation', resource_type: 'image',
+        transformation: [{ width: 300, height: 300, crop: 'fill', gravity: 'face' }] },
+      (err, r) => err ? reject(err) : resolve(r)
+    )
+    stream.end(req.file.buffer)
+  })
+  res.json({ url: result.secure_url })
+}))
 
 // ── Send reminders ────────────────────────────────────────────────────────────
 app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
@@ -430,6 +423,12 @@ app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
   }
 
   res.json({ sent, skipped, errors })
+})
+
+// ── Global error handler ──────────────────────────────────────────────────────
+app.use((err, _req, res, _next) => {
+  console.error(err)
+  res.status(500).json({ error: err.message || 'Internal server error' })
 })
 
 // ── Start ─────────────────────────────────────────────────────────────────────
