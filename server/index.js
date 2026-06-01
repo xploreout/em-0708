@@ -401,7 +401,12 @@ app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
 })
 
 // ── Start ─────────────────────────────────────────────────────────────────────
+if (!process.env.DATABASE_URL) {
+  console.error('✗ DATABASE_URL is not set. Add a PostgreSQL database in Railway and link it to this service.')
+  process.exit(1)
+}
+
 const PORT = process.env.PORT || 3001
 initDB()
   .then(() => app.listen(PORT, () => console.log(`✓ Server → http://localhost:${PORT}`)))
-  .catch(err => { console.error('DB init failed:', err.message); process.exit(1) })
+  .catch(err => { console.error('DB init failed:', err.stack || err.message || err); process.exit(1) })
