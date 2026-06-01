@@ -97,10 +97,18 @@ async function initDB() {
 
 // ── Cloudinary ────────────────────────────────────────────────────────────────
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:    process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME?.trim(),
+  api_key:    process.env.CLOUDINARY_API_KEY?.trim(),
+  api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
 })
+{
+  const ok = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET
+  if (ok) {
+    console.log(`✓ Cloudinary: cloud=${process.env.CLOUDINARY_CLOUD_NAME?.trim()} key=${process.env.CLOUDINARY_API_KEY?.trim().slice(0, 6)}…`)
+  } else {
+    console.warn('⚠ Cloudinary: one or more env vars missing (CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET)')
+  }
+}
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -332,7 +340,9 @@ app.delete('/api/congregation/:id', requireAuth('admin'), wrap(async (req, res) 
 // ── Photo upload ──────────────────────────────────────────────────────────────
 app.post('/api/congregation/upload-photo', requireAuth('admin'), upload.single('photo'), wrap(async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' })
-  if (!process.env.CLOUDINARY_CLOUD_NAME) return res.status(503).json({ error: 'Cloudinary not configured' })
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    return res.status(503).json({ error: 'Cloudinary not configured — check CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in Railway Variables' })
+  }
   const result = await new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       { folder: 'acbcc-congregation', resource_type: 'image' },
