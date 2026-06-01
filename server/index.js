@@ -3,28 +3,90 @@ import cors from 'cors'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import dotenv from 'dotenv'
-import { readFileSync, writeFileSync, existsSync } from 'fs'
-import { fileURLToPath } from 'url'
-import { dirname, join } from 'path'
 import { v2 as cloudinary } from 'cloudinary'
 import nodemailer from 'nodemailer'
 import multer from 'multer'
+import pg from 'pg'
 
 dotenv.config()
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const PASSWORDS_FILE    = join(__dirname, 'passwords.json')
-const SCHEDULE_FILE     = join(__dirname, 'schedule.json')
-const CONGREGATION_FILE = join(__dirname, 'congregation.json')
+const { Pool } = pg
 const JWT_SECRET  = process.env.JWT_SECRET
 const JWT_EXPIRES = '8h'
 const ROLES = ['calendar', 'praiseTeam', 'worship', 'admin']
-
 const MONTH_NAMES = ['January','February','March','April','May','June',
   'July','August','September','October','November','December']
 
 if (!JWT_SECRET || JWT_SECRET === 'replace-with-a-long-random-secret-string') {
-  console.warn('⚠ WARNING: JWT_SECRET not set. Update server/.env before deploying.')
+  console.warn('⚠ WARNING: JWT_SECRET not set.')
+}
+
+// ── Database ──────────────────────────────────────────────────────────────────
+const isLocal = (process.env.DATABASE_URL || '').includes('localhost')
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: isLocal ? false : { rejectUnauthorized: false },
+})
+
+async function initDB() {
+  const client = await pool.connect()
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS teams (
+        id   SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE
+      );
+
+      CREATE TABLE IF NOT EXISTS contacts (
+        id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name       VARCHAR(200) NOT NULL,
+        phone      VARCHAR(50)  DEFAULT '',
+        email      VARCHAR(200) DEFAULT '',
+        photo_url  TEXT         DEFAULT '',
+        created_at TIMESTAMPTZ  DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS events (
+        id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        event_date DATE         NOT NULL,
+        event_name VARCHAR(200) NOT NULL DEFAULT '',
+        team_id    INTEGER REFERENCES teams(id) ON DELETE SET NULL,
+        created_at TIMESTAMPTZ  DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS event_persons (
+        id          SERIAL PRIMARY KEY,
+        event_id    UUID         NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+        person_name VARCHAR(200) NOT NULL,
+        task        VARCHAR(200) DEFAULT '',
+        sort_order  INTEGER      DEFAULT 0
+      );
+
+      CREATE TABLE IF NOT EXISTS passwords (
+        role VARCHAR(50) PRIMARY KEY,
+        hash TEXT        NOT NULL
+      );
+    `)
+
+    // Seed default passwords for any missing roles
+    const defaults = {
+      calendar:   process.env.PASSWORD_CALENDAR    || 'calendar123',
+      praiseTeam: process.env.PASSWORD_PRAISE_TEAM || 'praise123',
+      worship:    process.env.PASSWORD_WORSHIP     || 'worship123',
+      admin:      process.env.PASSWORD_ADMIN       || 'admin123',
+    }
+    for (const [role, pass] of Object.entries(defaults)) {
+      const { rows } = await client.query('SELECT 1 FROM passwords WHERE role=$1', [role])
+      if (rows.length === 0) {
+        await client.query('INSERT INTO passwords(role,hash) VALUES($1,$2)',
+          [role, bcrypt.hashSync(pass, 10)])
+      }
+    }
+
+    console.log('✓ Database ready')
+  } finally {
+    client.release()
+  }
 }
 
 // ── Cloudinary ────────────────────────────────────────────────────────────────
@@ -44,49 +106,6 @@ const upload = multer({
 })
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function initPasswords() {
-  if (existsSync(PASSWORDS_FILE)) return
-  const defaults = {
-    calendar:   bcrypt.hashSync(process.env.PASSWORD_CALENDAR    || 'calendar123', 10),
-    praiseTeam: bcrypt.hashSync(process.env.PASSWORD_PRAISE_TEAM || 'praise123',   10),
-    worship:    bcrypt.hashSync(process.env.PASSWORD_WORSHIP      || 'worship123',  10),
-    admin:      bcrypt.hashSync(process.env.PASSWORD_ADMIN        || 'admin123',    10),
-  }
-  writeFileSync(PASSWORDS_FILE, JSON.stringify(defaults, null, 2))
-  console.log('✓ passwords.json initialized from .env defaults')
-}
-
-const getPasswords   = () => JSON.parse(readFileSync(PASSWORDS_FILE, 'utf-8'))
-const savePasswords  = (p) => writeFileSync(PASSWORDS_FILE, JSON.stringify(p, null, 2))
-
-function getSchedule() {
-  if (!existsSync(SCHEDULE_FILE)) return {}
-  const raw = JSON.parse(readFileSync(SCHEDULE_FILE, 'utf-8'))
-  const out = {}
-  for (const [k, v] of Object.entries(raw)) {
-    const entries = Array.isArray(v) ? v : [v]
-    out[k] = entries.map(e => {
-      // Migrate old { eventName, personOnDuty } → { eventName, persons: [{name, task}] }
-      if ('personOnDuty' in e && !('persons' in e)) {
-        const persons = (e.personOnDuty || '').split(',')
-          .map(p => p.trim()).filter(Boolean)
-          .map(name => ({ name, task: '' }))
-        return { eventName: e.eventName || '', persons }
-      }
-      if (!e.persons) return { eventName: e.eventName || '', persons: [] }
-      return e
-    })
-  }
-  return out
-}
-const saveSchedule = (s) => writeFileSync(SCHEDULE_FILE, JSON.stringify(s, null, 2))
-
-function getCongregation() {
-  if (!existsSync(CONGREGATION_FILE)) return []
-  return JSON.parse(readFileSync(CONGREGATION_FILE, 'utf-8'))
-}
-const saveCongregation = (m) => writeFileSync(CONGREGATION_FILE, JSON.stringify(m, null, 2))
-
 function requireAuth(requiredRole) {
   return (req, res, next) => {
     const auth = req.headers.authorization
@@ -116,100 +135,172 @@ function createMailer() {
   })
 }
 
+const toMember = r => ({
+  id: r.id, name: r.name,
+  phone: r.phone || '', email: r.email || '', photoUrl: r.photo_url || '',
+})
+
 // ── App ───────────────────────────────────────────────────────────────────────
 const app = express()
 app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:5173' }))
 app.use(express.json())
 
-initPasswords()
-
 // ── Auth ──────────────────────────────────────────────────────────────────────
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { role, password } = req.body ?? {}
   if (!role || !password || !ROLES.includes(role)) return res.status(400).json({ error: 'Invalid request' })
-  const hash = getPasswords()[role]
-  if (!hash || !bcrypt.compareSync(password, hash)) return res.status(401).json({ error: 'Incorrect password' })
+  const { rows } = await pool.query('SELECT hash FROM passwords WHERE role=$1', [role])
+  if (rows.length === 0 || !bcrypt.compareSync(password, rows[0].hash)) {
+    return res.status(401).json({ error: 'Incorrect password' })
+  }
   const token = jwt.sign({ role }, JWT_SECRET, { expiresIn: JWT_EXPIRES })
   res.json({ token, role })
 })
 
 app.get('/api/me', requireAuth(), (req, res) => res.json({ role: req.user.role }))
 
-app.post('/api/admin/change-password', requireAuth('admin'), (req, res) => {
+app.post('/api/admin/change-password', requireAuth('admin'), async (req, res) => {
   const { role, newPassword } = req.body ?? {}
   if (!role || !newPassword || !ROLES.includes(role)) return res.status(400).json({ error: 'Invalid request' })
   if (newPassword.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' })
-  const passwords = getPasswords()
-  passwords[role] = bcrypt.hashSync(newPassword, 10)
-  savePasswords(passwords)
+  await pool.query('UPDATE passwords SET hash=$1 WHERE role=$2', [bcrypt.hashSync(newPassword, 10), role])
   res.json({ success: true })
 })
 
 // ── Schedule ──────────────────────────────────────────────────────────────────
-app.get('/api/schedule', requireAuth(), (_req, res) => res.json(getSchedule()))
+app.get('/api/schedule', requireAuth(), async (_req, res) => {
+  const { rows } = await pool.query(`
+    SELECT
+      to_char(e.event_date, 'YYYY-MM-DD') AS date,
+      e.id         AS event_id,
+      e.event_name,
+      e.team_id,
+      ep.person_name,
+      ep.task,
+      ep.sort_order
+    FROM events e
+    LEFT JOIN event_persons ep ON ep.event_id = e.id
+    ORDER BY e.event_date, e.created_at, ep.sort_order, ep.id
+  `)
 
-app.put('/api/schedule/:date', requireAuth(), (req, res) => {
+  const schedule = {}
+  const eventMap = {}
+  for (const row of rows) {
+    if (!schedule[row.date]) schedule[row.date] = []
+    if (!eventMap[row.event_id]) {
+      const entry = { eventName: row.event_name, teamId: row.team_id, persons: [] }
+      eventMap[row.event_id] = entry
+      schedule[row.date].push(entry)
+    }
+    if (row.person_name) {
+      eventMap[row.event_id].persons.push({ name: row.person_name, task: row.task || '' })
+    }
+  }
+  res.json(schedule)
+})
+
+app.put('/api/schedule/:date', requireAuth(), async (req, res) => {
   const { date } = req.params
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return res.status(400).json({ error: 'Invalid date format' })
   const { entries } = req.body ?? {}
   if (!Array.isArray(entries)) return res.status(400).json({ error: 'entries must be an array' })
-  const schedule = getSchedule()
-  const filtered = entries.filter(e => e?.eventName || e?.personOnDuty)
-  if (filtered.length === 0) delete schedule[date]
-  else schedule[date] = filtered
-  saveSchedule(schedule)
-  res.json({ success: true })
-})
 
-// ── Congregation CRUD ─────────────────────────────────────────────────────────
+  const client = await pool.connect()
+  try {
+    await client.query('BEGIN')
+    await client.query('DELETE FROM events WHERE event_date=$1', [date])
 
-// Names-only endpoint — any authenticated user (for autocomplete in schedule)
-app.get('/api/congregation/names', requireAuth(), (_req, res) => {
-  res.json(getCongregation().map(m => ({ id: m.id, name: m.name })))
-})
+    for (const entry of entries.filter(e => e?.eventName || e?.personOnDuty)) {
+      const { rows: [ev] } = await client.query(
+        'INSERT INTO events(event_date,event_name,team_id) VALUES($1,$2,$3) RETURNING id',
+        [date, entry.eventName || '', entry.teamId || null]
+      )
+      const persons = entry.persons ?? []
+      for (let i = 0; i < persons.length; i++) {
+        const { name, task } = persons[i]
+        if (!name?.trim()) continue
+        await client.query(
+          'INSERT INTO event_persons(event_id,person_name,task,sort_order) VALUES($1,$2,$3,$4)',
+          [ev.id, name.trim(), task || '', i]
+        )
+      }
+    }
 
-app.get('/api/congregation', requireAuth('admin'), (_req, res) => {
-  res.json(getCongregation())
-})
-
-app.post('/api/congregation', requireAuth('admin'), (req, res) => {
-  const { name, phone, email, photoUrl } = req.body ?? {}
-  if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
-  const members = getCongregation()
-  const member  = {
-    id: crypto.randomUUID(),
-    name: name.trim(),
-    phone: phone?.trim() ?? '',
-    email: email?.trim() ?? '',
-    photoUrl: photoUrl?.trim() ?? '',
+    await client.query('COMMIT')
+    res.json({ success: true })
+  } catch (err) {
+    await client.query('ROLLBACK')
+    console.error('Schedule save error:', err)
+    res.status(500).json({ error: 'Failed to save schedule' })
+  } finally {
+    client.release()
   }
-  members.push(member)
-  saveCongregation(members)
-  res.json(member)
 })
 
-app.put('/api/congregation/:id', requireAuth('admin'), (req, res) => {
-  const { id } = req.params
-  const { name, phone, email, photoUrl } = req.body ?? {}
+// ── Teams ─────────────────────────────────────────────────────────────────────
+app.get('/api/teams', requireAuth(), async (_req, res) => {
+  const { rows } = await pool.query('SELECT id, name FROM teams ORDER BY name')
+  res.json(rows)
+})
+
+app.post('/api/teams', requireAuth('admin'), async (req, res) => {
+  const { name } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
-  const members = getCongregation()
-  const idx = members.findIndex(m => m.id === id)
-  if (idx === -1) return res.status(404).json({ error: 'Member not found' })
-  members[idx] = { ...members[idx], name: name.trim(), phone: phone?.trim() ?? '', email: email?.trim() ?? '', photoUrl: photoUrl?.trim() ?? '' }
-  saveCongregation(members)
-  res.json(members[idx])
+  try {
+    const { rows: [team] } = await pool.query(
+      'INSERT INTO teams(name) VALUES($1) RETURNING *', [name.trim()])
+    res.json(team)
+  } catch (err) {
+    if (err.code === '23505') return res.status(409).json({ error: 'Team already exists' })
+    throw err
+  }
 })
 
-app.delete('/api/congregation/:id', requireAuth('admin'), (req, res) => {
-  const { id } = req.params
-  const members  = getCongregation()
-  const filtered = members.filter(m => m.id !== id)
-  if (filtered.length === members.length) return res.status(404).json({ error: 'Member not found' })
-  saveCongregation(filtered)
+app.delete('/api/teams/:id', requireAuth('admin'), async (req, res) => {
+  const { rowCount } = await pool.query('DELETE FROM teams WHERE id=$1', [req.params.id])
+  if (rowCount === 0) return res.status(404).json({ error: 'Team not found' })
   res.json({ success: true })
 })
 
-// ── Photo upload → Cloudinary ─────────────────────────────────────────────────
+// ── Congregation ──────────────────────────────────────────────────────────────
+app.get('/api/congregation/names', requireAuth(), async (_req, res) => {
+  const { rows } = await pool.query('SELECT id, name FROM contacts ORDER BY name')
+  res.json(rows)
+})
+
+app.get('/api/congregation', requireAuth('admin'), async (_req, res) => {
+  const { rows } = await pool.query('SELECT * FROM contacts ORDER BY name')
+  res.json(rows.map(toMember))
+})
+
+app.post('/api/congregation', requireAuth('admin'), async (req, res) => {
+  const { name, phone, email, photoUrl } = req.body ?? {}
+  if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
+  const { rows: [m] } = await pool.query(
+    'INSERT INTO contacts(name,phone,email,photo_url) VALUES($1,$2,$3,$4) RETURNING *',
+    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '']
+  )
+  res.json(toMember(m))
+})
+
+app.put('/api/congregation/:id', requireAuth('admin'), async (req, res) => {
+  const { name, phone, email, photoUrl } = req.body ?? {}
+  if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
+  const { rows, rowCount } = await pool.query(
+    'UPDATE contacts SET name=$1,phone=$2,email=$3,photo_url=$4 WHERE id=$5 RETURNING *',
+    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '', req.params.id]
+  )
+  if (rowCount === 0) return res.status(404).json({ error: 'Member not found' })
+  res.json(toMember(rows[0]))
+})
+
+app.delete('/api/congregation/:id', requireAuth('admin'), async (req, res) => {
+  const { rowCount } = await pool.query('DELETE FROM contacts WHERE id=$1', [req.params.id])
+  if (rowCount === 0) return res.status(404).json({ error: 'Member not found' })
+  res.json({ success: true })
+})
+
+// ── Photo upload ──────────────────────────────────────────────────────────────
 app.post('/api/congregation/upload-photo', requireAuth('admin'), upload.single('photo'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' })
   if (!process.env.CLOUDINARY_CLOUD_NAME) return res.status(503).json({ error: 'Cloudinary not configured' })
@@ -229,28 +320,32 @@ app.post('/api/congregation/upload-photo', requireAuth('admin'), upload.single('
   }
 })
 
-// ── Send monthly reminders ────────────────────────────────────────────────────
+// ── Send reminders ────────────────────────────────────────────────────────────
 app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
   const { year, month } = req.body ?? {}
   if (year == null || month == null) return res.status(400).json({ error: 'year and month are required' })
 
-  const schedule     = getSchedule()
-  const congregation = getCongregation()
+  const { rows: scheduleRows } = await pool.query(`
+    SELECT e.event_date, e.event_name, ep.person_name, ep.task
+    FROM events e
+    JOIN event_persons ep ON ep.event_id = e.id
+    WHERE EXTRACT(YEAR  FROM e.event_date) = $1
+      AND EXTRACT(MONTH FROM e.event_date) = $2
+    ORDER BY e.event_date
+  `, [year, month + 1])
 
-  // Collect duties per person for this month
-  const dutyMap = {} // personName → [{ date, eventName }]
-  for (const [dateStr, entries] of Object.entries(schedule)) {
-    const d = new Date(dateStr + 'T00:00:00')
-    if (d.getFullYear() !== year || d.getMonth() !== month) continue
-    for (const entry of entries) {
-      const persons = entry.persons ?? []
-      for (const { name, task } of persons) {
-        const person = name?.trim()
-        if (!person) continue
-        if (!dutyMap[person]) dutyMap[person] = []
-        dutyMap[person].push({ date: d, eventName: entry.eventName || 'Duty', task: task || '' })
-      }
-    }
+  const { rows: congregation } = await pool.query('SELECT * FROM contacts')
+
+  const dutyMap = {}
+  for (const row of scheduleRows) {
+    const person = row.person_name?.trim()
+    if (!person) continue
+    if (!dutyMap[person]) dutyMap[person] = []
+    dutyMap[person].push({
+      date: new Date(row.event_date),
+      eventName: row.event_name || 'Duty',
+      task: row.task || '',
+    })
   }
 
   if (Object.keys(dutyMap).length === 0) {
@@ -262,9 +357,7 @@ app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
     return res.status(503).json({ error: err.message })
   }
 
-  const sent    = []
-  const skipped = []
-  const errors  = []
+  const sent = [], skipped = [], errors = []
 
   for (const [personName, duties] of Object.entries(dutyMap)) {
     const pLower = personName.toLowerCase()
@@ -272,9 +365,8 @@ app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
       const mLower = m.name.toLowerCase()
       return mLower === pLower || mLower.includes(pLower) || pLower.includes(mLower)
     })
-
-    if (!member) { skipped.push({ name: personName, reason: 'not in database' }); continue }
-    if (!member.email) { skipped.push({ name: personName, reason: 'no email on file' }); continue }
+    if (!member)        { skipped.push({ name: personName, reason: 'not in database' }); continue }
+    if (!member.email)  { skipped.push({ name: personName, reason: 'no email on file' }); continue }
 
     const dutyRows = duties
       .sort((a, b) => a.date - b.date)
@@ -285,9 +377,9 @@ app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
 <div style="font-family:sans-serif;max-width:520px;margin:auto;color:#333">
   <h2 style="color:#1d4ed8">ACBCC English Ministry</h2>
   <p>Hi <strong>${member.name}</strong>,</p>
-  <p>This is a friendly reminder that you have the following duties in <strong>${MONTH_NAMES[month]} ${year}</strong>:</p>
+  <p>Friendly reminder — your duties in <strong>${MONTH_NAMES[month]} ${year}</strong>:</p>
   <ul style="line-height:1.8">${dutyRows}</ul>
-  <p>Thank you for your faithful service! If you have any questions or need to make changes, please contact the ministry coordinator.</p>
+  <p>Thank you for your faithful service! Contact the ministry coordinator with any questions.</p>
   <p style="color:#6b7280;font-size:0.85em;margin-top:24px">— ACBCC English Ministry Team</p>
 </div>`
 
@@ -297,7 +389,7 @@ app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
         to: member.email,
         subject: `Your ${MONTH_NAMES[month]} ${year} Schedule — ACBCC English Ministry`,
         html,
-        text: `Hi ${member.name},\n\nReminder: you have duties in ${MONTH_NAMES[month]} ${year}:\n\n${duties.map(d => `• ${d.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} — ${d.eventName}`).join('\n')}\n\nThank you!\n— ACBCC English Ministry`,
+        text: duties.map(d => `• ${d.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} — ${d.eventName}`).join('\n'),
       })
       sent.push({ name: member.name, email: member.email })
     } catch (err) {
@@ -310,4 +402,6 @@ app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3001
-app.listen(PORT, () => console.log(`✓ Auth server → http://localhost:${PORT}`))
+initDB()
+  .then(() => app.listen(PORT, () => console.log(`✓ Server → http://localhost:${PORT}`)))
+  .catch(err => { console.error('DB init failed:', err.message); process.exit(1) })
