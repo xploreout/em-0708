@@ -9,7 +9,7 @@ type Props = {
 }
 
 const ROLE_OPTIONS: { role: Role; label: string }[] = [
-  { role: 'attendance', label: 'Arrival Checkin' },
+  { role: 'attendance', label: 'Class Checkin' },
   { role: 'calendar',   label: 'Coworker' },
   { role: 'admin',      label: 'Admin' },
 ]

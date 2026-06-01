@@ -9,7 +9,7 @@ export type Role = 'calendar' | 'admin' | 'attendance'
 export const ROLE_LABELS: Record<Role, string> = {
   calendar:   'Coworker',
   admin:      'Admin',
-  attendance: 'Arrival Checkin',
+  attendance: 'Class Checkin',
 }
 
 export const ROLE_ROUTES: Record<Role, string> = {

@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/tanlui/projects/acbcc/em-first/emfirst-0708 diff server/index.js)"
+    ]
+  }
+}
