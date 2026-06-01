@@ -12,8 +12,6 @@ import EmFeud from './components/EmFeud';
 import EmFeudForm from './components/EmFeudForm';
 import { AuthProvider } from './context/AuthContext';
 import ScheduleCalendar from './components/schedule/ScheduleCalendar';
-import PraiseTeam from './components/schedule/PraiseTeam';
-import Worship from './components/schedule/Worship';
 import AdminPanel from './components/schedule/AdminPanel'
 import CongregationPage from './components/congregation/CongregationPage';
 import PastEvents from './components/PastEvents';
@@ -67,10 +65,8 @@ function App() {
           <Route path="/games/emfeud" element={<EmFeud />} />
           <Route path="/games/emfeud/form" element={<EmFeudForm />} />
           <Route element={<Layout />}>
-            <Route path="/schedule/calendar"    element={<ScheduleCalendar />} />
-            <Route path="/schedule/praise-team" element={<PraiseTeam />} />
-            <Route path="/schedule/worship"     element={<Worship />} />
-            <Route path="/schedule/admin"        element={<AdminPanel />} />
+            <Route path="/schedule/calendar" element={<ScheduleCalendar />} />
+            <Route path="/schedule/admin"    element={<AdminPanel />} />
             <Route path="/schedule/congregation" element={<CongregationPage />} />
           </Route>
         </Routes>

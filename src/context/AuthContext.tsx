@@ -1,20 +1,19 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-export type Role = 'calendar' | 'praiseTeam' | 'worship' | 'admin'
+const IDLE_TIMEOUT_MS = 40 * 60 * 1000
+const IDLE_EVENTS = ['mousemove', 'keydown', 'pointerdown', 'scroll', 'touchstart'] as const
+
+export type Role = 'calendar' | 'admin'
 
 export const ROLE_LABELS: Record<Role, string> = {
-  calendar:   'CoWorker Calendar',
-  praiseTeam: 'Praise Team',
-  worship:    'Worship',
-  admin:      'Admin',
+  calendar: 'Coworker',
+  admin:    'Admin',
 }
 
 export const ROLE_ROUTES: Record<Role, string> = {
-  calendar:   '/schedule/calendar',
-  praiseTeam: '/schedule/praise-team',
-  worship:    '/schedule/worship',
-  admin:      '/schedule/admin',
+  calendar: '/schedule/calendar',
+  admin:    '/schedule/admin',
 }
 
 type AuthCtx = {
@@ -41,19 +40,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ role: r, password }),
       })
     } catch {
-      throw new Error('Cannot reach server — make sure it is running (cd server && npm run dev)')
+      throw new Error('Cannot reach server — make sure it is running')
     }
-    let data: any = {}
+    // Read as text first so we can show diagnostic info if JSON parse fails
+    const text = await res.text()
+    let data: Record<string, string> = {}
     try {
-      data = await res.json()
+      data = JSON.parse(text)
     } catch {
-      throw new Error(`Server error (${res.status}) — unexpected response`)
+      throw new Error(`Server error (${res.status}) — ${text.slice(0, 120) || 'no response body'}`)
     }
     if (!res.ok) throw new Error(data.error || 'Login failed')
     sessionStorage.setItem('auth_token', data.token)
     sessionStorage.setItem('auth_role',  data.role)
     setToken(data.token)
-    setRole(data.role)
+    setRole(data.role as Role)
   }, [])
 
   const logout = useCallback(() => {
@@ -65,7 +66,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const isAuthorized = useCallback((required: Role) => {
     if (!token || !role) return false
-    return role === 'admin' || role === required
+    if (role === 'admin') return true
+    return role === required
   }, [token, role])
 
   const authFetch = useCallback((url: string, init: RequestInit = {}) => {
@@ -74,6 +76,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       headers: { ...(init.headers ?? {}), Authorization: `Bearer ${token}` },
     })
   }, [token])
+
+  // Auto-logout after 40 minutes of idle
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    if (!token) return
+    const reset = () => {
+      if (idleTimer.current) clearTimeout(idleTimer.current)
+      idleTimer.current = setTimeout(logout, IDLE_TIMEOUT_MS)
+    }
+    reset()
+    IDLE_EVENTS.forEach(e => window.addEventListener(e, reset, { passive: true }))
+    return () => {
+      if (idleTimer.current) clearTimeout(idleTimer.current)
+      IDLE_EVENTS.forEach(e => window.removeEventListener(e, reset))
+    }
+  }, [token, logout])
 
   return (
     <AuthContext.Provider value={{ token, role, login, logout, isAuthorized, authFetch }}>
@@ -88,7 +106,6 @@ export function useAuth() {
   return ctx
 }
 
-// Gate component — renders children only if authorized, otherwise shows lock screen
 export function RequireAuth({ role: required, children }: { role: Role; children: React.ReactNode }) {
   const { isAuthorized } = useAuth()
   const navigate = useNavigate()
@@ -98,7 +115,7 @@ export function RequireAuth({ role: required, children }: { role: Role; children
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-50 px-4">
         <div className="text-5xl">🔒</div>
         <h2 className="text-xl font-bold text-gray-700">Access Required</h2>
-        <p className="text-gray-500 text-sm">Please log in with the <strong>{ROLE_LABELS[required]}</strong> password.</p>
+        <p className="text-gray-500 text-sm">Please log in as <strong>{ROLE_LABELS[required]}</strong>.</p>
         <button
           onClick={() => navigate('/')}
           className="mt-2 px-5 py-2 rounded-full bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition"

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   Loader2, Plus, Pencil, Trash2, X, Check, Search,
-  Upload, Send, Users, ExternalLink,
+  Upload, Send, Users, ExternalLink, CalendarDays, BookUser,
 } from 'lucide-react'
 import { RequireAuth, useAuth } from '../../context/AuthContext'
+import { CalendarContent } from './ScheduleCalendar'
 
 type Member = {
   id: string
@@ -220,10 +221,10 @@ function RemindersPanel() {
   )
 }
 
-// ── Admin Panel ───────────────────────────────────────────────────────────────
+// ── Contacts tab ─────────────────────────────────────────────────────────────
 
-function AdminContent() {
-  const { authFetch, logout, role } = useAuth()
+function ContactsPanel() {
+  const { authFetch } = useAuth()
   const [members,  setMembers]  = useState<Member[]>([])
   const [loading,  setLoading]  = useState(true)
   const [search,   setSearch]   = useState('')
@@ -278,20 +279,7 @@ function AdminContent() {
   })
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="text-gray-500 text-sm mt-0.5">Logged in as <strong>{role}</strong></p>
-        </div>
-        <button onClick={logout}
-          className="px-4 py-2 rounded-lg border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">
-          Logout
-        </button>
-      </div>
-
-      {/* Congregation table */}
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-8">
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {/* Toolbar */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
@@ -377,7 +365,6 @@ function AdminContent() {
           </div>
         )}
 
-        {/* Reminders */}
         <div className="px-4 pb-5">
           <RemindersPanel />
         </div>
@@ -389,6 +376,50 @@ function AdminContent() {
           onSave={handleSave}
           onClose={() => setModal(null)}
         />
+      )}
+    </div>
+  )
+}
+
+// ── Admin Panel ───────────────────────────────────────────────────────────────
+
+function AdminContent() {
+  const [tab, setTab] = useState<'calendar' | 'contacts'>('calendar')
+
+  return (
+    <div>
+      {/* Top bar */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-4">
+        <h1 className="text-2xl font-bold text-gray-900 mb-3">Admin</h1>
+        <div className="flex rounded-xl border border-gray-200 overflow-hidden text-sm font-semibold w-full">
+          <button
+            onClick={() => setTab('calendar')}
+            className={`flex flex-1 items-center justify-center gap-1.5 px-4 py-2.5 transition-colors ${
+              tab === 'calendar' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <CalendarDays className="w-4 h-4" />
+            Calendar
+          </button>
+          <button
+            onClick={() => setTab('contacts')}
+            className={`flex flex-1 items-center justify-center gap-1.5 px-4 py-2.5 border-l border-gray-200 transition-colors ${
+              tab === 'contacts' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <BookUser className="w-4 h-4" />
+            Contacts
+          </button>
+        </div>
+      </div>
+
+      {/* Tab content */}
+      {tab === 'calendar' ? (
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-8">
+          <CalendarContent />
+        </div>
+      ) : (
+        <ContactsPanel />
       )}
     </div>
   )

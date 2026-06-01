@@ -1,137 +1,81 @@
 import { useState, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Menu, X, ArrowLeft, ChevronDown, LogIn, LogOut } from 'lucide-react'
-import { useAuth, Role, ROLE_LABELS, ROLE_ROUTES } from '../context/AuthContext'
+import { useAuth, ROLE_LABELS, ROLE_ROUTES } from '../context/AuthContext'
 import LoginModal from './LoginModal'
 
 const Header = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [resourcesOpen, setResourcesOpen] = useState(false)
-  const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false)
-  const [eventsOpen, setEventsOpen] = useState(false)
-  const [mobileEventsOpen, setMobileEventsOpen] = useState(false)
-  const [loginOpen, setLoginOpen] = useState(false)
-  const [loginDropdown, setLoginDropdown] = useState(false)
-  const [mobileLoginOpen, setMobileLoginOpen] = useState(false)
-  const [loginRole, setLoginRole] = useState<Role | undefined>()
-  const loginTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [isOpen,             setIsOpen]             = useState(false)
+  const [resourcesOpen,      setResourcesOpen]      = useState(false)
+  const [mobileResourcesOpen,setMobileResourcesOpen]= useState(false)
+  const [eventsOpen,         setEventsOpen]         = useState(false)
+  const [mobileEventsOpen,   setMobileEventsOpen]   = useState(false)
+  const [loginOpen,          setLoginOpen]          = useState(false)
+
+  const hoverTimeout       = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const eventsHoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const location = useLocation()
   const navigate = useNavigate()
   const { role, logout } = useAuth()
-  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const eventsHoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const toggleMenu = () => {
-    setIsOpen(prev => {
-      if (prev) setMobileLoginOpen(false)
-      return !prev
-    })
-  }
-
-  const loginItems: Role[] = ['calendar', 'praiseTeam', 'worship', 'admin']
-
-  function openLogin(r: Role) {
-    setLoginRole(r)
-    setLoginOpen(true)
-    setLoginDropdown(false)
-  }
-
-  function handleLoginMouseEnter() {
-    if (loginTimeout.current) clearTimeout(loginTimeout.current)
-    setLoginDropdown(true)
-  }
-  function handleLoginMouseLeave() {
-    loginTimeout.current = setTimeout(() => setLoginDropdown(false), 150)
-  }
 
   const eventsItems = [
     { name: 'Upcoming Events', href: '/events' },
-    { name: 'Past Events', href: '/past-events' },
+    { name: 'Past Events',     href: '/past-events' },
   ]
 
   const resourcesItems = [
-    { name: 'Adult Small Group', href: '/resources/adult-small-group' },
-    { name: 'Youth Ministry', href: '/resources/youth' },
-    { name: 'Children Ministry', href: '/resources/children' },
+    { name: 'Adult Small Group',    href: '/resources/adult-small-group' },
+    { name: 'Youth Ministry',       href: '/resources/youth' },
+    { name: 'Children Ministry',    href: '/resources/children' },
     { name: 'Devotional Resources', href: '/resources/other' },
   ]
 
-  const isResourcesActive = resourcesItems.some((i) =>
-    location.pathname.startsWith(i.href),
-  )
+  const isResourcesActive = resourcesItems.some(i => location.pathname.startsWith(i.href))
+  const isEventsActive    = eventsItems.some(i => location.pathname === i.href)
 
-  const isEventsActive = eventsItems.some((i) =>
-    location.pathname === i.href,
-  )
-
-  const handleMouseEnter = () => {
-    if (hoverTimeout.current) clearTimeout(hoverTimeout.current)
-    setResourcesOpen(true)
-  }
-
-  const handleMouseLeave = () => {
-    hoverTimeout.current = setTimeout(() => setResourcesOpen(false), 150)
-  }
-
-  const handleEventsMouseEnter = () => {
-    if (eventsHoverTimeout.current) clearTimeout(eventsHoverTimeout.current)
-    setEventsOpen(true)
-  }
-
-  const handleEventsMouseLeave = () => {
-    eventsHoverTimeout.current = setTimeout(() => setEventsOpen(false), 150)
-  }
+  const handleMouseEnter       = () => { if (hoverTimeout.current) clearTimeout(hoverTimeout.current); setResourcesOpen(true) }
+  const handleMouseLeave       = () => { hoverTimeout.current = setTimeout(() => setResourcesOpen(false), 150) }
+  const handleEventsMouseEnter = () => { if (eventsHoverTimeout.current) clearTimeout(eventsHoverTimeout.current); setEventsOpen(true) }
+  const handleEventsMouseLeave = () => { eventsHoverTimeout.current = setTimeout(() => setEventsOpen(false), 150) }
 
   return (
-    <header className=' bg-white sticky top-0 z-50 transition-all duration-300'>
-      <div className='  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 '>
-        <div className='flex justify-between items-center py-4 '>
+    <header className='bg-white sticky top-0 z-50 transition-all duration-300'>
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+        <div className='flex justify-between items-center py-4'>
+
+          {/* Logo */}
           <a href='#' rel='noopener noreferrer'>
             <h1 className='text-xl font-bold brush-title-inline'>ACBCCEM</h1>
           </a>
+
+          {/* Desktop nav */}
           <nav className='hidden md:flex space-x-8 items-center'>
-            <Link
-              to='/im-new'
+            <Link to='/im-new'
               className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
                 location.pathname === '/im-new'
                   ? 'bg-blue-100 text-blue-700'
                   : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-              }`}
-            >
+              }`}>
               I'm New
             </Link>
 
             {/* Events dropdown */}
-            <div
-              className='relative'
-              onMouseEnter={handleEventsMouseEnter}
-              onMouseLeave={handleEventsMouseLeave}
-            >
-              <button
-                className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 flex items-center gap-1 hover:bg-primary-50 ${
-                  isEventsActive
-                    ? 'text-primary-600 bg-primary-50'
-                    : 'text-gray-700 hover:text-primary-600'
-                }`}
-              >
+            <div className='relative' onMouseEnter={handleEventsMouseEnter} onMouseLeave={handleEventsMouseLeave}>
+              <button className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 flex items-center gap-1 hover:bg-primary-50 ${
+                isEventsActive ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:text-primary-600'
+              }`}>
                 Events
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform duration-200 ${eventsOpen ? 'rotate-180' : ''}`}
-                />
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${eventsOpen ? 'rotate-180' : ''}`} />
               </button>
               {eventsOpen && (
                 <div className='absolute top-full left-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
-                  {eventsItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
+                  {eventsItems.map(item => (
+                    <Link key={item.name} to={item.href}
                       className={`block px-4 py-2 text-sm transition-colors duration-150 hover:bg-gray-50 ${
-                        location.pathname === item.href
-                          ? 'text-primary-600 font-medium'
-                          : 'text-gray-700 hover:text-primary-600'
+                        location.pathname === item.href ? 'text-primary-600 font-medium' : 'text-gray-700 hover:text-primary-600'
                       }`}
-                      onClick={() => setEventsOpen(false)}
-                    >
+                      onClick={() => setEventsOpen(false)}>
                       {item.name}
                     </Link>
                   ))}
@@ -139,38 +83,22 @@ const Header = () => {
               )}
             </div>
 
-            {/* Resources dropdown */}
-            <div
-              className='relative'
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              <button
-                className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 flex items-center gap-1 hover:bg-primary-50 ${
-                  isResourcesActive
-                    ? 'text-primary-600 bg-primary-50'
-                    : 'text-gray-700 hover:text-primary-600'
-                }`}
-              >
+            {/* Ministries dropdown */}
+            <div className='relative' onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+              <button className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 flex items-center gap-1 hover:bg-primary-50 ${
+                isResourcesActive ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:text-primary-600'
+              }`}>
                 Ministries
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform duration-200 ${resourcesOpen ? 'rotate-180' : ''}`}
-                />
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${resourcesOpen ? 'rotate-180' : ''}`} />
               </button>
-
               {resourcesOpen && (
                 <div className='absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
-                  {resourcesItems.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.href}
+                  {resourcesItems.map(item => (
+                    <Link key={item.name} to={item.href}
                       className={`block px-4 py-2 text-sm transition-colors duration-150 hover:bg-gray-50 ${
-                        location.pathname.startsWith(item.href)
-                          ? 'text-primary-600 font-medium'
-                          : 'text-gray-700 hover:text-primary-600'
+                        location.pathname.startsWith(item.href) ? 'text-primary-600 font-medium' : 'text-gray-700 hover:text-primary-600'
                       }`}
-                      onClick={() => setResourcesOpen(false)}
-                    >
+                      onClick={() => setResourcesOpen(false)}>
                       {item.name}
                     </Link>
                   ))}
@@ -178,236 +106,150 @@ const Header = () => {
               )}
             </div>
 
-            <Link
-              to='/about'
+            <Link to='/about'
               className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 hover:bg-primary-50 ${
-                location.pathname === '/about'
-                  ? 'text-primary-600 bg-primary-50'
-                  : 'text-gray-700 hover:text-primary-600'
-              }`}
-            >
+                location.pathname === '/about' ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:text-primary-600'
+              }`}>
               About
             </Link>
 
-            <a
-              href='https://www.acbcc.org'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-gray-700 hover:text-blue-400 transition-colors duration-200 font-semibold flex items-center space-x-1'
-            >
-              <span>ACBCC</span><span className='text-xs font-normal ml-0.5 leading-none text-gray-400' style={{ writingMode: 'vertical-rl' }}>中文</span>
+            <a href='https://www.acbcc.org' target='_blank' rel='noopener noreferrer'
+              className='text-gray-700 hover:text-blue-400 transition-colors duration-200 font-semibold flex items-center space-x-1'>
+              <span>ACBCC</span>
+              <span className='text-xs font-normal ml-0.5 leading-none text-gray-400' style={{ writingMode: 'vertical-rl' }}>中文</span>
             </a>
 
             {/* Login / user badge */}
             {role ? (
               <div className='flex items-center gap-2'>
-                <button
-                  onClick={() => navigate(ROLE_ROUTES[role])}
-                  className='text-xs font-bold px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition'
-                >
+                <button onClick={() => navigate(ROLE_ROUTES[role])}
+                  className='text-xs font-bold px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition'>
                   {ROLE_LABELS[role]}
                 </button>
-                <button onClick={() => { logout(); navigate('/') }} title='Logout' className='text-gray-400 hover:text-gray-600 transition'>
+                <button onClick={() => { logout(); navigate('/') }} title='Logout'
+                  className='text-gray-400 hover:text-gray-600 transition'>
                   <LogOut className='w-4 h-4' />
                 </button>
               </div>
             ) : (
-              <div className='relative' onMouseEnter={handleLoginMouseEnter} onMouseLeave={handleLoginMouseLeave}>
-                <button className='flex items-center gap-1.5 px-2 py-1.5 text-gray-400 hover:text-gray-600 transition-colors duration-200'>
-                  <LogIn className='w-4 h-4' />
-                  <span className='text-xs font-medium'>Login</span>
-                  <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${loginDropdown ? 'rotate-180' : ''}`} />
-                </button>
-                {loginDropdown && (
-                  <div className='absolute top-full right-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
-                    {loginItems.map(r => (
-                      <button
-                        key={r}
-                        onClick={() => openLogin(r)}
-                        className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors'
-                      >
-                        {ROLE_LABELS[r]}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <button onClick={() => setLoginOpen(true)}
+                className='flex items-center gap-1.5 px-2 py-1.5 text-gray-400 hover:text-gray-600 transition-colors duration-200'>
+                <LogIn className='w-4 h-4' />
+                <span className='text-xs font-medium'>Login</span>
+              </button>
             )}
-
           </nav>
 
-          {/* Mobile menu button */}
-          <div className='flex md:hidden justify-between'>
-            <button
-              onClick={toggleMenu}
-              className=' text-gray-700 hover:text-primary-600 p-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500'
-              aria-label='Toggle menu'
-            >
-              {isOpen ? (
-                <X className='h-6 w-6' />
-              ) : (
-                <Menu className='h-6 w-6' />
-              )}
+          {/* Mobile hamburger */}
+          <div className='flex md:hidden'>
+            <button onClick={() => setIsOpen(v => !v)}
+              className='text-gray-700 hover:text-primary-600 p-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500'
+              aria-label='Toggle menu'>
+              {isOpen ? <X className='h-6 w-6' /> : <Menu className='h-6 w-6' />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        <div
-          className={`md:hidden transition-all duration-300 ease-in-out ${
-            isOpen
-              ? 'max-h-screen py-4 opacity-100'
-              : 'max-h-0 py-0 opacity-0 overflow-hidden'
-          }`}
-        >
+        {/* Mobile nav */}
+        <div className={`md:hidden transition-all duration-300 ease-in-out ${
+          isOpen ? 'max-h-screen py-4 opacity-100' : 'max-h-0 py-0 opacity-0 overflow-hidden'
+        }`}>
           <nav className='flex flex-col space-y-2'>
             <a href='#' rel='noopener noreferrer'>
-              <h1 className='text-xl font-bold brush-title-inline'>
-                ACBCC English Ministry
-              </h1>
+              <h1 className='text-xl font-bold brush-title-inline'>ACBCC English Ministry</h1>
             </a>
-            <a
-              href='https://www.acbcc.org'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-gray-700 hover:text-blue-400 transition-colors duration-200 font-medium-sm flex items-center space-x-1 '
-            >
+            <a href='https://www.acbcc.org' target='_blank' rel='noopener noreferrer'
+              className='text-gray-700 hover:text-blue-400 transition-colors duration-200 font-medium-sm flex items-center space-x-1'>
               <ArrowLeft className='h-4 w-4' />
               <span>Acbcc</span>
             </a>
 
-            <Link
-              to='/im-new'
+            <Link to='/im-new'
               className='px-3 py-1 rounded-full text-base font-semibold bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200 inline-block'
-              onClick={() => setIsOpen(false)}
-            >
+              onClick={() => setIsOpen(false)}>
               I'm New
             </Link>
 
             {/* Mobile Events accordion */}
             <button
-              className={`px-3 text-left rounded-md text-base font-medium flex items-center gap-1 ${
-                isEventsActive ? 'text-primary-600' : 'text-blue-700'
-              }`}
-              onClick={() => setMobileEventsOpen(!mobileEventsOpen)}
-            >
+              className={`px-3 text-left rounded-md text-base font-medium flex items-center gap-1 ${isEventsActive ? 'text-primary-600' : 'text-blue-700'}`}
+              onClick={() => setMobileEventsOpen(v => !v)}>
               Events
-              <ChevronDown
-                className={`h-4 w-4 transition-transform duration-200 ${mobileEventsOpen ? 'rotate-180' : ''}`}
-              />
+              <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mobileEventsOpen ? 'rotate-180' : ''}`} />
             </button>
             {mobileEventsOpen && (
               <div className='pl-6 flex flex-col space-y-1'>
-                {eventsItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
+                {eventsItems.map(item => (
+                  <Link key={item.name} to={item.href}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
-                      location.pathname === item.href
-                        ? 'text-primary-600'
-                        : 'text-blue-700 hover:text-blue-500'
+                      location.pathname === item.href ? 'text-primary-600' : 'text-blue-700 hover:text-blue-500'
                     }`}
-                    onClick={() => {
-                      setIsOpen(false)
-                      setMobileEventsOpen(false)
-                    }}
-                  >
+                    onClick={() => { setIsOpen(false); setMobileEventsOpen(false) }}>
                     {item.name}
                   </Link>
                 ))}
               </div>
             )}
 
-            {/* Mobile Resources accordion */}
+            {/* Mobile Ministries accordion */}
             <button
-              className={`px-3 text-left rounded-md text-base font-medium flex items-center gap-1 ${
-                isResourcesActive ? 'text-primary-600' : 'text-blue-700'
-              }`}
-              onClick={() => setMobileResourcesOpen(!mobileResourcesOpen)}
-            >
+              className={`px-3 text-left rounded-md text-base font-medium flex items-center gap-1 ${isResourcesActive ? 'text-primary-600' : 'text-blue-700'}`}
+              onClick={() => setMobileResourcesOpen(v => !v)}>
               Ministries
-              <ChevronDown
-                className={`h-4 w-4 transition-transform duration-200 ${mobileResourcesOpen ? 'rotate-180' : ''}`}
-              />
+              <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mobileResourcesOpen ? 'rotate-180' : ''}`} />
             </button>
             {mobileResourcesOpen && (
               <div className='pl-6 flex flex-col space-y-1'>
-                {resourcesItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
+                {resourcesItems.map(item => (
+                  <Link key={item.name} to={item.href}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
-                      location.pathname.startsWith(item.href)
-                        ? 'text-primary-600'
-                        : 'text-blue-700 hover:text-blue-500'
+                      location.pathname.startsWith(item.href) ? 'text-primary-600' : 'text-blue-700 hover:text-blue-500'
                     }`}
-                    onClick={() => {
-                      setIsOpen(false)
-                      setMobileResourcesOpen(false)
-                    }}
-                  >
+                    onClick={() => { setIsOpen(false); setMobileResourcesOpen(false) }}>
                     {item.name}
                   </Link>
                 ))}
               </div>
             )}
 
-            <Link
-              to='/about'
+            <Link to='/about'
               className={`px-3 py-1 rounded-md text-base font-medium transition-colors duration-200 ${
-                location.pathname === '/about'
-                  ? 'text-primary-600'
-                  : 'text-blue-700 hover:text-blue-500'
+                location.pathname === '/about' ? 'text-primary-600' : 'text-blue-700 hover:text-blue-500'
               }`}
-              onClick={() => setIsOpen(false)}
-            >
+              onClick={() => setIsOpen(false)}>
               About
             </Link>
 
             {/* Mobile login / logout */}
             <div className='pt-1 border-t border-gray-100'>
               {role ? (
-                <div className='flex items-center justify-between px-3 py-1'>
+                <div className='flex flex-col gap-1'>
                   <button
                     onClick={() => { navigate(ROLE_ROUTES[role]); setIsOpen(false) }}
-                    className='text-sm font-semibold text-blue-700'
-                  >
+                    className='w-full text-left px-3 py-2 text-sm font-semibold text-blue-700 rounded-lg hover:bg-blue-50 transition'>
                     {ROLE_LABELS[role]}
                   </button>
-                  <button onClick={() => { logout(); setIsOpen(false); navigate('/') }} className='text-xs text-gray-500 hover:text-red-500 font-semibold transition'>Logout</button>
+                  <button
+                    onClick={() => { logout(); setIsOpen(false); navigate('/') }}
+                    className='w-full flex items-center gap-2 px-3 py-2 text-sm font-semibold text-red-500 rounded-lg hover:bg-red-50 transition'>
+                    <LogOut className='w-4 h-4' />
+                    Logout
+                  </button>
                 </div>
               ) : (
-                <>
-                  <button
-                    className='w-full px-3 py-1 text-left flex items-center gap-1.5 text-gray-400 hover:text-gray-600 transition-colors duration-200'
-                    onClick={() => setMobileLoginOpen(!mobileLoginOpen)}
-                  >
-                    <LogIn className='w-4 h-4' />
-                    <span className='text-sm font-medium'>Login</span>
-                    <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${mobileLoginOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {mobileLoginOpen && (
-                    <div className='pl-6 flex flex-col space-y-1'>
-                      {loginItems.map(r => (
-                        <button
-                          key={r}
-                          onClick={() => { openLogin(r); setIsOpen(false); setMobileLoginOpen(false) }}
-                          className='px-3 py-1 text-left text-sm font-medium text-blue-700 hover:text-blue-500 transition-colors'
-                        >
-                          {ROLE_LABELS[r]}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </>
+                <button
+                  onClick={() => { setLoginOpen(true); setIsOpen(false) }}
+                  className='w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors duration-200'>
+                  <LogIn className='w-4 h-4' />
+                  Login
+                </button>
               )}
             </div>
-
           </nav>
         </div>
       </div>
 
-      {loginOpen && <LoginModal initialRole={loginRole} onClose={() => setLoginOpen(false)} />}
+      {loginOpen && <LoginModal onClose={() => setLoginOpen(false)} />}
     </header>
   )
 }

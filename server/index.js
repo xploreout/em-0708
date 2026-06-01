@@ -13,12 +13,13 @@ dotenv.config()
 const { Pool } = pg
 const JWT_SECRET  = process.env.JWT_SECRET
 const JWT_EXPIRES = '8h'
-const ROLES = ['calendar', 'praiseTeam', 'worship', 'admin']
+const ROLES = ['calendar', 'admin']
 const MONTH_NAMES = ['January','February','March','April','May','June',
   'July','August','September','October','November','December']
 
-if (!JWT_SECRET || JWT_SECRET === 'replace-with-a-long-random-secret-string') {
-  console.warn('⚠ WARNING: JWT_SECRET not set.')
+if (!JWT_SECRET) {
+  console.error('✗ JWT_SECRET is not set. Add JWT_SECRET to Railway Variables.')
+  process.exit(1)
 }
 
 // ── Database ──────────────────────────────────────────────────────────────────
@@ -77,10 +78,8 @@ async function initDB() {
 
     // Seed default passwords for any missing roles
     const defaults = {
-      calendar:   process.env.PASSWORD_CALENDAR    || 'calendar123',
-      praiseTeam: process.env.PASSWORD_PRAISE_TEAM || 'praise123',
-      worship:    process.env.PASSWORD_WORSHIP     || 'worship123',
-      admin:      process.env.PASSWORD_ADMIN       || 'admin123',
+      calendar: process.env.PASSWORD_CALENDAR || 'calendar123',
+      admin:    process.env.PASSWORD_ADMIN    || 'admin123',
     }
     for (const [role, pass] of Object.entries(defaults)) {
       const { rows } = await client.query('SELECT 1 FROM passwords WHERE role=$1', [role])
@@ -208,7 +207,7 @@ app.get('/api/schedule', requireAuth(), wrap(async (_req, res) => {
   res.json(schedule)
 }))
 
-app.put('/api/schedule/:date', requireAuth(), wrap(async (req, res) => {
+app.put('/api/schedule/:date', requireAuth('calendar'), wrap(async (req, res) => {
   const { date } = req.params
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return res.status(400).json({ error: 'Invalid date format' })
   const { entries } = req.body ?? {}
