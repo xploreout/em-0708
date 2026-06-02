@@ -141,19 +141,20 @@ async function initDB() {
 }
 
 // ── Cloudinary ────────────────────────────────────────────────────────────────
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME?.trim(),
-  api_key:    process.env.CLOUDINARY_API_KEY?.trim(),
-  api_secret: process.env.CLOUDINARY_API_SECRET?.trim(),
-})
-{
-  const ok = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET
-  if (ok) {
-    const secret = process.env.CLOUDINARY_API_SECRET?.trim() ?? ''
-    console.log(`✓ Cloudinary: cloud=${process.env.CLOUDINARY_CLOUD_NAME?.trim()} key=${process.env.CLOUDINARY_API_KEY?.trim().slice(0, 6)}… secret_len=${secret.length} secret_start=${secret.slice(0, 4)}…`)
-  } else {
-    console.warn('⚠ Cloudinary: one or more env vars missing (CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET)')
-  }
+if (process.env.CLOUDINARY_URL) {
+  // Railway plugin sets CLOUDINARY_URL=cloudinary://key:secret@cloud — SDK reads it automatically
+  cloudinary.config({ cloudinary_url: process.env.CLOUDINARY_URL })
+  const cfg = cloudinary.config()
+  console.log(`✓ Cloudinary (via CLOUDINARY_URL): cloud=${cfg.cloud_name} key=${String(cfg.api_key).slice(0, 6)}…`)
+} else if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME.trim(),
+    api_key:    process.env.CLOUDINARY_API_KEY.trim(),
+    api_secret: process.env.CLOUDINARY_API_SECRET.trim(),
+  })
+  console.log(`✓ Cloudinary: cloud=${process.env.CLOUDINARY_CLOUD_NAME.trim()} key=${process.env.CLOUDINARY_API_KEY.trim().slice(0, 6)}…`)
+} else {
+  console.warn('⚠ Cloudinary: set CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET')
 }
 
 const upload = multer({
@@ -396,8 +397,9 @@ app.delete('/api/congregation/:id', requireAuth('admin'), wrap(async (req, res) 
 // ── Photo upload ──────────────────────────────────────────────────────────────
 app.post('/api/congregation/upload-photo', requireAuth('admin'), upload.single('photo'), wrap(async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' })
-  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-    return res.status(503).json({ error: 'Cloudinary not configured — check CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in Railway Variables' })
+  const cfg = cloudinary.config()
+  if (!cfg.cloud_name || !cfg.api_key || !cfg.api_secret) {
+    return res.status(503).json({ error: 'Cloudinary not configured — set CLOUDINARY_URL or individual CLOUDINARY_* variables in Railway' })
   }
   const result = await new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
