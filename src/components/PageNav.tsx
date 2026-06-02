@@ -8,6 +8,7 @@ const pages = [
   { path: '/resources/youth', label: 'Youth Ministry' },
   { path: '/resources/children', label: 'Children Ministry' },
   { path: '/resources/other', label: 'Devotional Resources' },
+  { path: '/class-resources', label: 'Class Resources' },
 ]
 
 const PageNav = () => {

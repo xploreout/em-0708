@@ -29,6 +29,7 @@ const Header = () => {
     { name: 'Youth Ministry',       href: '/resources/youth' },
     { name: 'Children Ministry',    href: '/resources/children' },
     { name: 'Devotional Resources', href: '/resources/other' },
+    { name: 'Class Resources',      href: '/class-resources' },
   ]
 
   const isResourcesActive = resourcesItems.some(i => location.pathname.startsWith(i.href))

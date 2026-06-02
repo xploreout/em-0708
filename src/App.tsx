@@ -15,6 +15,7 @@ import ScheduleCalendar from './components/schedule/ScheduleCalendar';
 import AdminPanel from './components/schedule/AdminPanel'
 import AttendancePage from './components/attendance/AttendancePage'
 import ClassDetailPage from './components/attendance/ClassDetailPage'
+import ClassResourcesPage from './components/attendance/ClassResourcesPage'
 import CongregationPage from './components/congregation/CongregationPage';
 import PastEvents from './components/PastEvents';
 import MainPage from './components/MainPage';
@@ -53,6 +54,7 @@ function App() {
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route element={<Layout />}>
+            <Route path="/class-resources" element={<ClassResourcesPage />} />
             <Route path="/events" element={<Events />} />
             <Route path="/resources/adult-small-group" element={<AdultSmallGroup />} />
             <Route path="/resources/youth" element={<Youth />} />

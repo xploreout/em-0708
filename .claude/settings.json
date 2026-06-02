@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git -C /Users/tanlui/projects/acbcc/em-first/emfirst-0708 diff server/index.js)"
+      "Bash(git -C /Users/tanlui/projects/acbcc/em-first/emfirst-0708 diff server/index.js)",
+      "Bash(/Users/tanlui/.nvm/versions/node/v22.15.0/bin/npx tsc *)",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(/Users/tanlui/projects/acbcc/em-first/emfirst-0708/node_modules/.bin/tsc --noEmit -p /Users/tanlui/projects/acbcc/em-first/emfirst-0708/tsconfig.json)",
+      "Bash(ls /usr/local/bin/node /opt/homebrew/bin/node ~/.nvm/versions/node/*/bin/node 2>/dev/null | head -5)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(PATH=/Users/tanlui/.nvm/versions/node/v22.2.0/bin:__TRACKED_VAR__ node /Users/tanlui/projects/acbcc/em-first/emfirst-0708/node_modules/.bin/tsc --noEmit -p /Users/tanlui/projects/acbcc/em-first/emfirst-0708/tsconfig.json)"
     ]
   }
 }
