@@ -108,6 +108,16 @@ async function initDB() {
         attendee_notes TEXT DEFAULT '',
         checked_in_at  TIMESTAMPTZ DEFAULT NOW()
       );
+
+      CREATE TABLE IF NOT EXISTS class_documents (
+        id          SERIAL PRIMARY KEY,
+        class_id    INTEGER NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+        name        VARCHAR(300) NOT NULL,
+        url         TEXT NOT NULL,
+        file_type   VARCHAR(100) DEFAULT '',
+        size_bytes  INTEGER DEFAULT 0,
+        created_at  TIMESTAMPTZ DEFAULT NOW()
+      );
     `)
 
     // Migration: add columns to classes table for existing installations
@@ -118,6 +128,9 @@ async function initDB() {
       `ALTER TABLE classes ADD COLUMN IF NOT EXISTS recurrence VARCHAR(20) DEFAULT 'none'`,
       `ALTER TABLE classes ADD COLUMN IF NOT EXISTS end_date DATE`,
       `ALTER TABLE classes ADD COLUMN IF NOT EXISTS lead_password_hash TEXT DEFAULT ''`,
+      `ALTER TABLE classes ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT false`,
+      `ALTER TABLE classes ADD COLUMN IF NOT EXISTS start_date DATE`,
+      `ALTER TABLE class_sessions ADD COLUMN IF NOT EXISTS session_lead_name VARCHAR(200) DEFAULT ''`,
     ]) { await client.query(ddl) }
 
     // Seed default passwords for any missing roles
@@ -163,6 +176,25 @@ const upload = multer({
   fileFilter: (_req, file, cb) => {
     if (file.mimetype.startsWith('image/')) cb(null, true)
     else cb(new Error('Only image files are allowed'))
+  },
+})
+
+const uploadDoc = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/plain',
+    ]
+    if (file.mimetype.startsWith('image/') || allowed.includes(file.mimetype)) cb(null, true)
+    else cb(new Error('Unsupported file type'))
   },
 })
 
@@ -551,8 +583,13 @@ app.get('/api/attendance/search', requireAuth('attendance'), wrap(async (req, re
 }))
 
 // ── Classes ───────────────────────────────────────────────────────────────────
-app.get('/api/classes', requireAuth('attendance'), wrap(async (_req, res) => {
-  const { rows } = await pool.query('SELECT * FROM classes ORDER BY name')
+app.get('/api/classes', requireAuth('attendance'), wrap(async (req, res) => {
+  const isAdmin = req.user.role === 'admin'
+  const { rows } = await pool.query(
+    isAdmin
+      ? 'SELECT * FROM classes ORDER BY archived, name'
+      : 'SELECT * FROM classes WHERE archived = false OR archived IS NULL ORDER BY name'
+  )
   res.json(rows.map(toClass))
 }))
 
@@ -567,18 +604,20 @@ const toClass = r => ({
   description: r.description || '', location: r.location || '',
   meeting_day: r.meeting_day || '', meeting_time: r.meeting_time || '',
   recurrence: r.recurrence || 'none',
+  start_date: r.start_date ? new Date(r.start_date).toISOString().slice(0, 10) : null,
   end_date: r.end_date ? new Date(r.end_date).toISOString().slice(0, 10) : null,
   has_lead_password: !!(r.lead_password_hash),
+  archived: r.archived || false,
 })
 
 app.post('/api/classes', requireAuth('admin'), wrap(async (req, res) => {
-  const { name, lead_name='', lead_email='', description='', location='', meeting_day='', meeting_time='', recurrence='none', end_date=null, lead_password='' } = req.body ?? {}
+  const { name, lead_name='', lead_email='', description='', location='', meeting_day='', meeting_time='', recurrence='none', start_date=null, end_date=null, lead_password='' } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
   const hash = lead_password ? bcrypt.hashSync(lead_password, 10) : ''
   const { rows: [cls] } = await pool.query(
-    `INSERT INTO classes(name,lead_name,lead_email,description,location,meeting_day,meeting_time,recurrence,end_date,lead_password_hash)
-     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
-    [name.trim(), lead_name.trim(), lead_email.trim(), description.trim(), location.trim(), meeting_day.trim(), meeting_time.trim(), recurrence, end_date || null, hash]
+    `INSERT INTO classes(name,lead_name,lead_email,description,location,meeting_day,meeting_time,recurrence,start_date,end_date,lead_password_hash)
+     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
+    [name.trim(), lead_name.trim(), lead_email.trim(), description.trim(), location.trim(), meeting_day.trim(), meeting_time.trim(), recurrence, start_date || null, end_date || null, hash]
   ).catch(err => {
     if (err.code === '23505') { res.status(409).json({ error: 'Class already exists' }); return { rows: [] } }
     throw err
@@ -587,19 +626,19 @@ app.post('/api/classes', requireAuth('admin'), wrap(async (req, res) => {
 }))
 
 app.put('/api/classes/:id', requireAuth('attendance'), wrap(async (req, res) => {
-  const { name, lead_name='', lead_email='', description='', location='', meeting_day='', meeting_time='', recurrence='none', end_date=null, lead_password } = req.body ?? {}
+  const { name, lead_name='', lead_email='', description='', location='', meeting_day='', meeting_time='', recurrence='none', start_date=null, end_date=null, lead_password } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
-  const base = [name.trim(), lead_name.trim(), lead_email.trim(), description.trim(), location.trim(), meeting_day.trim(), meeting_time.trim(), recurrence, end_date || null]
+  const base = [name.trim(), lead_name.trim(), lead_email.trim(), description.trim(), location.trim(), meeting_day.trim(), meeting_time.trim(), recurrence, start_date || null, end_date || null]
   let rows, rowCount
   if (lead_password !== undefined) {
     const hash = lead_password ? bcrypt.hashSync(lead_password, 10) : ''
     ;({ rows, rowCount } = await pool.query(
-      `UPDATE classes SET name=$1,lead_name=$2,lead_email=$3,description=$4,location=$5,meeting_day=$6,meeting_time=$7,recurrence=$8,end_date=$9,lead_password_hash=$10 WHERE id=$11 RETURNING *`,
+      `UPDATE classes SET name=$1,lead_name=$2,lead_email=$3,description=$4,location=$5,meeting_day=$6,meeting_time=$7,recurrence=$8,start_date=$9,end_date=$10,lead_password_hash=$11 WHERE id=$12 RETURNING *`,
       [...base, hash, req.params.id]
     ))
   } else {
     ;({ rows, rowCount } = await pool.query(
-      `UPDATE classes SET name=$1,lead_name=$2,lead_email=$3,description=$4,location=$5,meeting_day=$6,meeting_time=$7,recurrence=$8,end_date=$9 WHERE id=$10 RETURNING *`,
+      `UPDATE classes SET name=$1,lead_name=$2,lead_email=$3,description=$4,location=$5,meeting_day=$6,meeting_time=$7,recurrence=$8,start_date=$9,end_date=$10 WHERE id=$11 RETURNING *`,
       [...base, req.params.id]
     ))
   }
@@ -628,8 +667,103 @@ app.post('/api/classes/:id/lead-verify', requireAuth('attendance'), wrap(async (
   res.json({ ok: bcrypt.compareSync(password, hash) })
 }))
 
+app.patch('/api/classes/:id/archive', requireAuth('admin'), wrap(async (req, res) => {
+  const { archived } = req.body ?? {}
+  const { rows, rowCount } = await pool.query(
+    'UPDATE classes SET archived=$1 WHERE id=$2 RETURNING *',
+    [!!archived, req.params.id]
+  )
+  if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
+  res.json(toClass(rows[0]))
+}))
+
 app.delete('/api/classes/:id', requireAuth('admin'), wrap(async (req, res) => {
   const { rowCount } = await pool.query('DELETE FROM classes WHERE id=$1', [req.params.id])
+  if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
+  res.json({ success: true })
+}))
+
+// ── Class Documents ────────────────────────────────────────────────────────────
+
+// Public: all classes + their documents (no auth) for Class Resources page
+app.get('/api/public/class-resources', wrap(async (_req, res) => {
+  const { rows: classes } = await pool.query('SELECT * FROM classes ORDER BY archived, name')
+  const { rows: docs }    = await pool.query('SELECT * FROM class_documents ORDER BY created_at DESC')
+  const result = classes.map(c => ({
+    ...toClass(c),
+    documents: docs.filter(d => d.class_id === c.id).map(d => ({
+      id: d.id, name: d.name, url: d.url, file_type: d.file_type,
+      size_bytes: d.size_bytes, created_at: d.created_at,
+    })),
+  }))
+  res.json(result)
+}))
+
+app.get('/api/classes/:id/documents', requireAuth('attendance'), wrap(async (req, res) => {
+  const { rows } = await pool.query(
+    'SELECT * FROM class_documents WHERE class_id=$1 ORDER BY created_at DESC',
+    [req.params.id]
+  )
+  res.json(rows)
+}))
+
+app.post('/api/classes/:id/documents', requireAuth('attendance'), uploadDoc.single('file'), wrap(async (req, res) => {
+  const file = req.file
+  if (!file) return res.status(400).json({ error: 'No file provided' })
+  const cfg = cloudinary.config()
+  if (!cfg.cloud_name || !cfg.api_key || !cfg.api_secret) {
+    return res.status(503).json({ error: 'Cloudinary not configured' })
+  }
+  const { name = '' } = req.body ?? {}
+  const docName = (name || file.originalname).trim().slice(0, 300)
+
+  // Extract and sanitise the original extension so downloads open correctly
+  const origName = file.originalname || 'file'
+  const dotIdx   = origName.lastIndexOf('.')
+  const origExt  = dotIdx > 0 ? origName.slice(dotIdx).toLowerCase() : ''
+  const origBase = dotIdx > 0 ? origName.slice(0, dotIdx) : origName
+  const safeBase = origBase.replace(/[^\w-]/g, '_').slice(0, 80) || 'file'
+  const publicId = `acbcc-class-docs/${Date.now()}_${safeBase}`
+
+  // PDFs and images → resource_type 'image' so Cloudinary serves with correct
+  // Content-Type (application/pdf or image/*), making them viewable in a browser tab.
+  // All other docs → resource_type 'raw'; include the extension in the public_id
+  // so the download URL has the correct extension (.docx, .pptx, etc.).
+  const isImage = file.mimetype.startsWith('image/')
+  const isPdf   = file.mimetype === 'application/pdf'
+  const resourceType = (isImage || isPdf) ? 'image' : 'raw'
+  const cloudPublicId = resourceType === 'raw' ? publicId + origExt : publicId
+
+  const result = await new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { resource_type: resourceType, public_id: cloudPublicId },
+      (err, r) => err ? reject(err) : resolve(r)
+    )
+    stream.end(file.buffer)
+  })
+  const { rows: [doc] } = await pool.query(
+    'INSERT INTO class_documents(class_id,name,url,file_type,size_bytes) VALUES($1,$2,$3,$4,$5) RETURNING *',
+    [req.params.id, docName, result.secure_url, file.mimetype, file.size]
+  )
+  res.json({ id: doc.id, name: doc.name, url: doc.url, file_type: doc.file_type, size_bytes: doc.size_bytes, created_at: doc.created_at })
+}))
+
+app.post('/api/classes/:id/documents/link', requireAuth('attendance'), wrap(async (req, res) => {
+  const { name, url } = req.body ?? {}
+  if (!url?.trim()) return res.status(400).json({ error: 'URL is required' })
+  const docName = (name || url).trim().slice(0, 300)
+  const { rows: [doc] } = await pool.query(
+    'INSERT INTO class_documents(class_id,name,url,file_type,size_bytes) VALUES($1,$2,$3,$4,$5) RETURNING *',
+    [req.params.id, docName, url.trim(), 'video/youtube', 0]
+  )
+  res.json({ id: doc.id, name: doc.name, url: doc.url, file_type: doc.file_type, size_bytes: 0, created_at: doc.created_at })
+}))
+
+app.delete('/api/classes/:id/documents/:docId', requireAuth('attendance'), wrap(async (req, res) => {
+  const { rowCount } = await pool.query(
+    'DELETE FROM class_documents WHERE id=$1 AND class_id=$2',
+    [req.params.docId, req.params.id]
+  )
   if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
   res.json({ success: true })
 }))
@@ -637,7 +771,7 @@ app.delete('/api/classes/:id', requireAuth('admin'), wrap(async (req, res) => {
 // ── Class Sessions ─────────────────────────────────────────────────────────────
 app.get('/api/classes/:id/sessions', requireAuth('attendance'), wrap(async (req, res) => {
   const { rows } = await pool.query(
-    `SELECT cs.id, to_char(cs.session_date,'YYYY-MM-DD') AS session_date, cs.topic, cs.notes,
+    `SELECT cs.id, to_char(cs.session_date,'YYYY-MM-DD') AS session_date, cs.topic, cs.notes, cs.session_lead_name,
       COALESCE(json_agg(
         json_build_object(
           'id', ca.id, 'person_name', ca.person_name, 'phone', ca.phone,
@@ -647,7 +781,7 @@ app.get('/api/classes/:id/sessions', requireAuth('attendance'), wrap(async (req,
     FROM class_sessions cs
     LEFT JOIN class_attendance ca ON ca.session_id = cs.id
     WHERE cs.class_id = $1
-    GROUP BY cs.id, cs.session_date, cs.topic, cs.notes
+    GROUP BY cs.id, cs.session_date, cs.topic, cs.notes, cs.session_lead_name
     ORDER BY cs.session_date DESC`,
     [req.params.id]
   )
@@ -655,23 +789,25 @@ app.get('/api/classes/:id/sessions', requireAuth('attendance'), wrap(async (req,
 }))
 
 app.post('/api/classes/:id/sessions', requireAuth('attendance'), wrap(async (req, res) => {
-  const { topic = '', notes = '', date } = req.body ?? {}
+  const { topic = '', notes = '', date, session_lead_name = '' } = req.body ?? {}
   const sessionDate = date || new Date().toISOString().slice(0, 10)
   const { rows: [session] } = await pool.query(
-    `INSERT INTO class_sessions(class_id,session_date,topic,notes) VALUES($1,$2,$3,$4)
-     ON CONFLICT (class_id,session_date) DO UPDATE SET topic=EXCLUDED.topic, notes=EXCLUDED.notes
-     RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes`,
-    [req.params.id, sessionDate, topic, notes]
+    `INSERT INTO class_sessions(class_id,session_date,topic,notes,session_lead_name) VALUES($1,$2,$3,$4,$5)
+     ON CONFLICT (class_id,session_date) DO UPDATE
+       SET topic=EXCLUDED.topic, notes=EXCLUDED.notes, session_lead_name=EXCLUDED.session_lead_name
+     RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes, session_lead_name`,
+    [req.params.id, sessionDate, topic, notes, session_lead_name]
   )
   res.json(session)
 }))
 
 app.put('/api/classes/:classId/sessions/:sid', requireAuth('attendance'), wrap(async (req, res) => {
-  const { topic = '', notes = '' } = req.body ?? {}
+  const { topic = '', notes = '', session_lead_name = '' } = req.body ?? {}
   const { rows, rowCount } = await pool.query(
-    `UPDATE class_sessions SET topic=$1,notes=$2 WHERE id=$3 AND class_id=$4
-     RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes`,
-    [topic, notes, req.params.sid, req.params.classId]
+    `UPDATE class_sessions SET topic=$1, notes=$2, session_lead_name=$3
+     WHERE id=$4 AND class_id=$5
+     RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes, session_lead_name`,
+    [topic, notes, session_lead_name, req.params.sid, req.params.classId]
   )
   if (rowCount === 0) return res.status(404).json({ error: 'Session not found' })
   res.json(rows[0])
