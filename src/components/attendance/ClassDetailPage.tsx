@@ -713,7 +713,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, authFetch }:
 }
 
 // ── Summary Panel ──────────────────────────────────────────────────────────────
-function SummaryPanel({ sessions }: { sessions: Session[] }) {
+function SummaryPanel({ cls, sessions }: { cls: ClassInfo; sessions: Session[] }) {
   const sorted = [...sessions].sort((a, b) => a.session_date.localeCompare(b.session_date))
   const allNames = [...new Set(sorted.flatMap(s => s.attendees.map(a => a.person_name)))].sort()
   const attended = new Map<string, Set<string>>()
@@ -723,8 +723,50 @@ function SummaryPanel({ sessions }: { sessions: Session[] }) {
       attended.get(a.person_name)!.add(s.session_date)
     }
 
+  const firstSession = sorted[0]?.session_date
+  const lastSession  = sorted[sorted.length - 1]?.session_date
+
   return (
     <div>
+      {/* Class info card */}
+      <div className="bg-white border border-gray-200 rounded-2xl px-5 py-4 mb-5 flex flex-col gap-2">
+        <h2 className="text-base font-bold text-gray-800">{cls.name}</h2>
+        {cls.description && <p className="text-sm text-gray-500">{cls.description}</p>}
+        <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-1">
+          {cls.lead_name && (
+            <span className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Users className="w-3.5 h-3.5 text-gray-400" /> {cls.lead_name}
+            </span>
+          )}
+          {cls.meeting_day && cls.meeting_time && (
+            <span className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Clock className="w-3.5 h-3.5 text-gray-400" /> {cls.meeting_day}s · {cls.meeting_time}
+            </span>
+          )}
+          {cls.location && (
+            <span className="flex items-center gap-1.5 text-xs text-gray-500">
+              <MapPin className="w-3.5 h-3.5 text-gray-400" /> {cls.location}
+            </span>
+          )}
+          {cls.recurrence && cls.recurrence !== 'none' && (
+            <span className="flex items-center gap-1.5 text-xs text-gray-500">
+              <RefreshCw className="w-3.5 h-3.5 text-gray-400" />
+              {cls.recurrence.charAt(0).toUpperCase() + cls.recurrence.slice(1)}
+              {cls.end_date ? ` until ${fmtDate(cls.end_date)}` : ''}
+            </span>
+          )}
+          {firstSession && (
+            <span className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Calendar className="w-3.5 h-3.5 text-gray-400" />
+              {firstSession === lastSession
+                ? `Started ${fmtDate(firstSession)}`
+                : `${fmtDate(firstSession)} – ${fmtDate(lastSession!)}`}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Attendance stats */}
       <div className="grid grid-cols-3 gap-3 mb-5">
         {[
           { val: sessions.length,   label: 'Sessions',  bg: 'bg-blue-50 border-blue-100 text-blue-700 text-blue-500' },
@@ -1021,7 +1063,7 @@ export default function ClassDetailPage() {
           <EditPanel cls={cls} classId={id} sessions={sessions} onClassSaved={c => { setCls(c); loadData() }} authFetch={authFetch} />
         )}
         {leadTab === 'summary' && (
-          <SummaryPanel sessions={sessions} />
+          <SummaryPanel cls={cls} sessions={sessions} />
         )}
       </div>
     </div>

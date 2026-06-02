@@ -149,7 +149,8 @@ cloudinary.config({
 {
   const ok = process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET
   if (ok) {
-    console.log(`✓ Cloudinary: cloud=${process.env.CLOUDINARY_CLOUD_NAME?.trim()} key=${process.env.CLOUDINARY_API_KEY?.trim().slice(0, 6)}…`)
+    const secret = process.env.CLOUDINARY_API_SECRET?.trim() ?? ''
+    console.log(`✓ Cloudinary: cloud=${process.env.CLOUDINARY_CLOUD_NAME?.trim()} key=${process.env.CLOUDINARY_API_KEY?.trim().slice(0, 6)}… secret_len=${secret.length} secret_start=${secret.slice(0, 4)}…`)
   } else {
     console.warn('⚠ Cloudinary: one or more env vars missing (CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET)')
   }
