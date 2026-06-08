@@ -762,31 +762,36 @@ app.get('/api/proxy-pdf', wrap(async (req, res) => {
     return null
   }
 
+  // Resolve credentials: SDK config first, individual env vars as fallback
   const cfg = cloudinary.config()
+  const cloudName = cfg.cloud_name || (process.env.CLOUDINARY_CLOUD_NAME || '').trim()
+  const apiKey    = String(cfg.api_key || '') || (process.env.CLOUDINARY_API_KEY || '').trim()
+  const apiSecret = cfg.api_secret || (process.env.CLOUDINARY_API_SECRET || '').trim()
+  console.log(`proxy-pdf: cloud=${cloudName} key=${apiKey.slice(0, 8)}… hasSecret=${!!apiSecret} publicId=${publicId}`)
 
-  // Strategy 1: signed delivery URL — embeds auth signature directly in the CDN URL so
-  // res.cloudinary.com serves the asset even on restricted-delivery accounts (e.g. Railway).
-  if (publicId && cfg.cloud_name && cfg.api_key && cfg.api_secret) {
+  // Strategy 1: private_download_url → api.cloudinary.com (bypasses CDN delivery restrictions)
+  if (publicId && cloudName && apiKey && apiSecret) {
     try {
-      const signedUrl = cloudinary.url(publicId, {
+      const dlUrl = cloudinary.utils.private_download_url(publicId, '', {
         resource_type: resourceType,
         type: 'upload',
-        sign_url: true,
-        secure: true,
         expires_at: Math.floor(Date.now() / 1000) + 300,
       })
-      const buf = await tryUrl(signedUrl)
+      console.log(`proxy-pdf: strategy1 → ${dlUrl.slice(0, 150)}`)
+      const buf = await tryUrl(dlUrl)
       if (buf) {
         res.set('Content-Type', 'application/pdf')
         res.set('Content-Disposition', 'inline')
         return res.send(buf)
       }
     } catch (e) {
-      console.warn('proxy-pdf: signed URL error:', e.message)
+      console.warn('proxy-pdf: strategy1 error:', e.message)
     }
+  } else {
+    console.warn(`proxy-pdf: skipping strategy1 — missing: cloud=${!cloudName} key=${!apiKey} secret=${!apiSecret}`)
   }
 
-  // Strategy 2: plain CDN URL (works for truly public resources)
+  // Strategy 2: plain CDN URL (works for public resources)
   for (const u of publicId.endsWith('.pdf') ? [url] : [url + '.pdf', url]) {
     try {
       const buf = await tryUrl(u)
