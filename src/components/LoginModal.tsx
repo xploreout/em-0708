@@ -9,7 +9,7 @@ type Props = {
 }
 
 const ROLE_OPTIONS: { role: Role; label: string }[] = [
-  { role: 'attendance', label: 'Class Checkin' },
+  { role: 'attendance', label: 'Class' },
   { role: 'calendar',   label: 'Coworker' },
   { role: 'admin',      label: 'Admin' },
 ]
@@ -71,7 +71,7 @@ export default function LoginModal({ onClose }: Props) {
               key={role}
               type='button'
               onClick={() => { setSelectedRole(role); setError(null); setTimeout(() => passwordRef.current?.focus(), 0) }}
-              className={`flex-1 py-2 rounded-xl text-sm font-semibold border-2 transition ${
+              className={`flex-1 py-2 text-sm font-semibold border-2 transition ${
                 selectedRole === role
                   ? 'border-blue-500 bg-blue-50 text-blue-700'
                   : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
@@ -95,7 +95,7 @@ export default function LoginModal({ onClose }: Props) {
                 onChange={(e) => { setPassword(e.target.value); setError(null) }}
                 placeholder={selectedRole ? `Enter ${roleLabel} password` : 'Select a role above'}
                 disabled={!selectedRole}
-                className='w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 pr-10 text-sm outline-none focus:border-blue-400 transition disabled:bg-gray-50 disabled:text-gray-400'
+                className='w-full border-2 border-gray-200 px-4 py-2.5 pr-10 text-sm outline-none focus:border-blue-400 transition disabled:bg-gray-50 disabled:text-gray-400'
               />
               <button
                 type='button'
@@ -113,7 +113,7 @@ export default function LoginModal({ onClose }: Props) {
           <button
             type='submit'
             disabled={loading || !password || !selectedRole}
-            className='w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed'
+            className='w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed'
           >
             {loading ? 'Verifying…' : `Login${roleLabel ? ` as ${roleLabel}` : ''}`}
           </button>

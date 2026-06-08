@@ -109,6 +109,13 @@ async function initDB() {
         checked_in_at  TIMESTAMPTZ DEFAULT NOW()
       );
 
+      CREATE TABLE IF NOT EXISTS class_notes (
+        id         SERIAL PRIMARY KEY,
+        class_id   INTEGER NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+        content    TEXT NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+
       CREATE TABLE IF NOT EXISTS class_documents (
         id          SERIAL PRIMARY KEY,
         class_id    INTEGER NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
@@ -683,6 +690,34 @@ app.delete('/api/classes/:id', requireAuth('admin'), wrap(async (req, res) => {
   res.json({ success: true })
 }))
 
+// ── Class Notes ────────────────────────────────────────────────────────────────
+app.get('/api/classes/:id/notes', requireAuth('attendance'), wrap(async (req, res) => {
+  const { rows } = await pool.query(
+    'SELECT id, content, created_at FROM class_notes WHERE class_id=$1 ORDER BY created_at DESC',
+    [req.params.id]
+  )
+  res.json(rows)
+}))
+
+app.post('/api/classes/:id/notes', requireAuth('attendance'), wrap(async (req, res) => {
+  const { content } = req.body ?? {}
+  if (!content?.trim()) return res.status(400).json({ error: 'Content is required' })
+  const { rows: [note] } = await pool.query(
+    'INSERT INTO class_notes(class_id, content) VALUES($1,$2) RETURNING id, content, created_at',
+    [req.params.id, content.trim()]
+  )
+  res.json(note)
+}))
+
+app.delete('/api/classes/:id/notes/:noteId', requireAuth('attendance'), wrap(async (req, res) => {
+  const { rowCount } = await pool.query(
+    'DELETE FROM class_notes WHERE id=$1 AND class_id=$2',
+    [req.params.noteId, req.params.id]
+  )
+  if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
+  res.json({ success: true })
+}))
+
 // ── Class Documents ────────────────────────────────────────────────────────────
 
 // Public: all classes + their documents (no auth) for Class Resources page
@@ -697,6 +732,72 @@ app.get('/api/public/class-resources', wrap(async (_req, res) => {
     })),
   }))
   res.json(result)
+}))
+
+// Public PDF proxy — fetches a Cloudinary PDF server-side to avoid browser CORS/auth issues.
+// Uses private_download_url (Cloudinary API server) which works regardless of resource
+// access_mode, then falls back to plain CDN URL for truly public resources.
+app.get('/api/proxy-pdf', wrap(async (req, res) => {
+  const { url } = req.query
+  if (!url || !url.startsWith('https://res.cloudinary.com/')) {
+    return res.status(400).json({ error: 'Invalid URL' })
+  }
+
+  // Parse: https://res.cloudinary.com/{cloud}/{resType}/upload/[v{n}/]{publicId}
+  const parsed = url.match(/res\.cloudinary\.com\/[^/]+\/(image|raw|video)\/upload\/(?:v\d+\/)?([^?]+)/)
+  const resourceType = parsed?.[1] ?? 'raw'
+  const publicId     = decodeURIComponent(parsed?.[2] ?? '')
+
+  const PDF_MAGIC = [0x25, 0x50, 0x44, 0x46] // %PDF
+  function isPdf(buf) {
+    return buf.length > 4 && buf[0] === PDF_MAGIC[0] && buf[1] === PDF_MAGIC[1] &&
+           buf[2] === PDF_MAGIC[2] && buf[3] === PDF_MAGIC[3]
+  }
+  async function tryUrl(u) {
+    const r = await fetch(u)
+    if (!r.ok) { console.warn(`proxy-pdf: ${r.status} from ${u.slice(0, 120)}`); return null }
+    const buf = Buffer.from(await r.arrayBuffer())
+    if (isPdf(buf)) return buf
+    console.warn(`proxy-pdf: non-PDF bytes (${buf.slice(0, 4).toString('hex')}) from ${u.slice(0, 120)}`)
+    return null
+  }
+
+  const cfg = cloudinary.config()
+
+  // Strategy 1: private_download_url — goes through api.cloudinary.com with full API
+  // credentials, bypasses access_mode: 'authenticated' on the CDN.
+  if (publicId && cfg.cloud_name && cfg.api_key && cfg.api_secret) {
+    try {
+      const dlUrl = cloudinary.utils.private_download_url(publicId, '', {
+        resource_type: resourceType,
+        type: 'upload',
+        expires_at: Math.floor(Date.now() / 1000) + 300,
+      })
+      const buf = await tryUrl(dlUrl)
+      if (buf) {
+        res.set('Content-Type', 'application/pdf')
+        res.set('Content-Disposition', 'inline')
+        return res.send(buf)
+      }
+    } catch (e) {
+      console.warn('proxy-pdf: private_download_url error:', e.message)
+    }
+  }
+
+  // Strategy 2: plain CDN URL (works for truly public resources)
+  for (const u of publicId.endsWith('.pdf') ? [url] : [url + '.pdf', url]) {
+    try {
+      const buf = await tryUrl(u)
+      if (buf) {
+        res.set('Content-Type', 'application/pdf')
+        res.set('Content-Disposition', 'inline')
+        return res.send(buf)
+      }
+    } catch { continue }
+  }
+
+  console.error(`proxy-pdf: all strategies failed for ${url}`)
+  return res.status(502).send('Could not load PDF')
 }))
 
 app.get('/api/classes/:id/documents', requireAuth('attendance'), wrap(async (req, res) => {
@@ -715,24 +816,28 @@ app.post('/api/classes/:id/documents', requireAuth('attendance'), uploadDoc.sing
     return res.status(503).json({ error: 'Cloudinary not configured' })
   }
   const { name = '' } = req.body ?? {}
-  const docName = (name || file.originalname).trim().slice(0, 300)
+  // multer passes originalname as latin1; decode to utf-8 so non-ASCII filenames aren't garbled
+  const decodedOriginal = (() => {
+    try { return Buffer.from(file.originalname || 'file', 'latin1').toString('utf8') } catch { return file.originalname || 'file' }
+  })()
+  const docName = (name || decodedOriginal).trim().slice(0, 300)
 
   // Extract and sanitise the original extension so downloads open correctly
-  const origName = file.originalname || 'file'
+  const origName = decodedOriginal
   const dotIdx   = origName.lastIndexOf('.')
   const origExt  = dotIdx > 0 ? origName.slice(dotIdx).toLowerCase() : ''
   const origBase = dotIdx > 0 ? origName.slice(0, dotIdx) : origName
   const safeBase = origBase.replace(/[^\w-]/g, '_').slice(0, 80) || 'file'
   const publicId = `acbcc-class-docs/${Date.now()}_${safeBase}`
 
-  // PDFs and images → resource_type 'image' so Cloudinary serves with correct
-  // Content-Type (application/pdf or image/*), making them viewable in a browser tab.
-  // All other docs → resource_type 'raw'; include the extension in the public_id
-  // so the download URL has the correct extension (.docx, .pptx, etc.).
+  // Images → resource_type 'image' (Cloudinary CDN serves them natively).
+  // Everything else (PDFs, docx, pptx, etc.) → resource_type 'raw' so Cloudinary
+  // serves the file as-is without image-delivery restrictions (avoids 401 errors).
+  // Always include the original extension in the public_id for raw uploads so the
+  // download URL has the correct extension.
   const isImage = file.mimetype.startsWith('image/')
-  const isPdf   = file.mimetype === 'application/pdf'
-  const resourceType = (isImage || isPdf) ? 'image' : 'raw'
-  const cloudPublicId = resourceType === 'raw' ? publicId + origExt : publicId
+  const resourceType = isImage ? 'image' : 'raw'
+  const cloudPublicId = isImage ? publicId : publicId + origExt
 
   const result = await new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, ArrowLeft, ChevronDown, LogIn, LogOut } from 'lucide-react'
+import { Menu, X, ArrowLeft, ChevronDown, ChevronRight, LogIn, LogOut } from 'lucide-react'
 import { useAuth, ROLE_LABELS, ROLE_ROUTES } from '../context/AuthContext'
 import LoginModal from './LoginModal'
 
@@ -8,11 +8,14 @@ const Header = () => {
   const [isOpen,             setIsOpen]             = useState(false)
   const [resourcesOpen,      setResourcesOpen]      = useState(false)
   const [mobileResourcesOpen,setMobileResourcesOpen]= useState(false)
+  const [mobileResoSubOpen,  setMobileResoSubOpen]  = useState(false)
+  const [resoSubOpen,        setResoSubOpen]        = useState(false)
   const [eventsOpen,         setEventsOpen]         = useState(false)
   const [mobileEventsOpen,   setMobileEventsOpen]   = useState(false)
   const [loginOpen,          setLoginOpen]          = useState(false)
 
   const hoverTimeout       = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const resoSubTimeout     = useRef<ReturnType<typeof setTimeout> | null>(null)
   const eventsHoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const location = useLocation()
@@ -24,21 +27,26 @@ const Header = () => {
     { name: 'Past Events',     href: '/past-events' },
   ]
 
-  const resourcesItems = [
-    { name: 'Adult Small Group',    href: '/resources/adult-small-group' },
-    { name: 'Youth Ministry',       href: '/resources/youth' },
-    { name: 'Children Ministry',    href: '/resources/children' },
+  const ministriesItems = [
+    { name: 'Adult Small Group', href: '/resources/adult-small-group' },
+    { name: 'Youth Ministry',    href: '/resources/youth' },
+    { name: 'Children Ministry', href: '/resources/children' },
+  ]
+
+  const resoItems = [
     { name: 'Devotional Resources', href: '/resources/other' },
     { name: 'Class Resources',      href: '/class-resources' },
   ]
 
-  const isResourcesActive = resourcesItems.some(i => location.pathname.startsWith(i.href))
+  const isResourcesActive = [...ministriesItems, ...resoItems].some(i => location.pathname.startsWith(i.href))
   const isEventsActive    = eventsItems.some(i => location.pathname === i.href)
 
   const handleMouseEnter       = () => { if (hoverTimeout.current) clearTimeout(hoverTimeout.current); setResourcesOpen(true) }
   const handleMouseLeave       = () => { hoverTimeout.current = setTimeout(() => setResourcesOpen(false), 150) }
   const handleEventsMouseEnter = () => { if (eventsHoverTimeout.current) clearTimeout(eventsHoverTimeout.current); setEventsOpen(true) }
   const handleEventsMouseLeave = () => { eventsHoverTimeout.current = setTimeout(() => setEventsOpen(false), 150) }
+  const handleResoSubEnter     = () => { if (resoSubTimeout.current) clearTimeout(resoSubTimeout.current); setResoSubOpen(true) }
+  const handleResoSubLeave     = () => { resoSubTimeout.current = setTimeout(() => setResoSubOpen(false), 150) }
 
   return (
     <header className='bg-white sticky top-0 z-50 transition-all duration-300'>
@@ -94,7 +102,7 @@ const Header = () => {
               </button>
               {resourcesOpen && (
                 <div className='absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
-                  {resourcesItems.map(item => (
+                  {ministriesItems.map(item => (
                     <Link key={item.name} to={item.href}
                       className={`block px-4 py-2 text-sm transition-colors duration-150 hover:bg-gray-50 ${
                         location.pathname.startsWith(item.href) ? 'text-primary-600 font-medium' : 'text-gray-700 hover:text-primary-600'
@@ -103,6 +111,29 @@ const Header = () => {
                       {item.name}
                     </Link>
                   ))}
+
+                  {/* Resources flyout */}
+                  <div className='relative' onMouseEnter={handleResoSubEnter} onMouseLeave={handleResoSubLeave}>
+                    <div className={`flex items-center justify-between px-4 py-2 text-sm cursor-pointer transition-colors duration-150 hover:bg-gray-50 ${
+                      resoItems.some(i => location.pathname.startsWith(i.href)) ? 'text-primary-600 font-medium' : 'text-gray-700 hover:text-primary-600'
+                    }`}>
+                      Resources
+                      <ChevronRight className='h-3 w-3' />
+                    </div>
+                    {resoSubOpen && (
+                      <div className='absolute left-full top-0 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
+                        {resoItems.map(item => (
+                          <Link key={item.name} to={item.href}
+                            className={`block px-4 py-2 text-sm transition-colors duration-150 hover:bg-gray-50 ${
+                              location.pathname.startsWith(item.href) ? 'text-primary-600 font-medium' : 'text-gray-700 hover:text-primary-600'
+                            }`}
+                            onClick={() => { setResourcesOpen(false); setResoSubOpen(false) }}>
+                            {item.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -201,7 +232,7 @@ const Header = () => {
             </button>
             {mobileResourcesOpen && (
               <div className='pl-6 flex flex-col space-y-1'>
-                {resourcesItems.map(item => (
+                {ministriesItems.map(item => (
                   <Link key={item.name} to={item.href}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
                       location.pathname.startsWith(item.href) ? 'text-primary-600' : 'text-blue-700 hover:text-blue-500'
@@ -210,6 +241,29 @@ const Header = () => {
                     {item.name}
                   </Link>
                 ))}
+
+                {/* Resources nested accordion */}
+                <button
+                  className={`px-3 text-left rounded-md text-sm font-medium flex items-center gap-1 ${
+                    resoItems.some(i => location.pathname.startsWith(i.href)) ? 'text-primary-600' : 'text-blue-700'
+                  }`}
+                  onClick={() => setMobileResoSubOpen(v => !v)}>
+                  Resources
+                  <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${mobileResoSubOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {mobileResoSubOpen && (
+                  <div className='pl-4 flex flex-col space-y-1'>
+                    {resoItems.map(item => (
+                      <Link key={item.name} to={item.href}
+                        className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
+                          location.pathname.startsWith(item.href) ? 'text-primary-600' : 'text-blue-700 hover:text-blue-500'
+                        }`}
+                        onClick={() => { setIsOpen(false); setMobileResourcesOpen(false); setMobileResoSubOpen(false) }}>
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

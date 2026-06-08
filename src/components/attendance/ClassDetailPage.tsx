@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import PdfViewerModal from '../PdfViewerModal'
 import {
   ArrowLeft, CheckCircle2, Search, Save, X, Mail, UserX,
   MapPin, Clock, Calendar, RefreshCw, Eye, EyeOff,
   ClipboardList, BarChart2, Edit2, Users, Key, LogOut,
   Plus, ChevronDown, ChevronRight, Archive, ArchiveRestore, Trash2,
-  Upload, FileText, File, FileImage, Download, Loader2, Youtube, Link,
+  Upload, FileText, File, FileImage, Download, Loader2, Youtube, Link, StickyNote, Send,
+  Play, ExternalLink,
 } from 'lucide-react'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -688,13 +690,16 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
   const { role } = useAuth()
   const isAdmin = role === 'admin'
   const [form, setForm] = useState({ ...cls, start_date: cls.start_date || '', end_date: cls.end_date || '' })
+  const [initForm]     = useState({ ...cls, start_date: cls.start_date || '', end_date: cls.end_date || '' })
   const [savingClass, setSavingClass] = useState(false)
 
   const todaySession = sessions.find(s => s.session_date === TODAY)
   const [topic, setTopic]               = useState(todaySession?.topic || '')
   const [sessionNotes, setSessionNotes] = useState(todaySession?.notes || '')
   const [sessionLead, setSessionLead]   = useState(todaySession?.session_lead_name || '')
-  const [savingSession, setSavingSession] = useState(false)
+  const [initTopic]        = useState(todaySession?.topic || '')
+  const [initSessionNotes] = useState(todaySession?.notes || '')
+  const [initSessionLead]  = useState(todaySession?.session_lead_name || '')
 
   // Per-session lead names for all sessions
   const [sessionLeads, setSessionLeads] = useState<Record<number, string>>(
@@ -736,39 +741,42 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
     else showFlash('Delete failed')
   }
 
-  async function saveClass(e: React.FormEvent) {
-    e.preventDefault()
+  async function handleSave() {
+    if (!form.name.trim()) { showFlash('Class name is required'); return }
     setSavingClass(true)
-    const r = await authFetch(`/api/classes/${classId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: form.name, lead_name: form.lead_name, lead_email: form.lead_email,
-        description: form.description, location: form.location,
-        meeting_day: form.meeting_day, meeting_time: form.meeting_time,
-        recurrence: form.recurrence,
-        start_date: form.start_date || null,
-        end_date: form.recurrence !== 'none' ? form.end_date || null : null,
+    const [r1] = await Promise.all([
+      authFetch(`/api/classes/${classId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name, lead_name: form.lead_name, lead_email: form.lead_email,
+          description: form.description, location: form.location,
+          meeting_day: form.meeting_day, meeting_time: form.meeting_time,
+          recurrence: form.recurrence,
+          start_date: form.start_date || null,
+          end_date: form.recurrence !== 'none' ? form.end_date || null : null,
+        }),
       }),
-    })
+      authFetch(`/api/classes/${classId}/sessions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic, notes: sessionNotes, session_lead_name: sessionLead, date: TODAY }),
+      }),
+    ])
     setSavingClass(false)
-    if (r.ok) {
-      onClassSaved(await r.json())
-      showFlash('Class info saved!')
+    if (r1.ok) {
+      onClassSaved(await r1.json())
+      showFlash('Saved!')
+    } else {
+      showFlash('Save failed')
     }
   }
 
-  async function saveSession() {
-    setSavingSession(true)
-    const r = await authFetch(`/api/classes/${classId}/sessions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic, notes: sessionNotes, session_lead_name: sessionLead, date: TODAY }),
-    })
-    setSavingSession(false)
-    if (r.ok) {
-      showFlash("Today's session saved!")
-    }
+  function handleCancel() {
+    setForm({ ...initForm })
+    setTopic(initTopic)
+    setSessionNotes(initSessionNotes)
+    setSessionLead(initSessionLead)
   }
 
   async function saveSessionLead(session: Session) {
@@ -795,8 +803,9 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
     showFlash('Note saved!')
   }
 
-  const inp = 'w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-400 transition'
-  const lbl = 'text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block'
+  const inp = 'w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 font-medium outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-200 transition bg-white'
+  const lbl = 'text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5 block'
+  const sectionH = 'font-bold text-indigo-700 mb-3 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-indigo-100 pb-1.5'
 
   return (
     <div className="flex flex-col gap-6">
@@ -806,9 +815,28 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
         </div>
       )}
 
+      {/* Save / Cancel */}
+      <div className="flex gap-2">
+        <button
+          onClick={handleSave}
+          disabled={savingClass}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50"
+        >
+          <Save className="w-4 h-4" />
+          {savingClass ? 'Saving…' : 'Save'}
+        </button>
+        <button
+          onClick={handleCancel}
+          disabled={savingClass}
+          className="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition disabled:opacity-50"
+        >
+          Cancel
+        </button>
+      </div>
+
       {/* Class Info */}
-      <form onSubmit={saveClass}>
-        <h3 className="font-semibold text-gray-700 mb-3 text-sm uppercase tracking-wider">Class Info</h3>
+      <div>
+        <h3 className={sectionH}>Class Info</h3>
         <div className="flex flex-col gap-3">
           <div><label className={lbl}>Class Name *</label><input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={inp} required /></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -819,7 +847,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
         </div>
 
         {/* Schedule */}
-        <h3 className="font-semibold text-gray-700 my-3 text-sm uppercase tracking-wider flex items-center gap-2">
+        <h3 className={`${sectionH} mt-4`}>
           <Calendar className="w-4 h-4" /> Schedule
         </h3>
         <div className="flex flex-col gap-3">
@@ -861,7 +889,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
           </div>
           <div className={`grid gap-3 ${form.recurrence !== 'none' ? 'grid-cols-2' : 'grid-cols-1'}`}>
             <div>
-              <label className={lbl}>{form.recurrence === 'none' ? 'Date' : 'Start Date'}</label>
+              <label className={lbl}>Begin Date</label>
               <input
                 type="date"
                 value={form.start_date || ''}
@@ -883,28 +911,17 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
           </div>
         </div>
 
-        <button
-          type="submit"
-          disabled={savingClass}
-          className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50"
-        >
-          <Save className="w-4 h-4" />
-          {savingClass ? 'Saving…' : 'Save class info'}
-        </button>
-      </form>
+      </div>
 
       {/* Today's session */}
       <section>
-        <h3 className="font-semibold text-gray-700 mb-3 text-sm uppercase tracking-wider">
+        <h3 className={sectionH}>
           Today's Session — {fmtDate(TODAY)}
         </h3>
         <div className="flex flex-col gap-3">
           <div><label className={lbl}>Topic</label><input value={topic} onChange={e => setTopic(e.target.value)} placeholder="What are you studying today?" className={inp} /></div>
           <div><label className={lbl}>Session Leader</label><input value={sessionLead} onChange={e => setSessionLead(e.target.value)} placeholder="Who is leading today's session?" className={inp} /></div>
           <div><label className={lbl}>Session Notes</label><textarea value={sessionNotes} onChange={e => setSessionNotes(e.target.value)} rows={3} placeholder="Notes for this session…" className={`${inp} resize-none`} /></div>
-          <button onClick={saveSession} disabled={savingSession} className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition disabled:opacity-50">
-            <Save className="w-4 h-4" />{savingSession ? 'Saving…' : "Save today's session"}
-          </button>
         </div>
       </section>
 
@@ -916,7 +933,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
         />
       ) : sessions.length > 0 && (
         <section>
-          <h3 className="font-semibold text-gray-700 mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+          <h3 className={`${sectionH}`}>
             <Users className="w-4 h-4" /> Session Leaders
           </h3>
           <div className="flex flex-col gap-2">
@@ -949,7 +966,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
       {/* Attendee notes */}
       {todaySession && todaySession.attendees.length > 0 && (
         <section>
-          <h3 className="font-semibold text-gray-700 mb-3 text-sm uppercase tracking-wider">Attendee Notes — Today</h3>
+          <h3 className={sectionH}>Attendee Notes — Today</h3>
           <div className="flex flex-col gap-3">
             {todaySession.attendees.map(a => (
               <div key={a.id} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
@@ -969,6 +986,14 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
           </div>
         </section>
       )}
+
+      {/* Documents */}
+      <section>
+        <h3 className={sectionH}>
+          <FileText className="w-4 h-4" /> Documents
+        </h3>
+        <DocumentsPanel classId={classId} authFetch={authFetch} />
+      </section>
 
       {/* Admin danger zone */}
       {isAdmin && (
@@ -1218,7 +1243,13 @@ function DocumentsPanel({ classId, authFetch }: {
   const [docName, setDocName]     = useState('')
   const [ytUrl, setYtUrl]         = useState('')
   const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [viewingPdf, setViewingPdf] = useState<{ url: string; name: string; downloadUrl: string } | null>(null)
+  const [expandedYt, setExpandedYt] = useState<Set<number>>(new Set())
   const fileRef = React.useRef<HTMLInputElement>(null)
+
+  function toggleYt(id: number) {
+    setExpandedYt(prev => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s })
+  }
 
   const showFlash = (msg: string, ok = true) => { setFlash({ msg, ok }); setTimeout(() => setFlash(null), 3000) }
 
@@ -1270,6 +1301,15 @@ function DocumentsPanel({ classId, authFetch }: {
   const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition bg-white'
 
   return (
+    <>
+    {viewingPdf && (
+      <PdfViewerModal
+        url={viewingPdf.url}
+        name={viewingPdf.name}
+        downloadUrl={viewingPdf.downloadUrl}
+        onClose={() => setViewingPdf(null)}
+      />
+    )}
     <div className="flex flex-col gap-3">
       {flash && (
         <div className={`flex items-center gap-2 text-xs font-medium px-3 py-2 rounded-lg ${flash.ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
@@ -1333,48 +1373,78 @@ function DocumentsPanel({ classId, authFetch }: {
               const isPdf = doc.file_type === 'application/pdf'
               const isImg = doc.file_type.startsWith('image/')
               const vid   = isYt ? ytVideoId(doc.url) : null
+              const ytExpanded = isYt && expandedYt.has(doc.id)
               return (
-                <div key={doc.id} className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-100 rounded-lg">
-                  {vid
-                    ? <img src={`https://img.youtube.com/vi/${vid}/default.jpg`} alt="" className="w-10 h-7 object-cover rounded flex-shrink-0" />
-                    : <DocIcon type={doc.file_type} />
-                  }
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-800 truncate leading-tight">{doc.name}</div>
-                    {doc.size_bytes > 0 && <span className="text-xs text-gray-400">{formatBytes(doc.size_bytes)}</span>}
-                  </div>
-                  {/* Open / download actions */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    {isYt && (
-                      <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                        className="p-1.5 text-red-400 hover:text-red-600 transition" title="Watch on YouTube">
-                        <Youtube className="w-3.5 h-3.5" />
-                      </a>
-                    )}
-                    {isPdf && (
-                      <>
-                        <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                          className="px-2 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-50 rounded transition" title="View PDF">
-                          View
-                        </a>
-                        <a href={dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
-                          className="p-1.5 text-gray-400 hover:text-gray-600 transition" title="Download">
+                <div key={doc.id} className="bg-white border border-gray-100 rounded-lg overflow-hidden">
+                  <div className="flex items-center gap-2 px-3 py-2">
+                    {vid
+                      ? <img src={`https://img.youtube.com/vi/${vid}/default.jpg`} alt=""
+                          onClick={() => toggleYt(doc.id)}
+                          className="w-10 h-7 object-cover rounded flex-shrink-0 cursor-pointer hover:opacity-80 transition" />
+                      : <DocIcon type={doc.file_type} />
+                    }
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-800 truncate leading-tight">{doc.name}</div>
+                      {doc.size_bytes > 0 && <span className="text-xs text-gray-400">{formatBytes(doc.size_bytes)}</span>}
+                    </div>
+                    {/* Open / download actions */}
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {isYt && (
+                        <>
+                          <button
+                            onClick={() => toggleYt(doc.id)}
+                            className={`p-1.5 rounded transition ${ytExpanded ? 'text-red-500 bg-red-50' : 'text-red-400 hover:text-red-600'}`}
+                            title={ytExpanded ? 'Hide player' : 'Play inline'}
+                          >
+                            <Play className="w-3.5 h-3.5" fill={ytExpanded ? 'currentColor' : 'none'} />
+                          </button>
+                          <a href={doc.url} target="_blank" rel="noopener noreferrer"
+                            className="p-1.5 text-gray-400 hover:text-red-500 transition" title="Open on YouTube">
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        </>
+                      )}
+                      {isPdf && (
+                        <>
+                          <button
+                            onClick={() => setViewingPdf({ url: `/api/proxy-pdf?url=${encodeURIComponent(doc.url)}`, name: doc.name, downloadUrl: dlUrl(doc.url) })}
+                            className="px-2 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-50 rounded transition"
+                            title="View PDF"
+                          >
+                            View
+                          </button>
+                          <a href={dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
+                            className="p-1.5 text-gray-400 hover:text-gray-600 transition" title="Download">
+                            <Download className="w-3.5 h-3.5" />
+                          </a>
+                        </>
+                      )}
+                      {(isImg || (!isYt && !isPdf)) && (
+                        <a href={isImg ? doc.url : dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
+                          className="p-1.5 text-gray-400 hover:text-blue-500 transition" title={isImg ? 'View' : 'Download'}>
                           <Download className="w-3.5 h-3.5" />
                         </a>
-                      </>
-                    )}
-                    {(isImg || (!isYt && !isPdf)) && (
-                      <a href={isImg ? doc.url : dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
-                        className="p-1.5 text-gray-400 hover:text-blue-500 transition" title={isImg ? 'View' : 'Download'}>
-                        <Download className="w-3.5 h-3.5" />
-                      </a>
+                      )}
+                    </div>
+                    {(role === 'admin' || role === 'attendance') && (
+                      <button onClick={() => handleDelete(doc.id)} disabled={deletingId === doc.id}
+                        className="p-1 text-gray-300 hover:text-red-500 transition disabled:opacity-40 flex-shrink-0">
+                        {deletingId === doc.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                      </button>
                     )}
                   </div>
-                  {(role === 'admin' || role === 'attendance') && (
-                    <button onClick={() => handleDelete(doc.id)} disabled={deletingId === doc.id}
-                      className="p-1 text-gray-300 hover:text-red-500 transition disabled:opacity-40 flex-shrink-0">
-                      {deletingId === doc.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                    </button>
+                  {ytExpanded && vid && (
+                    <div className="px-3 pb-3">
+                      <div className="aspect-video w-full rounded overflow-hidden bg-black">
+                        <iframe
+                          src={`https://www.youtube.com/embed/${vid}?autoplay=1`}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={doc.name}
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
               )
@@ -1383,11 +1453,131 @@ function DocumentsPanel({ classId, authFetch }: {
         )}
       </div>
     </div>
+    </>
+  )
+}
+
+// ── Class Notes Panel ─────────────────────────────────────────────────────────
+type ClassNote = { id: number; content: string; created_at: string }
+
+function ClassNotesPanel({ classId, authFetch }: {
+  classId: string
+  authFetch: (u: string, i?: RequestInit) => Promise<Response>
+}) {
+  const [notes, setNotes]     = useState<ClassNote[]>([])
+  const [loading, setLoading] = useState(true)
+  const [text, setText]       = useState('')
+  const [saving, setSaving]   = useState(false)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+
+  useEffect(() => {
+    authFetch(`/api/classes/${classId}/notes`)
+      .then(r => r.json())
+      .then(d => { setNotes(Array.isArray(d) ? d : []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [classId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function addNote() {
+    if (!text.trim()) return
+    setSaving(true)
+    const r = await authFetch(`/api/classes/${classId}/notes`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: text.trim() }),
+    })
+    const d = await r.json()
+    setSaving(false)
+    if (r.ok) { setNotes(prev => [d, ...prev]); setText('') }
+  }
+
+  async function deleteNote(id: number) {
+    setDeletingId(id)
+    const r = await authFetch(`/api/classes/${classId}/notes/${id}`, { method: 'DELETE' })
+    if (r.ok) setNotes(prev => prev.filter(n => n.id !== id))
+    setDeletingId(null)
+  }
+
+  function fmtNoteDate(iso: string) {
+    const d = new Date(iso)
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+      '  ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Add note */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+        <h3 className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <StickyNote className="w-3.5 h-3.5" /> Add Note
+        </h3>
+        <textarea
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="Write a class note…"
+          rows={3}
+          className="w-full border border-amber-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-amber-500 resize-none bg-white mb-2"
+          onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) addNote() }}
+        />
+        <button
+          onClick={addNote}
+          disabled={saving || !text.trim()}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition disabled:opacity-50"
+        >
+          {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+          {saving ? 'Saving…' : 'Add Note'}
+        </button>
+      </div>
+
+      {/* Notes list — newest first */}
+      <div>
+        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+          All Notes ({notes.length})
+        </h3>
+        {loading ? (
+          <p className="text-sm text-gray-400 text-center py-4">Loading…</p>
+        ) : notes.length === 0 ? (
+          <p className="text-sm text-gray-400 text-center py-4">No notes yet.</p>
+        ) : (
+          <div className="rounded-xl border border-gray-200 overflow-hidden">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-gray-100 border-b border-gray-200">
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-40">Date & Time</th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Note</th>
+                  <th className="px-2 py-2 w-8"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {notes.map((note, idx) => (
+                  <tr key={note.id} className={`border-b border-gray-100 last:border-0 ${idx === 0 ? 'bg-amber-50/60' : idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'}`}>
+                    <td className="px-4 py-3 align-top whitespace-nowrap">
+                      <span className="text-xs font-medium text-gray-500">{fmtNoteDate(note.created_at)}</span>
+                      {idx === 0 && <span className="ml-1.5 text-xs font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-full">Latest</span>}
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{note.content}</p>
+                    </td>
+                    <td className="px-2 py-3 align-top">
+                      <button
+                        onClick={() => deleteNote(note.id)}
+                        disabled={deletingId === note.id}
+                        className="p-1 text-gray-300 hover:text-red-500 transition disabled:opacity-40"
+                      >
+                        {deletingId === note.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
 // ── Main ClassDetailPage ───────────────────────────────────────────────────────
-type LeadTab = 'checkin' | 'roster' | 'edit' | 'summary' | 'docs'
+type LeadTab = 'checkin' | 'roster' | 'edit' | 'summary' | 'docs' | 'notes'
 type KioskPhase = 'input' | 'confirmed' | 'classinfo'
 
 export default function ClassDetailPage() {
@@ -1396,7 +1586,7 @@ export default function ClassDetailPage() {
   const location    = useLocation()
   const { authFetch, role } = useAuth()
 
-  const navState = (location.state || {}) as { showClassInfo?: boolean; checkedInName?: string; leadUnlocked?: boolean }
+  const navState = (location.state || {}) as { showClassInfo?: boolean; checkedInName?: string; leadUnlocked?: boolean; defaultTab?: LeadTab }
 
   const [cls, setCls]         = useState<ClassInfo | null>(null)
   const [sessions, setSessions] = useState<Session[]>([])
@@ -1404,7 +1594,7 @@ export default function ClassDetailPage() {
 
   const [showLeadModal, setShowLeadModal] = useState(false)
   const [leadUnlocked, setLeadUnlocked]   = useState(navState.leadUnlocked || false)
-  const [leadTab, setLeadTab]             = useState<LeadTab>('checkin')
+  const [leadTab, setLeadTab]             = useState<LeadTab>(navState.defaultTab || 'checkin')
 
   const [phase, setPhase]               = useState<KioskPhase>('input')
   const [checkedInName, setCheckedInName] = useState(navState.checkedInName || '')
@@ -1451,6 +1641,7 @@ export default function ClassDetailPage() {
     { id: 'edit',    label: 'Edit',     Icon: Edit2 },
     { id: 'summary', label: 'Summary',  Icon: BarChart2 },
     { id: 'docs',    label: 'Docs',     Icon: FileText },
+    { id: 'notes',   label: 'Notes',    Icon: StickyNote },
   ]
 
   if (loading) {
@@ -1601,6 +1792,9 @@ export default function ClassDetailPage() {
         )}
         {leadTab === 'docs' && (
           <DocumentsPanel classId={id} authFetch={authFetch} />
+        )}
+        {leadTab === 'notes' && (
+          <ClassNotesPanel classId={id} authFetch={authFetch} />
         )}
       </div>
     </div>
