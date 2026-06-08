@@ -764,23 +764,25 @@ app.get('/api/proxy-pdf', wrap(async (req, res) => {
 
   const cfg = cloudinary.config()
 
-  // Strategy 1: private_download_url — goes through api.cloudinary.com with full API
-  // credentials, bypasses access_mode: 'authenticated' on the CDN.
+  // Strategy 1: signed delivery URL — embeds auth signature directly in the CDN URL so
+  // res.cloudinary.com serves the asset even on restricted-delivery accounts (e.g. Railway).
   if (publicId && cfg.cloud_name && cfg.api_key && cfg.api_secret) {
     try {
-      const dlUrl = cloudinary.utils.private_download_url(publicId, '', {
+      const signedUrl = cloudinary.url(publicId, {
         resource_type: resourceType,
         type: 'upload',
+        sign_url: true,
+        secure: true,
         expires_at: Math.floor(Date.now() / 1000) + 300,
       })
-      const buf = await tryUrl(dlUrl)
+      const buf = await tryUrl(signedUrl)
       if (buf) {
         res.set('Content-Type', 'application/pdf')
         res.set('Content-Disposition', 'inline')
         return res.send(buf)
       }
     } catch (e) {
-      console.warn('proxy-pdf: private_download_url error:', e.message)
+      console.warn('proxy-pdf: signed URL error:', e.message)
     }
   }
 
@@ -841,7 +843,7 @@ app.post('/api/classes/:id/documents', requireAuth('attendance'), uploadDoc.sing
 
   const result = await new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { resource_type: resourceType, public_id: cloudPublicId },
+      { resource_type: resourceType, public_id: cloudPublicId, access_mode: 'public' },
       (err, r) => err ? reject(err) : resolve(r)
     )
     stream.end(file.buffer)
