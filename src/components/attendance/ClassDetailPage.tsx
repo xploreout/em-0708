@@ -154,9 +154,10 @@ function NotifyModal({ name, classId, onClose, authFetch }:
 }
 
 // ── Kiosk Check-in Panel ───────────────────────────────────────────────────────
-function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
+function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch, cls }:
   { classId: string; isLeadMode: boolean; onCheckedIn?: (name: string) => void
-    authFetch: (u: string, i?: RequestInit) => Promise<Response> }
+    authFetch: (u: string, i?: RequestInit) => Promise<Response>
+    cls?: ClassInfo }
 ) {
   const [q, setQ]                 = useState('')
   const [results, setResults]     = useState<SearchResult[]>([])
@@ -179,6 +180,21 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
     loadSessions()
     setTimeout(() => inputRef.current?.focus(), 80)
   }, [loadSessions])
+
+  // All valid session dates: scheduled dates (past/today) + any off-schedule session dates
+  // Sorted ascending (oldest first); nearest to today is last
+  const availableDates = React.useMemo(() => {
+    const scheduled = cls ? generateSessionDates(cls).filter(d => d <= TODAY) : []
+    const fromSessions = allSessions.map(s => s.session_date).filter(d => d <= TODAY)
+    return [...new Set([...scheduled, ...fromSessions])].sort((a, b) => a.localeCompare(b))
+  }, [cls, allSessions])
+
+  // Default to the date nearest to today (last in ascending list)
+  useEffect(() => {
+    if (availableDates.length > 0 && !availableDates.includes(selectedDate)) {
+      setSelectedDate(availableDates[availableDates.length - 1])
+    }
+  }, [availableDates]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Recompute checkins list whenever selected date or sessions data changes
   useEffect(() => {
@@ -239,13 +255,6 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
 
   const noResults = q.trim().length > 0 && !searching && results.length === 0
 
-  // Build date options: today first, then existing session dates most-recent-first
-  const sessionDates = [TODAY, ...allSessions
-    .map(s => s.session_date)
-    .filter(d => d !== TODAY)
-    .sort((a, b) => b.localeCompare(a))
-  ]
-
   return (
     <div>
       {/* Session date selector */}
@@ -253,30 +262,26 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
         <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
           <Calendar className="w-3.5 h-3.5" /> Session Date
         </label>
-        <input
-          type="date"
-          value={selectedDate}
-          max={TODAY}
-          onChange={e => e.target.value && setSelectedDate(e.target.value)}
-          className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-blue-400 transition bg-white"
-        />
-        {sessionDates.length > 1 && (
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {sessionDates.slice(0, 6).map(date => (
-              <button
-                key={date}
-                type="button"
-                onClick={() => setSelectedDate(date)}
-                className={`text-xs px-2.5 py-1 rounded-full border transition font-medium ${
-                  selectedDate === date
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                }`}
-              >
-                {date === TODAY ? 'Today' : fmtDate(date)}
-              </button>
+        {availableDates.length > 0 ? (
+          <select
+            value={selectedDate}
+            onChange={e => e.target.value && setSelectedDate(e.target.value)}
+            className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-blue-400 transition bg-white"
+          >
+            {[...availableDates].reverse().map((date, idx) => (
+              <option key={date} value={date}>
+                {idx === 0 ? `★ ${date === TODAY ? 'Today' : fmtDate(date)} (most recent)` : fmtDate(date)}
+              </option>
             ))}
-          </div>
+          </select>
+        ) : (
+          <input
+            type="date"
+            value={selectedDate}
+            max={TODAY}
+            onChange={e => e.target.value && setSelectedDate(e.target.value)}
+            className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-blue-400 transition bg-white"
+          />
         )}
       </div>
 
@@ -576,12 +581,12 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
 
   // State keyed by the row's effective date (session_date for real sessions, generated date for empty slots)
   const initLeaders = () => Object.fromEntries(rows.map(r => [r.date, r.session?.session_lead_name || '']))
-  const initStatuses = () => Object.fromEntries(rows.map(r => [r.date, r.session?.status || '']))
+  const initTopics  = () => Object.fromEntries(rows.map(r => [r.date, r.session?.topic || '']))
 
   const [leaders, setLeaders]         = useState<Record<string, string>>(initLeaders)
   const [origLeaders]                 = useState<Record<string, string>>(initLeaders)
-  const [statuses, setStatuses]       = useState<Record<string, string>>(initStatuses)
-  const [origStatuses]                = useState<Record<string, string>>(initStatuses)
+  const [topics, setTopics]           = useState<Record<string, string>>(initTopics)
+  const [origTopics]                  = useState<Record<string, string>>(initTopics)
   const [editedDates, setEditedDates] = useState<Record<string, string>>({})
   const [savingDate, setSavingDate]   = useState<string | null>(null)
   const [savedDate, setSavedDate]     = useState<string | null>(null)
@@ -604,7 +609,7 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
   async function save(rowDate: string, newDateOverride?: string) {
     if (savingDate) return
     const leader  = leaders[rowDate] ?? ''
-    const status  = statuses[rowDate] ?? ''
+    const topic   = topics[rowDate] ?? ''
     const newDate = newDateOverride ?? editedDatesRef.current[rowDate]
     const existing = sessions.find(s => s.session_date === rowDate)
     setSavingDate(rowDate)
@@ -612,15 +617,15 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
       await authFetch(`/api/classes/${classId}/sessions/${existing.id}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          topic: existing.topic, notes: existing.notes,
-          session_lead_name: leader, status,
+          topic, notes: existing.notes,
+          session_lead_name: leader, status: existing.status,
           ...(newDate && newDate !== rowDate ? { session_date: newDate } : {}),
         }),
       })
     } else {
       await authFetch(`/api/classes/${classId}/sessions`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date: newDate || rowDate, topic: '', notes: '', session_lead_name: leader, status }),
+        body: JSON.stringify({ date: newDate || rowDate, topic, notes: '', session_lead_name: leader, status: '' }),
       })
     }
     setEditedDates(p => { const n = { ...p }; delete n[rowDate]; return n })
@@ -632,14 +637,14 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
 
   function handleBlur(rowDate: string, domValue?: string) {
     const leaderChanged = (leaders[rowDate] ?? '') !== (origLeaders[rowDate] ?? '')
-    const statusChanged = (statuses[rowDate] ?? '') !== (origStatuses[rowDate] ?? '')
+    const topicChanged  = (topics[rowDate] ?? '') !== (origTopics[rowDate] ?? '')
     const pending = domValue ?? editedDatesRef.current[rowDate]
     const dateChanged = !!pending && pending !== rowDate
     if (dateChanged) {
       editedDatesRef.current = { ...editedDatesRef.current, [rowDate]: pending }
       setEditedDates(p => ({ ...p, [rowDate]: pending }))
       save(rowDate, pending)
-    } else if (leaderChanged || statusChanged) {
+    } else if (leaderChanged || topicChanged) {
       save(rowDate)
     }
   }
@@ -663,9 +668,8 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
               <tr className="bg-gray-100 border-b border-gray-200">
                 <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-8">#</th>
                 <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Day</th>
-                <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Session Leader</th>
+                <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Session Topic</th>
                 <th className="px-3 py-2 w-8"></th>
               </tr>
             </thead>
@@ -674,7 +678,6 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
                 const activeDate = editedDates[date] || date
                 const isPast     = activeDate < today
                 const isToday    = activeDate === today
-                const dayName    = new Date(activeDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' })
                 const isSaving   = savingDate === date
                 const isSaved    = savedDate === date
                 const isOffSched = !!session && !rowIsGenerated(date)
@@ -700,26 +703,6 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
                         }`}
                       />
                     </td>
-                    <td className={`px-3 py-2 text-xs font-semibold hidden sm:table-cell ${new Date(activeDate + 'T00:00:00').getDay() === 0 ? 'text-gray-400' : 'text-orange-500'}`}>{dayName}</td>
-                    <td className="px-3 py-2">
-                      <select
-                        value={statuses[date] ?? ''}
-                        onChange={e => { setStatuses(p => ({ ...p, [date]: e.target.value })); setTimeout(() => save(date), 0) }}
-                        className={`border rounded-lg px-2 py-1 text-xs font-semibold outline-none focus:border-blue-400 bg-white ${{
-                          '':          'border-gray-200 text-gray-500',
-                          'cancelled': 'border-red-200 text-red-600',
-                          'postponed': 'border-orange-200 text-orange-500',
-                          'changed':   'border-blue-200 text-blue-600',
-                          'other':     'border-purple-200 text-purple-600',
-                        }[statuses[date] ?? ''] ?? 'border-gray-200 text-gray-500'}`}
-                      >
-                        <option value="">{isToday ? 'Today' : isPast ? 'Past' : 'Upcoming'}</option>
-                        <option value="cancelled">Cancelled</option>
-                        <option value="postponed">Postponed</option>
-                        <option value="changed">Changed</option>
-                        <option value="other">Other</option>
-                      </select>
-                    </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-1.5">
                         <input
@@ -735,6 +718,18 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
                         {isSaving && <Loader2 className="w-3.5 h-3.5 text-blue-400 animate-spin flex-shrink-0" />}
                         {isSaved  && <CheckCircle2 className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />}
                       </div>
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        value={topics[date] ?? ''}
+                        onChange={e => setTopics(p => ({ ...p, [date]: e.target.value }))}
+                        onBlur={() => handleBlur(date)}
+                        onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur() }}
+                        placeholder="Enter session topic…"
+                        className={`w-full border rounded-lg px-2.5 py-1.5 text-sm outline-none transition ${
+                          isToday ? 'border-blue-300 focus:border-blue-500 bg-white' : 'border-gray-200 focus:border-blue-400 bg-white'
+                        }`}
+                      />
                     </td>
                     <td className="px-2 py-2">
                       {session && (
@@ -1055,7 +1050,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
       {/* Add to Congregation */}
       <section>
         <h3 className={sectionH}>
-          <UserPlus className="w-4 h-4" /> Add to Record
+          <UserPlus className="w-4 h-4" /> Add to Contact Record
         </h3>
         <div className="flex flex-col gap-2">
           <div className="flex gap-2">
@@ -1849,6 +1844,7 @@ export default function ClassDetailPage() {
             isLeadMode={false}
             onCheckedIn={handleKioskCheckedIn}
             authFetch={authFetch}
+            cls={cls}
           />
         </div>
 
@@ -1911,7 +1907,7 @@ export default function ClassDetailPage() {
 
       <div className={`mx-auto px-4 py-6 ${leadTab === 'edit' || leadTab === 'summary' ? 'max-w-3xl' : 'max-w-lg'}`}>
         {leadTab === 'checkin' && (
-          <KioskCheckinPanel classId={id} isLeadMode authFetch={authFetch} />
+          <KioskCheckinPanel classId={id} isLeadMode authFetch={authFetch} cls={cls} />
         )}
         {leadTab === 'roster' && (
           <RosterPanel classId={id} sessions={sessions} onRefresh={loadData} authFetch={authFetch} />

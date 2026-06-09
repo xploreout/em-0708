@@ -439,7 +439,7 @@ export default function AttendancePage() {
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <div className="bg-amber-500 px-5 py-3.5 flex items-center gap-2">
               <Key className="w-4 h-4 text-white" />
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">Class Update Access</h2>
+              <h2 className="text-sm font-bold text-white uppercase tracking-wider">Class Update</h2>
             </div>
             <div className="p-5">
               <p className="text-sm text-gray-500 mb-4">
