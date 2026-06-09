@@ -5,6 +5,7 @@ import PdfViewerModal from '../PdfViewerModal'
 type ClassDoc = {
   id: number; name: string; url: string; file_type: string
   size_bytes: number; created_at: string
+  session_id: number | null; session_date: string | null; session_topic: string | null
 }
 type ClassWithDocs = {
   id: number; name: string; lead_name: string; description: string
@@ -138,94 +139,128 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
         <div className="border-t border-gray-100 px-5 py-4">
           {cls.documents.length === 0 ? (
             <p className="text-sm text-gray-400 py-2">No documents uploaded yet.</p>
-          ) : (
-            <div className="flex flex-col gap-1">
-              {cls.documents.map(doc => {
-                const isYt  = doc.file_type === 'video/youtube'
-                const isPdf = doc.file_type === 'application/pdf'
-                const isImg = doc.file_type.startsWith('image/')
-                const vid   = isYt ? ytVideoId(doc.url) : null
-
-                const ytExpanded = isYt && expandedYt.has(doc.id)
-                return (
-                  <div key={doc.id} className="rounded-lg border border-gray-100 bg-white overflow-hidden">
-                    <div className="flex items-center gap-3 px-3 py-2">
-                      {vid
-                        ? <img src={`https://img.youtube.com/vi/${vid}/default.jpg`} alt=""
+          ) : (() => {
+            const renderDoc = (doc: ClassDoc) => {
+              const isYt  = doc.file_type === 'video/youtube'
+              const isPdf = doc.file_type === 'application/pdf'
+              const isImg = doc.file_type.startsWith('image/')
+              const vid   = isYt ? ytVideoId(doc.url) : null
+              const ytExpanded = isYt && expandedYt.has(doc.id)
+              return (
+                <div key={doc.id} className="rounded-lg border border-gray-100 bg-white overflow-hidden">
+                  <div className="flex items-center gap-3 px-3 py-2">
+                    {vid
+                      ? <img src={`https://img.youtube.com/vi/${vid}/default.jpg`} alt=""
+                          onClick={() => toggleYt(doc.id)}
+                          className="w-12 h-8 object-cover rounded flex-shrink-0 cursor-pointer hover:opacity-80 transition" />
+                      : <DocIcon type={doc.file_type} />
+                    }
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-800 truncate leading-tight">{doc.name}</div>
+                      {doc.size_bytes > 0 && <div className="text-xs text-gray-400">{formatBytes(doc.size_bytes)}</div>}
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {isYt && (
+                        <>
+                          <button
                             onClick={() => toggleYt(doc.id)}
-                            className="w-12 h-8 object-cover rounded flex-shrink-0 cursor-pointer hover:opacity-80 transition" />
-                        : <DocIcon type={doc.file_type} />
-                      }
-
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-gray-800 truncate leading-tight">{doc.name}</div>
-                        {doc.size_bytes > 0 && <div className="text-xs text-gray-400">{formatBytes(doc.size_bytes)}</div>}
-                      </div>
-
-                      {/* Action buttons */}
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        {isYt && (
-                          <>
-                            <button
-                              onClick={() => toggleYt(doc.id)}
-                              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition ${ytExpanded ? 'bg-red-100 text-red-600' : 'bg-red-500 hover:bg-red-600 text-white'}`}
-                            >
-                              <Play className="w-3 h-3" fill={ytExpanded ? 'currentColor' : 'none'} />
-                              {ytExpanded ? 'Hide' : 'View'}
-                            </button>
-                            <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                              className="flex items-center gap-1 px-2 py-1 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 text-xs transition"
-                              title="Open on YouTube">
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </>
-                        )}
-                        {isPdf && (
-                          <>
-                            <button
-                              onClick={() => setViewingPdf({ url: `/api/proxy-pdf?url=${encodeURIComponent(doc.url)}`, name: doc.name, downloadUrl: dlUrl(doc.url) })}
-                              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition"
-                            >
-                              View
-                            </button>
-                            <a href={dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
-                              className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-semibold transition">
-                              <Download className="w-3 h-3" />
-                            </a>
-                          </>
-                        )}
-                        {isImg && (
+                            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition ${ytExpanded ? 'bg-red-100 text-red-600' : 'bg-red-500 hover:bg-red-600 text-white'}`}
+                          >
+                            <Play className="w-3 h-3" fill={ytExpanded ? 'currentColor' : 'none'} />
+                            {ytExpanded ? 'Hide' : 'View'}
+                          </button>
                           <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold transition">
-                            View
+                            className="flex items-center gap-1 px-2 py-1 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 text-xs transition"
+                            title="Open on YouTube">
+                            <ExternalLink className="w-3 h-3" />
                           </a>
-                        )}
-                        {!isYt && !isPdf && !isImg && (
+                        </>
+                      )}
+                      {isPdf && (
+                        <>
+                          <button
+                            onClick={() => setViewingPdf({ url: `/api/proxy-pdf?url=${encodeURIComponent(doc.url)}`, name: doc.name, downloadUrl: dlUrl(doc.url) })}
+                            className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition"
+                          >
+                            View
+                          </button>
                           <a href={dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
                             className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-semibold transition">
-                            <Download className="w-3 h-3" /> Download
+                            <Download className="w-3 h-3" />
                           </a>
-                        )}
+                        </>
+                      )}
+                      {isImg && (
+                        <a href={doc.url} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold transition">
+                          View
+                        </a>
+                      )}
+                      {!isYt && !isPdf && !isImg && (
+                        <a href={dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-semibold transition">
+                          <Download className="w-3 h-3" /> Download
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  {ytExpanded && isYt && (
+                    <div className="px-3 pb-3">
+                      <div className="aspect-video w-full rounded overflow-hidden bg-black">
+                        <iframe
+                          src={ytEmbedUrl(doc.url)}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={doc.name}
+                        />
                       </div>
                     </div>
-                    {ytExpanded && isYt && (
-                      <div className="px-3 pb-3">
-                        <div className="aspect-video w-full rounded overflow-hidden bg-black">
-                          <iframe
-                            src={ytEmbedUrl(doc.url)}
-                            className="w-full h-full"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            title={doc.name}
-                          />
-                        </div>
-                      </div>
-                    )}
+                  )}
+                </div>
+              )
+            }
+
+            const classDocs = cls.documents.filter(d => !d.session_id)
+
+            // Session number based on chronological order (Session 1 = oldest)
+            const sessionDates = [...new Set(
+              cls.documents.filter(d => d.session_date).map(d => d.session_date!)
+            )].sort((a, b) => a.localeCompare(b))
+            const sessionNumberMap = new Map(sessionDates.map((date, i) => [date, i + 1]))
+
+            // Group session docs by session, sorted latest first
+            const sessionGroups = Object.values(
+              cls.documents.filter(d => d.session_id).reduce((acc, d) => {
+                const sid = d.session_id!
+                if (!acc[sid]) acc[sid] = { sid, date: d.session_date || '', topic: d.session_topic || '', docs: [] }
+                acc[sid].docs.push(d)
+                return acc
+              }, {} as Record<number, { sid: number; date: string; topic: string; docs: ClassDoc[] }>)
+            ).sort((a, b) => b.date.localeCompare(a.date))
+
+            return (
+              <div className="flex flex-col gap-4">
+                {classDocs.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Class Documents</p>
+                    <div className="flex flex-col gap-1">{classDocs.map(renderDoc)}</div>
                   </div>
-                )
-              })}
-            </div>
-          )}
+                )}
+                {sessionGroups.map(sg => {
+                  const sessionNum = sg.date ? sessionNumberMap.get(sg.date) : undefined
+                  return (
+                    <div key={sg.sid}>
+                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                        {sessionNum != null ? `Session ${sessionNum} · ` : ''}{sg.date ? fmtDate(sg.date) : ''}{sg.topic ? ` — ${sg.topic}` : ''}
+                      </p>
+                      <div className="flex flex-col gap-1">{sg.docs.map(renderDoc)}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })()}
         </div>
       )}
     </div>

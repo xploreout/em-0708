@@ -8,19 +8,19 @@ import {
   ClipboardList, BarChart2, Edit2, Users, Key, LogOut,
   Plus, ChevronDown, ChevronRight, Archive, ArchiveRestore, Trash2,
   Upload, FileText, File, FileImage, Download, Loader2, Youtube, Link, StickyNote, Send,
-  Play, ExternalLink,
+  Play, ExternalLink, UserPlus,
 } from 'lucide-react'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type ClassInfo = {
   id: number; name: string; lead_name: string; lead_email: string; description: string
-  location: string; meeting_day: string; meeting_time: string
+  location: string; meeting_day: string; meeting_time: string; end_time: string
   recurrence: string; start_date: string | null; end_date: string | null; archived?: boolean
 }
 type Attendee  = { id: number; person_name: string; phone: string; attendee_notes: string; checked_in_at: string }
-type Session   = { id: number; session_date: string; topic: string; notes: string; session_lead_name: string; attendees: Attendee[] }
+type Session   = { id: number; session_date: string; topic: string; notes: string; session_lead_name: string; status: string; attendees: Attendee[] }
 type SearchResult = { name: string; phone: string; lastSeen: string | null; inSystem: boolean }
-type ClassDoc     = { id: number; name: string; url: string; file_type: string; size_bytes: number; created_at: string }
+type ClassDoc     = { id: number; name: string; url: string; file_type: string; size_bytes: number; created_at: string; session_id: number | null; session_date: string | null }
 
 const TODAY = new Date().toISOString().slice(0, 10)
 const DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
@@ -29,60 +29,6 @@ function fmtDate(d: string) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-// ── Confirm Overlay (2 s) ──────────────────────────────────────────────────────
-function ConfirmOverlay({ name }: { name: string }) {
-  return (
-    <div className="fixed inset-0 z-50 bg-green-500 flex flex-col items-center justify-center select-none">
-      <CheckCircle2 className="w-24 h-24 text-white mb-5 animate-bounce" />
-      <h1 className="text-4xl font-bold text-white mb-2">{name}</h1>
-      <p className="text-white text-xl opacity-90">Checked in!</p>
-    </div>
-  )
-}
-
-// ── Class Info Display (4 s) ───────────────────────────────────────────────────
-function ClassInfoDisplay({ cls, todaySession }: { cls: ClassInfo; todaySession: Session | null }) {
-  const [secs, setSecs] = useState(4)
-  useEffect(() => {
-    const t = setInterval(() => setSecs(s => s - 1), 1000)
-    return () => clearInterval(t)
-  }, [])
-
-  return (
-    <div className="fixed inset-0 z-50 bg-blue-600 flex flex-col items-center justify-center px-6 text-white select-none">
-      <div className="text-center max-w-md">
-        <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-5">
-          <ClipboardList className="w-8 h-8 text-white" />
-        </div>
-        <h1 className="text-4xl font-bold mb-3">{cls.name}</h1>
-        {todaySession?.topic && (
-          <p className="text-xl text-blue-100 mb-4">Today: <em>{todaySession.topic}</em></p>
-        )}
-        <div className="flex flex-col gap-2 items-center text-blue-100 text-base mb-6">
-          {cls.meeting_day && cls.meeting_time && (
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              {cls.meeting_day}s · {cls.meeting_time}
-            </div>
-          )}
-          {cls.location && (
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              {cls.location}
-            </div>
-          )}
-          {cls.lead_name && (
-            <div className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Leader: {cls.lead_name}
-            </div>
-          )}
-        </div>
-        <p className="text-blue-200 text-sm">Returning in {secs}s…</p>
-      </div>
-    </div>
-  )
-}
 
 // ── Lead Password Modal ────────────────────────────────────────────────────────
 function LeadPasswordModal({ classId, onSuccess, onClose, authFetch }:
@@ -215,22 +161,30 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
   const [q, setQ]                 = useState('')
   const [results, setResults]     = useState<SearchResult[]>([])
   const [searching, setSearching] = useState(false)
-  const [todayList, setTodayList] = useState<Attendee[]>([])
   const [flash, setFlash]         = useState<{ msg: string; ok: boolean } | null>(null)
   const [notifyFor, setNotifyFor] = useState<string | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const loadToday = useCallback(async () => {
+  const [allSessions, setAllSessions] = useState<Session[]>([])
+  const [selectedDate, setSelectedDate] = useState(TODAY)
+  const [checkins, setCheckins] = useState<Attendee[]>([])
+
+  const loadSessions = useCallback(async () => {
     const r = await authFetch(`/api/classes/${classId}/sessions`)
-    const sessions: Session[] = await r.json()
-    const today = sessions.find(s => s.session_date === TODAY)
-    setTodayList(today?.attendees || [])
+    const s = await r.json()
+    setAllSessions(Array.isArray(s) ? s : [])
   }, [classId, authFetch])
 
   useEffect(() => {
-    loadToday()
+    loadSessions()
     setTimeout(() => inputRef.current?.focus(), 80)
-  }, [loadToday])
+  }, [loadSessions])
+
+  // Recompute checkins list whenever selected date or sessions data changes
+  useEffect(() => {
+    const s = allSessions.find(s => s.session_date === selectedDate)
+    setCheckins(s?.attendees || [])
+  }, [selectedDate, allSessions])
 
   useEffect(() => {
     if (!q.trim()) { setResults([]); return }
@@ -248,16 +202,27 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
     const r = await authFetch(`/api/classes/${classId}/checkin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ person_name: name, phone }),
+      body: JSON.stringify({ person_name: name, phone, session_date: selectedDate }),
     })
     const d = await r.json()
     if (!r.ok) {
-      const msg = d.error === 'Already checked in today' ? `${name} is already checked in.` : (d.error || 'Error')
+      const isAlready = d.error === 'Already checked in'
+      const dateLabel = selectedDate === TODAY ? 'today' : `on ${fmtDate(selectedDate)}`
+      const msg = isAlready ? `${name} is already checked in ${dateLabel}.` : (d.error || 'Error')
       setFlash({ msg, ok: false })
       setTimeout(() => setFlash(null), 3000)
       return
     }
-    setTodayList(prev => [...prev, d])
+    setCheckins(prev => [...prev, d])
+    setAllSessions(prev => {
+      const idx = prev.findIndex(s => s.session_date === selectedDate)
+      if (idx >= 0) {
+        const updated = [...prev]
+        updated[idx] = { ...updated[idx], attendees: [...updated[idx].attendees, d] }
+        return updated
+      }
+      return prev
+    })
     setQ(''); setResults([])
     if (isLeadMode) {
       setFlash({ msg: `${name} checked in!`, ok: true })
@@ -269,13 +234,52 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
 
   async function doRemove(aid: number) {
     const r = await authFetch(`/api/classes/${classId}/attendance/${aid}`, { method: 'DELETE' })
-    if (r.ok) setTodayList(prev => prev.filter(a => a.id !== aid))
+    if (r.ok) setCheckins(prev => prev.filter(a => a.id !== aid))
   }
 
   const noResults = q.trim().length > 0 && !searching && results.length === 0
 
+  // Build date options: today first, then existing session dates most-recent-first
+  const sessionDates = [TODAY, ...allSessions
+    .map(s => s.session_date)
+    .filter(d => d !== TODAY)
+    .sort((a, b) => b.localeCompare(a))
+  ]
+
   return (
     <div>
+      {/* Session date selector */}
+      <div className="mb-4">
+        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+          <Calendar className="w-3.5 h-3.5" /> Session Date
+        </label>
+        <input
+          type="date"
+          value={selectedDate}
+          max={TODAY}
+          onChange={e => e.target.value && setSelectedDate(e.target.value)}
+          className="w-full border-2 border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-blue-400 transition bg-white"
+        />
+        {sessionDates.length > 1 && (
+          <div className="flex flex-wrap gap-1.5 mt-2">
+            {sessionDates.slice(0, 6).map(date => (
+              <button
+                key={date}
+                type="button"
+                onClick={() => setSelectedDate(date)}
+                className={`text-xs px-2.5 py-1 rounded-full border transition font-medium ${
+                  selectedDate === date
+                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                    : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                }`}
+              >
+                {date === TODAY ? 'Today' : fmtDate(date)}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="relative mb-3">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
@@ -351,13 +355,13 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
 
       <div className="mt-5">
         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-          Today ({todayList.length})
+          {selectedDate === TODAY ? 'Today' : fmtDate(selectedDate)} ({checkins.length})
         </h3>
-        {todayList.length === 0 ? (
+        {checkins.length === 0 ? (
           <p className="text-sm text-gray-400">No check-ins yet.</p>
         ) : (
           <div className="flex flex-col gap-1.5">
-            {todayList.map(a => (
+            {checkins.map(a => (
               <div key={a.id} className="flex items-center gap-3 px-4 py-2.5 bg-white border border-gray-100 rounded-lg shadow-sm">
                 <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
@@ -558,51 +562,90 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
   authFetch: (u: string, i?: RequestInit) => Promise<Response>
   onRefresh: () => void
 }) {
-  const dates = generateSessionDates(cls)
+  const genDates = generateSessionDates(cls)
 
-  // Build initial leader names from existing sessions
-  const initLeaders = () => {
-    const m: Record<string, string> = {}
-    dates.forEach(d => { m[d] = '' })
-    sessions.forEach(s => { m[s.session_date] = s.session_lead_name || '' })
-    return m
+  // Build rows: actual sessions at their real session_date, plus empty slots for
+  // generated dates that have no session. This means rows survive navigation because
+  // they are derived from DB data, not from transient component state.
+  const genDateSet = new Set(genDates)
+  const sessionDates = new Set(sessions.map(s => s.session_date))
+  const rows: Array<{ key: string; date: string; session: Session | undefined }> = [
+    ...sessions.map(s => ({ key: s.session_date, date: s.session_date, session: s })),
+    ...genDates.filter(d => !sessionDates.has(d)).map(d => ({ key: d, date: d, session: undefined })),
+  ].sort((a, b) => a.date.localeCompare(b.date))
+
+  // State keyed by the row's effective date (session_date for real sessions, generated date for empty slots)
+  const initLeaders = () => Object.fromEntries(rows.map(r => [r.date, r.session?.session_lead_name || '']))
+  const initStatuses = () => Object.fromEntries(rows.map(r => [r.date, r.session?.status || '']))
+
+  const [leaders, setLeaders]         = useState<Record<string, string>>(initLeaders)
+  const [origLeaders]                 = useState<Record<string, string>>(initLeaders)
+  const [statuses, setStatuses]       = useState<Record<string, string>>(initStatuses)
+  const [origStatuses]                = useState<Record<string, string>>(initStatuses)
+  const [editedDates, setEditedDates] = useState<Record<string, string>>({})
+  const [savingDate, setSavingDate]   = useState<string | null>(null)
+  const [savedDate, setSavedDate]     = useState<string | null>(null)
+  const [deletingId, setDeletingId]   = useState<number | null>(null)
+
+  // Refs so event handlers always see latest state without stale-closure issues
+  const editedDatesRef = useRef<Record<string, string>>({})
+  editedDatesRef.current = editedDates
+
+  async function deleteSession(session: Session) {
+    if (!confirm(`Delete session on ${fmtDate(session.session_date)}? This removes all attendance records for this session.`)) return
+    setDeletingId(session.id)
+    await authFetch(`/api/classes/${classId}/sessions/${session.id}`, { method: 'DELETE' })
+    setDeletingId(null)
+    onRefresh()
   }
 
-  const [leaders, setLeaders]       = useState<Record<string, string>>(initLeaders)
-  const [origLeaders]               = useState<Record<string, string>>(initLeaders)
-  const [savingDate, setSavingDate] = useState<string | null>(null)
-  const [savedDate, setSavedDate]   = useState<string | null>(null)
+  if (rows.length === 0) return null
 
-  if (dates.length === 0) return null
-
-  async function save(date: string) {
+  async function save(rowDate: string, newDateOverride?: string) {
     if (savingDate) return
-    const cur  = leaders[date] ?? ''
-    setSavingDate(date)
-    const existing = sessions.find(s => s.session_date === date)
+    const leader  = leaders[rowDate] ?? ''
+    const status  = statuses[rowDate] ?? ''
+    const newDate = newDateOverride ?? editedDatesRef.current[rowDate]
+    const existing = sessions.find(s => s.session_date === rowDate)
+    setSavingDate(rowDate)
     if (existing) {
       await authFetch(`/api/classes/${classId}/sessions/${existing.id}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: existing.topic, notes: existing.notes, session_lead_name: cur }),
+        body: JSON.stringify({
+          topic: existing.topic, notes: existing.notes,
+          session_lead_name: leader, status,
+          ...(newDate && newDate !== rowDate ? { session_date: newDate } : {}),
+        }),
       })
     } else {
       await authFetch(`/api/classes/${classId}/sessions`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ date, topic: '', notes: '', session_lead_name: cur }),
+        body: JSON.stringify({ date: newDate || rowDate, topic: '', notes: '', session_lead_name: leader, status }),
       })
     }
+    setEditedDates(p => { const n = { ...p }; delete n[rowDate]; return n })
     setSavingDate(null)
-    setSavedDate(date)
-    setTimeout(() => setSavedDate(d => d === date ? null : d), 1500)
+    setSavedDate(rowDate)
+    setTimeout(() => setSavedDate(d => d === rowDate ? null : d), 1500)
     onRefresh()
   }
 
-  function handleBlur(date: string) {
-    // Auto-save if value changed
-    if ((leaders[date] ?? '') !== (origLeaders[date] ?? '')) save(date)
+  function handleBlur(rowDate: string, domValue?: string) {
+    const leaderChanged = (leaders[rowDate] ?? '') !== (origLeaders[rowDate] ?? '')
+    const statusChanged = (statuses[rowDate] ?? '') !== (origStatuses[rowDate] ?? '')
+    const pending = domValue ?? editedDatesRef.current[rowDate]
+    const dateChanged = !!pending && pending !== rowDate
+    if (dateChanged) {
+      editedDatesRef.current = { ...editedDatesRef.current, [rowDate]: pending }
+      setEditedDates(p => ({ ...p, [rowDate]: pending }))
+      save(rowDate, pending)
+    } else if (leaderChanged || statusChanged) {
+      save(rowDate)
+    }
   }
 
   const today = TODAY
+  const rowIsGenerated = (d: string) => genDateSet.has(d)
 
   return (
     <section>
@@ -623,34 +666,59 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
                 <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">Day</th>
                 <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Session Leader</th>
+                <th className="px-3 py-2 w-8"></th>
               </tr>
             </thead>
             <tbody>
-              {dates.map((date, idx) => {
-                const isPast   = date < today
-                const isToday  = date === today
-                const isFuture = date > today
-                const dayName  = new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' })
-                const isSaving = savingDate === date
-                const isSaved  = savedDate === date
+              {rows.map(({ key, date, session }, idx) => {
+                const activeDate = editedDates[date] || date
+                const isPast     = activeDate < today
+                const isToday    = activeDate === today
+                const dayName    = new Date(activeDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short' })
+                const isSaving   = savingDate === date
+                const isSaved    = savedDate === date
+                const isOffSched = !!session && !rowIsGenerated(date)
 
                 return (
                   <tr
-                    key={date}
+                    key={key}
                     className={`border-b border-gray-100 last:border-0 ${
-                      isToday  ? 'bg-blue-50'  :
-                      isPast   ? 'bg-gray-50/60' : 'bg-white'
+                      isToday ? 'bg-blue-50' : isPast ? 'bg-gray-50/60' : 'bg-white'
                     }`}
                   >
-                    <td className="px-3 py-2 text-xs text-gray-400 font-medium">{idx + 1}</td>
-                    <td className="px-3 py-2 text-sm font-semibold text-gray-800 whitespace-nowrap">
-                      {fmtDate(date)}
+                    <td className="px-3 py-2 text-xs text-gray-400 font-medium">
+                      {isOffSched ? <span title="Off-schedule session" className="text-orange-400">*</span> : idx + 1}
                     </td>
-                    <td className="px-3 py-2 text-xs text-gray-500 hidden sm:table-cell">{dayName}</td>
                     <td className="px-3 py-2">
-                      {isToday  && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700">Today</span>}
-                      {isPast   && <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Past</span>}
-                      {isFuture && <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-600">Upcoming</span>}
+                      <input
+                        type="date"
+                        value={editedDates[date] ?? date}
+                        onChange={e => setEditedDates(p => ({ ...p, [date]: e.target.value }))}
+                        onBlur={e => handleBlur(date, e.currentTarget.value || undefined)}
+                        className={`border rounded-lg px-3 py-2 text-xs outline-none transition w-36 ${
+                          isToday ? 'border-blue-300 focus:border-blue-500 bg-white' : 'border-gray-200 focus:border-blue-400 bg-white'
+                        }`}
+                      />
+                    </td>
+                    <td className={`px-3 py-2 text-xs font-semibold hidden sm:table-cell ${new Date(activeDate + 'T00:00:00').getDay() === 0 ? 'text-gray-400' : 'text-orange-500'}`}>{dayName}</td>
+                    <td className="px-3 py-2">
+                      <select
+                        value={statuses[date] ?? ''}
+                        onChange={e => { setStatuses(p => ({ ...p, [date]: e.target.value })); setTimeout(() => save(date), 0) }}
+                        className={`border rounded-lg px-2 py-1 text-xs font-semibold outline-none focus:border-blue-400 bg-white ${{
+                          '':          'border-gray-200 text-gray-500',
+                          'cancelled': 'border-red-200 text-red-600',
+                          'postponed': 'border-orange-200 text-orange-500',
+                          'changed':   'border-blue-200 text-blue-600',
+                          'other':     'border-purple-200 text-purple-600',
+                        }[statuses[date] ?? ''] ?? 'border-gray-200 text-gray-500'}`}
+                      >
+                        <option value="">{isToday ? 'Today' : isPast ? 'Past' : 'Upcoming'}</option>
+                        <option value="cancelled">Cancelled</option>
+                        <option value="postponed">Postponed</option>
+                        <option value="changed">Changed</option>
+                        <option value="other">Other</option>
+                      </select>
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-1.5">
@@ -658,7 +726,7 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
                           value={leaders[date] ?? ''}
                           onChange={e => setLeaders(p => ({ ...p, [date]: e.target.value }))}
                           onBlur={() => handleBlur(date)}
-                          onKeyDown={e => { if (e.key === 'Enter') { e.currentTarget.blur() } }}
+                          onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur() }}
                           placeholder="Enter leader name…"
                           className={`flex-1 min-w-0 border rounded-lg px-2.5 py-1.5 text-sm outline-none transition ${
                             isToday ? 'border-blue-300 focus:border-blue-500 bg-white' : 'border-gray-200 focus:border-blue-400 bg-white'
@@ -667,6 +735,20 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
                         {isSaving && <Loader2 className="w-3.5 h-3.5 text-blue-400 animate-spin flex-shrink-0" />}
                         {isSaved  && <CheckCircle2 className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />}
                       </div>
+                    </td>
+                    <td className="px-2 py-2">
+                      {session && (
+                        <button
+                          onClick={() => deleteSession(session)}
+                          disabled={deletingId === session.id}
+                          className="text-gray-300 hover:text-red-500 transition disabled:opacity-40"
+                          title="Delete session"
+                        >
+                          {deletingId === session.id
+                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            : <Trash2 className="w-3.5 h-3.5" />}
+                        </button>
+                      )}
                     </td>
                   </tr>
                 )
@@ -689,8 +771,8 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
 ) {
   const { role } = useAuth()
   const isAdmin = role === 'admin'
-  const [form, setForm] = useState({ ...cls, start_date: cls.start_date || '', end_date: cls.end_date || '' })
-  const [initForm]     = useState({ ...cls, start_date: cls.start_date || '', end_date: cls.end_date || '' })
+  const [form, setForm] = useState({ ...cls, start_date: cls.start_date || '', end_date: cls.end_date || '', end_time: cls.end_time || '' })
+  const [initForm]     = useState({ ...cls, start_date: cls.start_date || '', end_date: cls.end_date || '', end_time: cls.end_time || '' })
   const [savingClass, setSavingClass] = useState(false)
 
   const todaySession = sessions.find(s => s.session_date === TODAY)
@@ -706,10 +788,19 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
     Object.fromEntries(sessions.map(s => [s.id, s.session_lead_name || '']))
   )
   const [savingLeadId, setSavingLeadId] = useState<number | null>(null)
+  const [deletingSessionId, setDeletingSessionId] = useState<number | null>(null)
 
-  const [attendeeNotes, setAttendeeNotes] = useState<Record<number, string>>(
-    Object.fromEntries((todaySession?.attendees || []).map(a => [a.id, a.attendee_notes || '']))
-  )
+  async function deleteSession(sessionId: number, sessionDate: string) {
+    if (!confirm(`Delete session on ${fmtDate(sessionDate)}? This removes all attendance records for this session.`)) return
+    setDeletingSessionId(sessionId)
+    await authFetch(`/api/classes/${classId}/sessions/${sessionId}`, { method: 'DELETE' })
+    setDeletingSessionId(null)
+    onRefresh()
+  }
+
+  const [newContactName, setNewContactName]   = useState('')
+  const [newContactPhone, setNewContactPhone] = useState('')
+  const [newContactEmail, setNewContactEmail] = useState('')
 
   const [flash, setFlash] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -744,14 +835,14 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
   async function handleSave() {
     if (!form.name.trim()) { showFlash('Class name is required'); return }
     setSavingClass(true)
-    const [r1] = await Promise.all([
+    const requests: Promise<Response>[] = [
       authFetch(`/api/classes/${classId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: form.name, lead_name: form.lead_name, lead_email: form.lead_email,
           description: form.description, location: form.location,
-          meeting_day: form.meeting_day, meeting_time: form.meeting_time,
+          meeting_day: form.meeting_day, meeting_time: form.meeting_time, end_time: form.end_time,
           recurrence: form.recurrence,
           start_date: form.start_date || null,
           end_date: form.recurrence !== 'none' ? form.end_date || null : null,
@@ -762,11 +853,29 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic, notes: sessionNotes, session_lead_name: sessionLead, date: TODAY }),
       }),
-    ])
+    ]
+    if (newContactName.trim()) {
+      requests.push(authFetch('/api/congregation/quick-add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newContactName, phone: newContactPhone, email: newContactEmail }),
+      }))
+    }
+    const [r1, , r3] = await Promise.all(requests)
     setSavingClass(false)
     if (r1.ok) {
       onClassSaved(await r1.json())
-      showFlash('Saved!')
+      if (r3) {
+        const d = await r3.json()
+        if (r3.ok) {
+          setNewContactName(''); setNewContactPhone(''); setNewContactEmail('')
+          showFlash(`Saved! ${d.name || newContactName} added to congregation.`)
+        } else {
+          showFlash(`Saved, but contact error: ${d.error || 'failed'}`)
+        }
+      } else {
+        showFlash('Saved!')
+      }
     } else {
       showFlash('Save failed')
     }
@@ -794,18 +903,9 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
     showFlash('Session leader saved!')
   }
 
-  async function saveAttendeeNote(aid: number) {
-    await authFetch(`/api/classes/${classId}/attendance/${aid}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ attendee_notes: attendeeNotes[aid] ?? '' }),
-    })
-    showFlash('Note saved!')
-  }
-
   const inp = 'w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-800 font-medium outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-200 transition bg-white'
   const lbl = 'text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5 block'
-  const sectionH = 'font-bold text-indigo-700 mb-3 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-indigo-100 pb-1.5'
+  const sectionH = 'font-bold text-indigo-700 mb-3 text-sm uppercase tracking-wider flex items-center gap-2'
 
   return (
     <div className="flex flex-col gap-6">
@@ -815,28 +915,8 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
         </div>
       )}
 
-      {/* Save / Cancel */}
-      <div className="flex gap-2">
-        <button
-          onClick={handleSave}
-          disabled={savingClass}
-          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50"
-        >
-          <Save className="w-4 h-4" />
-          {savingClass ? 'Saving…' : 'Save'}
-        </button>
-        <button
-          onClick={handleCancel}
-          disabled={savingClass}
-          className="px-5 py-2.5 rounded-lg border-2 border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition disabled:opacity-50"
-        >
-          Cancel
-        </button>
-      </div>
-
       {/* Class Info */}
       <div>
-        <h3 className={sectionH}>Class Info</h3>
         <div className="flex flex-col gap-3">
           <div><label className={lbl}>Class Name *</label><input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className={inp} required /></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -846,67 +926,66 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
           <div><label className={lbl}>Description</label><textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} className={`${inp} resize-none`} /></div>
         </div>
 
-        {/* Schedule */}
-        <h3 className={`${sectionH} mt-4`}>
-          <Calendar className="w-4 h-4" /> Schedule
-        </h3>
-        <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={lbl}>Day</label>
-              <select value={form.meeting_day} onChange={e => setForm(f => ({ ...f, meeting_day: e.target.value }))} className={inp}>
-                <option value="">— no day —</option>
-                {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className={lbl}>Time</label>
+        <div className="flex flex-col gap-3 mt-4">
+          <div className="flex gap-3">
+            <select value={form.meeting_day} onChange={e => setForm(f => ({ ...f, meeting_day: e.target.value }))} className={`${inp} flex-1`}>
+              <option value="">— no day —</option>
+              {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <div className={`${inp} flex-1 flex items-center gap-1 !py-0 !px-2`}>
               <input
                 type="time"
                 value={form.meeting_time}
                 onChange={e => setForm(f => ({ ...f, meeting_time: e.target.value }))}
-                className={inp}
+                className="w-[88px] outline-none bg-transparent py-2.5 text-sm"
               />
-            </div>
-          </div>
-          <div><label className={lbl}>Location</label><input value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="e.g. Room 201" className={inp} /></div>
-          <div>
-            <label className={lbl}>Recurring</label>
-            <div className="flex gap-2">
-              {(['none','weekly','monthly'] as const).map(r => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setForm(f => ({ ...f, recurrence: r }))}
-                  className={`flex-1 py-2 rounded-lg text-sm font-semibold border-2 transition capitalize ${
-                    form.recurrence === r ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-500 hover:border-gray-300'
-                  }`}
-                >
-                  {r === 'none' ? 'No recurrence' : r}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className={`grid gap-3 ${form.recurrence !== 'none' ? 'grid-cols-2' : 'grid-cols-1'}`}>
-            <div>
-              <label className={lbl}>Begin Date</label>
+              <span className="text-gray-400 text-xs flex-shrink-0">–</span>
               <input
-                type="date"
-                value={form.start_date || ''}
-                onChange={e => setForm(f => ({ ...f, start_date: e.target.value || '' }))}
-                className={inp}
+                type="time"
+                value={form.end_time}
+                onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
+                className="w-[88px] outline-none bg-transparent py-2.5 text-sm"
               />
             </div>
+            <input
+              value={form.location}
+              onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
+              placeholder="Location"
+              className={`${inp} flex-1`}
+            />
+          </div>
+          <div className="flex gap-5">
+            {(['none','weekly','monthly'] as const).map(r => (
+              <label key={r} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="recurrence"
+                  value={r}
+                  checked={form.recurrence === r}
+                  onChange={() => setForm(f => ({ ...f, recurrence: r }))}
+                  className="accent-blue-600 w-4 h-4"
+                />
+                <span className="text-sm text-gray-700 capitalize">{r === 'none' ? 'One Time' : r}</span>
+              </label>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="date"
+              value={form.start_date || ''}
+              onChange={e => setForm(f => ({ ...f, start_date: e.target.value || '' }))}
+              className={`${inp} flex-1`}
+            />
             {form.recurrence !== 'none' && (
-              <div>
-                <label className={lbl}>End Date</label>
+              <>
+                <span className="text-sm text-gray-400 flex-shrink-0">to</span>
                 <input
                   type="date"
                   value={form.end_date || ''}
                   onChange={e => setForm(f => ({ ...f, end_date: e.target.value || '' }))}
-                  className={inp}
+                  className={`${inp} flex-1`}
                 />
-              </div>
+              </>
             )}
           </div>
         </div>
@@ -919,8 +998,10 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
           Today's Session — {fmtDate(TODAY)}
         </h3>
         <div className="flex flex-col gap-3">
-          <div><label className={lbl}>Topic</label><input value={topic} onChange={e => setTopic(e.target.value)} placeholder="What are you studying today?" className={inp} /></div>
-          <div><label className={lbl}>Session Leader</label><input value={sessionLead} onChange={e => setSessionLead(e.target.value)} placeholder="Who is leading today's session?" className={inp} /></div>
+          <div className="flex gap-3">
+            <input value={topic} onChange={e => setTopic(e.target.value)} placeholder="Topic" className={`${inp} flex-1`} />
+            <input value={sessionLead} onChange={e => setSessionLead(e.target.value)} placeholder="Session leader" className={`${inp} flex-1`} />
+          </div>
           <div><label className={lbl}>Session Notes</label><textarea value={sessionNotes} onChange={e => setSessionNotes(e.target.value)} rows={3} placeholder="Notes for this session…" className={`${inp} resize-none`} /></div>
         </div>
       </section>
@@ -957,29 +1038,13 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
                 >
                   {savingLeadId === s.id ? 'Saving…' : <Save className="w-3 h-3" />}
                 </button>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Attendee notes */}
-      {todaySession && todaySession.attendees.length > 0 && (
-        <section>
-          <h3 className={sectionH}>Attendee Notes — Today</h3>
-          <div className="flex flex-col gap-3">
-            {todaySession.attendees.map(a => (
-              <div key={a.id} className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
-                <div className="font-medium text-gray-800 text-sm mb-1.5">{a.person_name}</div>
-                <textarea
-                  value={attendeeNotes[a.id] ?? ''}
-                  onChange={e => setAttendeeNotes(p => ({ ...p, [a.id]: e.target.value }))}
-                  rows={2}
-                  placeholder="Notes about this person…"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-blue-400 resize-none bg-white"
-                />
-                <button onClick={() => saveAttendeeNote(a.id)} className="mt-1 text-xs text-blue-600 hover:text-blue-800 font-medium">
-                  Save note
+                <button
+                  onClick={() => deleteSession(s.id, s.session_date)}
+                  disabled={deletingSessionId === s.id}
+                  className="text-gray-300 hover:text-red-500 transition disabled:opacity-40 flex-shrink-0"
+                  title="Delete session"
+                >
+                  {deletingSessionId === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                 </button>
               </div>
             ))}
@@ -987,12 +1052,60 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
         </section>
       )}
 
+      {/* Add to Congregation */}
+      <section>
+        <h3 className={sectionH}>
+          <UserPlus className="w-4 h-4" /> Add to Record
+        </h3>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <input
+              value={newContactName}
+              onChange={e => setNewContactName(e.target.value)}
+              placeholder="Full name *"
+              className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white"
+            />
+            <input
+              value={newContactPhone}
+              onChange={e => setNewContactPhone(e.target.value)}
+              placeholder="Phone"
+              className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white"
+            />
+            <input
+              value={newContactEmail}
+              onChange={e => setNewContactEmail(e.target.value)}
+              placeholder="Email"
+              className="flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Save / Cancel */}
+      <div className="flex gap-2">
+        <button
+          onClick={handleSave}
+          disabled={savingClass}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50"
+        >
+          <Save className="w-4 h-4" />
+          {savingClass ? 'Saving…' : 'Save'}
+        </button>
+        <button
+          onClick={handleCancel}
+          disabled={savingClass}
+          className="px-5 py-2.5 rounded-lg border-2 border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition disabled:opacity-50"
+        >
+          Cancel
+        </button>
+      </div>
+
       {/* Documents */}
       <section>
         <h3 className={sectionH}>
-          <FileText className="w-4 h-4" /> Documents
+          <FileText className="w-4 h-4" /> Upload Documents
         </h3>
-        <DocumentsPanel classId={classId} authFetch={authFetch} />
+        <DocumentsPanel classId={classId} authFetch={authFetch} sessions={sessions} />
       </section>
 
       {/* Admin danger zone */}
@@ -1230,9 +1343,10 @@ function DocIcon({ type }: { type: string }) {
   return <File className="w-4 h-4 text-gray-400 flex-shrink-0" />
 }
 
-function DocumentsPanel({ classId, authFetch }: {
+function DocumentsPanel({ classId, authFetch, sessions = [] }: {
   classId: string
   authFetch: (u: string, i?: RequestInit) => Promise<Response>
+  sessions?: { id: number; session_date: string; topic: string }[]
 }) {
   const { role } = useAuth()
   const [docs, setDocs]           = useState<ClassDoc[]>([])
@@ -1242,6 +1356,7 @@ function DocumentsPanel({ classId, authFetch }: {
   const [flash, setFlash]         = useState<{ msg: string; ok: boolean } | null>(null)
   const [docName, setDocName]     = useState('')
   const [ytUrl, setYtUrl]         = useState('')
+  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null)
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [viewingPdf, setViewingPdf] = useState<{ url: string; name: string; downloadUrl: string } | null>(null)
   const [expandedYt, setExpandedYt] = useState<Set<number>>(new Set())
@@ -1267,6 +1382,7 @@ function DocumentsPanel({ classId, authFetch }: {
     const fd = new FormData()
     fd.append('file', file)
     if (docName.trim()) fd.append('name', docName.trim())
+    if (selectedSessionId) fd.append('session_id', String(selectedSessionId))
     try {
       const r = await authFetch(`/api/classes/${classId}/documents`, { method: 'POST', body: fd })
       const d = await r.json()
@@ -1282,7 +1398,7 @@ function DocumentsPanel({ classId, authFetch }: {
     try {
       const r = await authFetch(`/api/classes/${classId}/documents/link`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: docName.trim() || ytUrl.trim(), url: ytUrl.trim() }),
+        body: JSON.stringify({ name: docName.trim() || ytUrl.trim(), url: ytUrl.trim(), session_id: selectedSessionId }),
       })
       const d = await r.json()
       if (r.ok) { setDocs(prev => [d, ...prev]); setDocName(''); setYtUrl(''); showFlash('Link added!') }
@@ -1321,9 +1437,9 @@ function DocumentsPanel({ classId, authFetch }: {
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
         {/* Tab toggle */}
         <div className="flex gap-1 mb-3 bg-white border border-gray-200 rounded-lg p-0.5 w-fit">
-          <button onClick={() => setTab('file')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition ${tab === 'file' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
-            <Upload className="w-3 h-3" /> File
+          <button onClick={() => { setTab('file'); fileRef.current?.click() }} disabled={uploading}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition disabled:opacity-50 ${tab === 'file' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
+            {uploading && tab === 'file' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />} File
           </button>
           <button onClick={() => setTab('yt')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition ${tab === 'yt' ? 'bg-red-500 text-white' : 'text-gray-500 hover:text-gray-700'}`}>
@@ -1331,19 +1447,34 @@ function DocumentsPanel({ classId, authFetch }: {
           </button>
         </div>
 
-        <input value={docName} onChange={e => setDocName(e.target.value)}
-          placeholder={tab === 'yt' ? 'Video title (optional)' : 'Title (optional — defaults to filename)'}
-          className={`${inp} mb-2`} />
+        <div className="flex gap-2 mb-2">
+          {sessions.length > 0 && (
+            <select
+              value={selectedSessionId ?? ''}
+              onChange={e => setSelectedSessionId(e.target.value ? parseInt(e.target.value) : null)}
+              className={`${inp} w-auto`}
+            >
+              <option value="">Class Document</option>
+              {[...sessions].sort((a, b) => b.session_date.localeCompare(a.session_date)).map(s => (
+                <option key={s.id} value={s.id}>
+                  {fmtDate(s.session_date)}{s.topic ? ` — ${s.topic}` : ''}
+                </option>
+              ))}
+            </select>
+          )}
+          <input value={docName} onChange={e => setDocName(e.target.value)}
+            placeholder={tab === 'yt' ? 'Video title (optional)' : 'Title (optional)'}
+            className={`${inp} flex-1`} />
+        </div>
 
         {tab === 'file' ? (
           <>
             <input ref={fileRef} type="file" className="hidden" onChange={handleUpload}
               accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,image/*" />
-            <button onClick={() => fileRef.current?.click()} disabled={uploading}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition disabled:opacity-50">
-              {uploading ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading…</> : <><Upload className="w-3.5 h-3.5" /> Choose File</>}
-            </button>
-            <p className="text-xs text-gray-400 text-center mt-1.5">PDF, Word, PPT, Excel, images · max 20 MB</p>
+            {uploading
+              ? <p className="text-xs text-blue-500 text-center py-1 font-medium">Uploading…</p>
+              : <p className="text-xs text-gray-400 text-center">PDF, Word, PPT, Excel, images · max 20 MB</p>
+            }
           </>
         ) : (
           <>
@@ -1358,100 +1489,129 @@ function DocumentsPanel({ classId, authFetch }: {
       </div>
 
       {/* Document list */}
-      <div>
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
-          {docs.length} document{docs.length !== 1 ? 's' : ''}
-        </p>
-        {loading ? (
-          <p className="text-xs text-gray-400 py-3 text-center">Loading…</p>
-        ) : docs.length === 0 ? (
-          <p className="text-xs text-gray-400 py-3 text-center">No documents yet.</p>
-        ) : (
-          <div className="flex flex-col gap-1">
-            {docs.map(doc => {
-              const isYt  = doc.file_type === 'video/youtube'
-              const isPdf = doc.file_type === 'application/pdf'
-              const isImg = doc.file_type.startsWith('image/')
-              const vid   = isYt ? ytVideoId(doc.url) : null
-              const ytExpanded = isYt && expandedYt.has(doc.id)
-              return (
-                <div key={doc.id} className="bg-white border border-gray-100 rounded-lg overflow-hidden">
-                  <div className="flex items-center gap-2 px-3 py-2">
-                    {vid
-                      ? <img src={`https://img.youtube.com/vi/${vid}/default.jpg`} alt=""
-                          onClick={() => toggleYt(doc.id)}
-                          className="w-10 h-7 object-cover rounded flex-shrink-0 cursor-pointer hover:opacity-80 transition" />
-                      : <DocIcon type={doc.file_type} />
-                    }
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-800 truncate leading-tight">{doc.name}</div>
-                      {doc.size_bytes > 0 && <span className="text-xs text-gray-400">{formatBytes(doc.size_bytes)}</span>}
-                    </div>
-                    {/* Open / download actions */}
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      {isYt && (
-                        <>
-                          <button
-                            onClick={() => toggleYt(doc.id)}
-                            className={`p-1.5 rounded transition ${ytExpanded ? 'text-red-500 bg-red-50' : 'text-red-400 hover:text-red-600'}`}
-                            title={ytExpanded ? 'Hide player' : 'Play inline'}
-                          >
-                            <Play className="w-3.5 h-3.5" fill={ytExpanded ? 'currentColor' : 'none'} />
-                          </button>
-                          <a href={doc.url} target="_blank" rel="noopener noreferrer"
-                            className="p-1.5 text-gray-400 hover:text-red-500 transition" title="Open on YouTube">
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
-                        </>
-                      )}
-                      {isPdf && (
-                        <>
-                          <button
-                            onClick={() => setViewingPdf({ url: `/api/proxy-pdf?url=${encodeURIComponent(doc.url)}`, name: doc.name, downloadUrl: dlUrl(doc.url) })}
-                            className="px-2 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-50 rounded transition"
-                            title="View PDF"
-                          >
-                            View
-                          </button>
-                          <a href={dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
-                            className="p-1.5 text-gray-400 hover:text-gray-600 transition" title="Download">
-                            <Download className="w-3.5 h-3.5" />
-                          </a>
-                        </>
-                      )}
-                      {(isImg || (!isYt && !isPdf)) && (
-                        <a href={isImg ? doc.url : dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
-                          className="p-1.5 text-gray-400 hover:text-blue-500 transition" title={isImg ? 'View' : 'Download'}>
-                          <Download className="w-3.5 h-3.5" />
-                        </a>
-                      )}
-                    </div>
-                    {(role === 'admin' || role === 'attendance') && (
-                      <button onClick={() => handleDelete(doc.id)} disabled={deletingId === doc.id}
-                        className="p-1 text-gray-300 hover:text-red-500 transition disabled:opacity-40 flex-shrink-0">
-                        {deletingId === doc.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+      {loading ? (
+        <p className="text-xs text-gray-400 py-3 text-center">Loading…</p>
+      ) : docs.length === 0 ? (
+        <p className="text-xs text-gray-400 py-3 text-center">No documents yet.</p>
+      ) : (() => {
+        const renderDoc = (doc: ClassDoc) => {
+          const isYt  = doc.file_type === 'video/youtube'
+          const isPdf = doc.file_type === 'application/pdf'
+          const isImg = doc.file_type.startsWith('image/')
+          const vid   = isYt ? ytVideoId(doc.url) : null
+          const ytExpanded = isYt && expandedYt.has(doc.id)
+          return (
+            <div key={doc.id} className="bg-white border border-gray-100 rounded-lg overflow-hidden">
+              <div className="flex items-center gap-2 px-3 py-2">
+                {vid
+                  ? <img src={`https://img.youtube.com/vi/${vid}/default.jpg`} alt=""
+                      onClick={() => toggleYt(doc.id)}
+                      className="w-10 h-7 object-cover rounded flex-shrink-0 cursor-pointer hover:opacity-80 transition" />
+                  : <DocIcon type={doc.file_type} />
+                }
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-gray-800 truncate leading-tight">{doc.name}</div>
+                  {doc.size_bytes > 0 && <span className="text-xs text-gray-400">{formatBytes(doc.size_bytes)}</span>}
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {isYt && (
+                    <>
+                      <button onClick={() => toggleYt(doc.id)}
+                        className={`p-1.5 rounded transition ${ytExpanded ? 'text-red-500 bg-red-50' : 'text-red-400 hover:text-red-600'}`}
+                        title={ytExpanded ? 'Hide player' : 'Play inline'}>
+                        <Play className="w-3.5 h-3.5" fill={ytExpanded ? 'currentColor' : 'none'} />
                       </button>
-                    )}
-                  </div>
-                  {ytExpanded && vid && (
-                    <div className="px-3 pb-3">
-                      <div className="aspect-video w-full rounded overflow-hidden bg-black">
-                        <iframe
-                          src={`https://www.youtube.com/embed/${vid}?autoplay=1`}
-                          className="w-full h-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          title={doc.name}
-                        />
-                      </div>
-                    </div>
+                      <a href={doc.url} target="_blank" rel="noopener noreferrer"
+                        className="p-1.5 text-gray-400 hover:text-red-500 transition" title="Open on YouTube">
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </>
                   )}
+                  {isPdf && (
+                    <>
+                      <button
+                        onClick={() => setViewingPdf({ url: `/api/proxy-pdf?url=${encodeURIComponent(doc.url)}`, name: doc.name, downloadUrl: dlUrl(doc.url) })}
+                        className="px-2 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-50 rounded transition">
+                        View
+                      </button>
+                      <a href={dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
+                        className="p-1.5 text-gray-400 hover:text-gray-600 transition" title="Download">
+                        <Download className="w-3.5 h-3.5" />
+                      </a>
+                    </>
+                  )}
+                  {(isImg || (!isYt && !isPdf)) && (
+                    <a href={isImg ? doc.url : dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
+                      className="p-1.5 text-gray-400 hover:text-blue-500 transition" title={isImg ? 'View' : 'Download'}>
+                      <Download className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+                </div>
+                {(role === 'admin' || role === 'attendance') && (
+                  <button onClick={() => handleDelete(doc.id)} disabled={deletingId === doc.id}
+                    className="p-1 text-gray-300 hover:text-red-500 transition disabled:opacity-40 flex-shrink-0">
+                    {deletingId === doc.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                  </button>
+                )}
+              </div>
+              {ytExpanded && vid && (
+                <div className="px-3 pb-3">
+                  <div className="aspect-video w-full rounded overflow-hidden bg-black">
+                    <iframe src={`https://www.youtube.com/embed/${vid}?autoplay=1`}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen title={doc.name} />
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        }
+
+        const classDocs = docs.filter(d => !d.session_id)
+
+        // Session number based on chronological order (Session 1 = oldest)
+        const sessionNumberMap = new Map<number, number>()
+        ;[...sessions].sort((a, b) => a.session_date.localeCompare(b.session_date))
+          .forEach((s, i) => sessionNumberMap.set(s.id, i + 1))
+
+        const sessionGroups = Object.values(
+          docs.filter(d => d.session_id).reduce((acc, d) => {
+            const sid = d.session_id!
+            if (!acc[sid]) {
+              const sess = sessions.find(s => s.id === sid)
+              acc[sid] = { id: sid, date: d.session_date || sess?.session_date || '', topic: sess?.topic || '', docs: [] }
+            }
+            acc[sid].docs.push(d)
+            return acc
+          }, {} as Record<number, { id: number; date: string; topic: string; docs: ClassDoc[] }>)
+        ).sort((a, b) => b.date.localeCompare(a.date))
+
+        return (
+          <div className="flex flex-col gap-4">
+            {classDocs.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Class Documents</p>
+                <div className="flex flex-col gap-1">{classDocs.map(renderDoc)}</div>
+              </div>
+            )}
+            {sessionGroups.map(sg => {
+              const sessionNum = sessionNumberMap.get(sg.id)
+              return (
+                <div key={sg.id}>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                    {sessionNum != null ? `Session ${sessionNum} · ` : ''}{fmtDate(sg.date)}{sg.topic ? ` — ${sg.topic}` : ''}
+                  </p>
+                  <div className="flex flex-col gap-1">{sg.docs.map(renderDoc)}</div>
                 </div>
               )
             })}
+            {classDocs.length === 0 && sessionGroups.length === 0 && (
+              <p className="text-xs text-gray-400 py-3 text-center">No documents yet.</p>
+            )}
           </div>
-        )}
-      </div>
+        )
+      })()}
     </div>
     </>
   )
@@ -1578,7 +1738,6 @@ function ClassNotesPanel({ classId, authFetch }: {
 
 // ── Main ClassDetailPage ───────────────────────────────────────────────────────
 type LeadTab = 'checkin' | 'roster' | 'edit' | 'summary' | 'docs' | 'notes'
-type KioskPhase = 'input' | 'confirmed' | 'classinfo'
 
 export default function ClassDetailPage() {
   const { id = '' } = useParams<{ id: string }>()
@@ -1586,7 +1745,7 @@ export default function ClassDetailPage() {
   const location    = useLocation()
   const { authFetch, role } = useAuth()
 
-  const navState = (location.state || {}) as { showClassInfo?: boolean; checkedInName?: string; leadUnlocked?: boolean; defaultTab?: LeadTab }
+  const navState = (location.state || {}) as { leadUnlocked?: boolean; defaultTab?: LeadTab }
 
   const [cls, setCls]         = useState<ClassInfo | null>(null)
   const [sessions, setSessions] = useState<Session[]>([])
@@ -1596,8 +1755,7 @@ export default function ClassDetailPage() {
   const [leadUnlocked, setLeadUnlocked]   = useState(navState.leadUnlocked || false)
   const [leadTab, setLeadTab]             = useState<LeadTab>(navState.defaultTab || 'checkin')
 
-  const [phase, setPhase]               = useState<KioskPhase>('input')
-  const [checkedInName, setCheckedInName] = useState(navState.checkedInName || '')
+  const [kioskToast, setKioskToast] = useState('')
 
   const isLead = leadUnlocked || role === 'admin'
 
@@ -1614,25 +1772,9 @@ export default function ClassDetailPage() {
 
   useEffect(() => { loadData() }, [loadData])
 
-  // If we arrived from AttendancePage after a check-in, jump straight to classinfo
-  useEffect(() => {
-    if (!loading && cls && navState.showClassInfo) {
-      setPhase('classinfo')
-    }
-  }, [loading, cls]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Auto-navigate back to /attendance after classinfo display
-  useEffect(() => {
-    if (phase !== 'classinfo') return
-    const t = setTimeout(() => navigate('/attendance', { replace: true }), 4000)
-    return () => clearTimeout(t)
-  }, [phase, navigate])
-
-  // Kiosk check-in done directly on this page → confirmed 2s → classinfo 4s
   function handleKioskCheckedIn(name: string) {
-    setCheckedInName(name)
-    setPhase('confirmed')
-    setTimeout(() => setPhase('classinfo'), 2000)
+    setKioskToast(`${name} checked in!`)
+    setTimeout(() => { setKioskToast(''); navigate('/attendance', { replace: true }) }, 1000)
   }
 
   const leadTabs: { id: LeadTab; label: string; Icon: React.ElementType }[] = [
@@ -1661,58 +1803,54 @@ export default function ClassDetailPage() {
     )
   }
 
-  const todaySession = sessions.find(s => s.session_date === TODAY) ?? null
-
   // ── Kiosk mode (non-lead) ─────────────────────────────────────────────────
   if (!isLead) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {phase === 'confirmed' && <ConfirmOverlay name={checkedInName} />}
-        {phase === 'classinfo' && <ClassInfoDisplay cls={cls} todaySession={todaySession} />}
+        <div className="bg-white border-b border-gray-200 px-4 py-3">
+          <div className="max-w-md mx-auto flex items-center justify-between">
+            <button
+              onClick={() => navigate('/attendance')}
+              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Classes
+            </button>
 
-        {phase === 'input' && (
-          <>
-            <div className="bg-white border-b border-gray-200 px-4 py-3">
-              <div className="max-w-md mx-auto flex items-center justify-between">
-                <button
-                  onClick={() => navigate('/attendance')}
-                  className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Classes
-                </button>
-
-                <div className="text-center flex-1 px-4">
-                  <h1 className="text-base font-bold text-gray-800 truncate">{cls.name}</h1>
-                  {cls.meeting_day && cls.meeting_time && (
-                    <p className="text-xs text-gray-400">{cls.meeting_day}s · {cls.meeting_time}</p>
-                  )}
-                  {cls.location && (
-                    <p className="text-xs text-gray-400 flex items-center justify-center gap-1">
-                      <MapPin className="w-3 h-3" />{cls.location}
-                    </p>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => setShowLeadModal(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50 text-xs font-bold transition"
-                >
-                  <Key className="w-3.5 h-3.5" /> Lead
-                </button>
-              </div>
+            <div className="text-center flex-1 px-4">
+              <h1 className="text-base font-bold text-gray-800 truncate">{cls.name}</h1>
+              {cls.meeting_day && cls.meeting_time && (
+                <p className="text-xs text-gray-400">{cls.meeting_day}s · {cls.meeting_time}</p>
+              )}
+              {cls.location && (
+                <p className="text-xs text-gray-400 flex items-center justify-center gap-1">
+                  <MapPin className="w-3 h-3" />{cls.location}
+                </p>
+              )}
             </div>
 
-            <div className="max-w-md mx-auto px-4 py-6">
-              <KioskCheckinPanel
-                classId={id}
-                isLeadMode={false}
-                onCheckedIn={handleKioskCheckedIn}
-                authFetch={authFetch}
-              />
+            <button
+              onClick={() => setShowLeadModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50 text-xs font-bold transition"
+            >
+              <Key className="w-3.5 h-3.5" /> Lead
+            </button>
+          </div>
+        </div>
+
+        <div className="max-w-md mx-auto px-4 py-6">
+          {kioskToast && (
+            <div className="flex items-center gap-2 bg-green-50 text-green-700 text-sm font-medium px-4 py-2.5 rounded-lg mb-4">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> {kioskToast}
             </div>
-          </>
-        )}
+          )}
+          <KioskCheckinPanel
+            classId={id}
+            isLeadMode={false}
+            onCheckedIn={handleKioskCheckedIn}
+            authFetch={authFetch}
+          />
+        </div>
 
         {showLeadModal && (
           <LeadPasswordModal
@@ -1791,7 +1929,7 @@ export default function ClassDetailPage() {
           <SummaryPanel cls={cls} sessions={sessions} />
         )}
         {leadTab === 'docs' && (
-          <DocumentsPanel classId={id} authFetch={authFetch} />
+          <DocumentsPanel classId={id} authFetch={authFetch} sessions={sessions} />
         )}
         {leadTab === 'notes' && (
           <ClassNotesPanel classId={id} authFetch={authFetch} />

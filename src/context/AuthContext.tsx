@@ -7,9 +7,9 @@ const IDLE_EVENTS = ['mousemove', 'keydown', 'pointerdown', 'scroll', 'touchstar
 export type Role = 'calendar' | 'admin' | 'attendance'
 
 export const ROLE_LABELS: Record<Role, string> = {
-  calendar:   'Coworker',
+  calendar:   'Coworker Calendar',
   admin:      'Admin',
-  attendance: 'Class',
+  attendance: 'Classes',
 }
 
 export const ROLE_ROUTES: Record<Role, string> = {

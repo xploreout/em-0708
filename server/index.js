@@ -139,6 +139,8 @@ async function initDB() {
       `ALTER TABLE classes ADD COLUMN IF NOT EXISTS start_date DATE`,
       `ALTER TABLE classes ADD COLUMN IF NOT EXISTS end_time VARCHAR(20) DEFAULT ''`,
       `ALTER TABLE class_sessions ADD COLUMN IF NOT EXISTS session_lead_name VARCHAR(200) DEFAULT ''`,
+      `ALTER TABLE class_sessions ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEFAULT ''`,
+      `ALTER TABLE class_documents ADD COLUMN IF NOT EXISTS session_id INTEGER REFERENCES class_sessions(id) ON DELETE SET NULL`,
     ]) { await client.query(ddl) }
 
     // Seed default passwords for any missing roles
@@ -403,6 +405,21 @@ app.post('/api/congregation', requireAuth('admin'), wrap(async (req, res) => {
   const { rows: [m] } = await pool.query(
     'INSERT INTO contacts(name,phone,email,photo_url) VALUES($1,$2,$3,$4) RETURNING *',
     [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '']
+  )
+  res.json(toMember(m))
+}))
+
+app.post('/api/congregation/quick-add', requireAuth('attendance'), wrap(async (req, res) => {
+  const { name, phone, email } = req.body ?? {}
+  if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
+  const { rows: existing } = await pool.query(
+    'SELECT id FROM contacts WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))',
+    [name.trim()]
+  )
+  if (existing.length > 0) return res.status(409).json({ error: 'Contact already exists in congregation' })
+  const { rows: [m] } = await pool.query(
+    'INSERT INTO contacts(name,phone,email,photo_url) VALUES($1,$2,$3,$4) RETURNING *',
+    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', '']
   )
   res.json(toMember(m))
 }))
@@ -724,12 +741,19 @@ app.delete('/api/classes/:id/notes/:noteId', requireAuth('attendance'), wrap(asy
 // Public: all classes + their documents (no auth) for Class Resources page
 app.get('/api/public/class-resources', wrap(async (_req, res) => {
   const { rows: classes } = await pool.query('SELECT * FROM classes ORDER BY archived, name')
-  const { rows: docs }    = await pool.query('SELECT * FROM class_documents ORDER BY created_at DESC')
+  const { rows: docs }    = await pool.query(`
+    SELECT cd.id, cd.class_id, cd.name, cd.url, cd.file_type, cd.size_bytes, cd.created_at,
+           cd.session_id, to_char(cs.session_date,'YYYY-MM-DD') AS session_date, cs.topic AS session_topic
+    FROM class_documents cd
+    LEFT JOIN class_sessions cs ON cs.id = cd.session_id
+    ORDER BY cd.created_at DESC
+  `)
   const result = classes.map(c => ({
     ...toClass(c),
     documents: docs.filter(d => d.class_id === c.id).map(d => ({
       id: d.id, name: d.name, url: d.url, file_type: d.file_type,
       size_bytes: d.size_bytes, created_at: d.created_at,
+      session_id: d.session_id || null, session_date: d.session_date || null, session_topic: d.session_topic || null,
     })),
   }))
   res.json(result)
@@ -810,7 +834,10 @@ app.get('/api/proxy-pdf', wrap(async (req, res) => {
 
 app.get('/api/classes/:id/documents', requireAuth('attendance'), wrap(async (req, res) => {
   const { rows } = await pool.query(
-    'SELECT * FROM class_documents WHERE class_id=$1 ORDER BY created_at DESC',
+    `SELECT cd.*, to_char(cs.session_date,'YYYY-MM-DD') AS session_date
+     FROM class_documents cd
+     LEFT JOIN class_sessions cs ON cs.id = cd.session_id
+     WHERE cd.class_id=$1 ORDER BY cd.created_at DESC`,
     [req.params.id]
   )
   res.json(rows)
@@ -823,7 +850,7 @@ app.post('/api/classes/:id/documents', requireAuth('attendance'), uploadDoc.sing
   if (!cfg.cloud_name || !cfg.api_key || !cfg.api_secret) {
     return res.status(503).json({ error: 'Cloudinary not configured' })
   }
-  const { name = '' } = req.body ?? {}
+  const { name = '', session_id } = req.body ?? {}
   // multer passes originalname as latin1; decode to utf-8 so non-ASCII filenames aren't garbled
   const decodedOriginal = (() => {
     try { return Buffer.from(file.originalname || 'file', 'latin1').toString('utf8') } catch { return file.originalname || 'file' }
@@ -854,22 +881,24 @@ app.post('/api/classes/:id/documents', requireAuth('attendance'), uploadDoc.sing
     )
     stream.end(file.buffer)
   })
+  const sid = session_id ? parseInt(session_id) : null
   const { rows: [doc] } = await pool.query(
-    'INSERT INTO class_documents(class_id,name,url,file_type,size_bytes) VALUES($1,$2,$3,$4,$5) RETURNING *',
-    [req.params.id, docName, result.secure_url, file.mimetype, file.size]
+    'INSERT INTO class_documents(class_id,name,url,file_type,size_bytes,session_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *',
+    [req.params.id, docName, result.secure_url, file.mimetype, file.size, sid]
   )
-  res.json({ id: doc.id, name: doc.name, url: doc.url, file_type: doc.file_type, size_bytes: doc.size_bytes, created_at: doc.created_at })
+  res.json({ id: doc.id, name: doc.name, url: doc.url, file_type: doc.file_type, size_bytes: doc.size_bytes, created_at: doc.created_at, session_id: doc.session_id, session_date: null })
 }))
 
 app.post('/api/classes/:id/documents/link', requireAuth('attendance'), wrap(async (req, res) => {
-  const { name, url } = req.body ?? {}
+  const { name, url, session_id } = req.body ?? {}
   if (!url?.trim()) return res.status(400).json({ error: 'URL is required' })
   const docName = (name || url).trim().slice(0, 300)
+  const sid = session_id ? parseInt(session_id) : null
   const { rows: [doc] } = await pool.query(
-    'INSERT INTO class_documents(class_id,name,url,file_type,size_bytes) VALUES($1,$2,$3,$4,$5) RETURNING *',
-    [req.params.id, docName, url.trim(), 'video/youtube', 0]
+    'INSERT INTO class_documents(class_id,name,url,file_type,size_bytes,session_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *',
+    [req.params.id, docName, url.trim(), 'video/youtube', 0, sid]
   )
-  res.json({ id: doc.id, name: doc.name, url: doc.url, file_type: doc.file_type, size_bytes: 0, created_at: doc.created_at })
+  res.json({ id: doc.id, name: doc.name, url: doc.url, file_type: doc.file_type, size_bytes: 0, created_at: doc.created_at, session_id: doc.session_id, session_date: null })
 }))
 
 app.delete('/api/classes/:id/documents/:docId', requireAuth('attendance'), wrap(async (req, res) => {
@@ -884,7 +913,7 @@ app.delete('/api/classes/:id/documents/:docId', requireAuth('attendance'), wrap(
 // ── Class Sessions ─────────────────────────────────────────────────────────────
 app.get('/api/classes/:id/sessions', requireAuth('attendance'), wrap(async (req, res) => {
   const { rows } = await pool.query(
-    `SELECT cs.id, to_char(cs.session_date,'YYYY-MM-DD') AS session_date, cs.topic, cs.notes, cs.session_lead_name,
+    `SELECT cs.id, to_char(cs.session_date,'YYYY-MM-DD') AS session_date, cs.topic, cs.notes, cs.session_lead_name, cs.status,
       COALESCE(json_agg(
         json_build_object(
           'id', ca.id, 'person_name', ca.person_name, 'phone', ca.phone,
@@ -894,7 +923,7 @@ app.get('/api/classes/:id/sessions', requireAuth('attendance'), wrap(async (req,
     FROM class_sessions cs
     LEFT JOIN class_attendance ca ON ca.session_id = cs.id
     WHERE cs.class_id = $1
-    GROUP BY cs.id, cs.session_date, cs.topic, cs.notes, cs.session_lead_name
+    GROUP BY cs.id, cs.session_date, cs.topic, cs.notes, cs.session_lead_name, cs.status
     ORDER BY cs.session_date DESC`,
     [req.params.id]
   )
@@ -902,28 +931,45 @@ app.get('/api/classes/:id/sessions', requireAuth('attendance'), wrap(async (req,
 }))
 
 app.post('/api/classes/:id/sessions', requireAuth('attendance'), wrap(async (req, res) => {
-  const { topic = '', notes = '', date, session_lead_name = '' } = req.body ?? {}
+  const { topic = '', notes = '', date, session_lead_name = '', status = '' } = req.body ?? {}
   const sessionDate = date || new Date().toISOString().slice(0, 10)
   const { rows: [session] } = await pool.query(
-    `INSERT INTO class_sessions(class_id,session_date,topic,notes,session_lead_name) VALUES($1,$2,$3,$4,$5)
+    `INSERT INTO class_sessions(class_id,session_date,topic,notes,session_lead_name,status) VALUES($1,$2,$3,$4,$5,$6)
      ON CONFLICT (class_id,session_date) DO UPDATE
-       SET topic=EXCLUDED.topic, notes=EXCLUDED.notes, session_lead_name=EXCLUDED.session_lead_name
-     RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes, session_lead_name`,
-    [req.params.id, sessionDate, topic, notes, session_lead_name]
+       SET topic=EXCLUDED.topic, notes=EXCLUDED.notes, session_lead_name=EXCLUDED.session_lead_name, status=EXCLUDED.status
+     RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes, session_lead_name, status`,
+    [req.params.id, sessionDate, topic, notes, session_lead_name, status]
   )
   res.json(session)
 }))
 
 app.put('/api/classes/:classId/sessions/:sid', requireAuth('attendance'), wrap(async (req, res) => {
-  const { topic = '', notes = '', session_lead_name = '' } = req.body ?? {}
-  const { rows, rowCount } = await pool.query(
-    `UPDATE class_sessions SET topic=$1, notes=$2, session_lead_name=$3
-     WHERE id=$4 AND class_id=$5
-     RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes, session_lead_name`,
-    [topic, notes, session_lead_name, req.params.sid, req.params.classId]
-  )
+  const { topic = '', notes = '', session_lead_name = '', session_date, status = '' } = req.body ?? {}
+  const base = [topic, notes, session_lead_name, status]
+  const { rows, rowCount } = session_date
+    ? await pool.query(
+        `UPDATE class_sessions SET topic=$1, notes=$2, session_lead_name=$3, status=$4, session_date=$5
+         WHERE id=$6 AND class_id=$7
+         RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes, session_lead_name, status`,
+        [...base, session_date, req.params.sid, req.params.classId]
+      )
+    : await pool.query(
+        `UPDATE class_sessions SET topic=$1, notes=$2, session_lead_name=$3, status=$4
+         WHERE id=$5 AND class_id=$6
+         RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date, topic, notes, session_lead_name, status`,
+        [...base, req.params.sid, req.params.classId]
+      )
   if (rowCount === 0) return res.status(404).json({ error: 'Session not found' })
   res.json(rows[0])
+}))
+
+app.delete('/api/classes/:classId/sessions/:sid', requireAuth('attendance'), wrap(async (req, res) => {
+  const { rowCount } = await pool.query(
+    `DELETE FROM class_sessions WHERE id=$1 AND class_id=$2`,
+    [req.params.sid, req.params.classId]
+  )
+  if (rowCount === 0) return res.status(404).json({ error: 'Session not found' })
+  res.json({ ok: true })
 }))
 
 // ── Class Attendance ───────────────────────────────────────────────────────────
@@ -960,20 +1006,20 @@ app.get('/api/classes/:id/search', requireAuth('attendance'), wrap(async (req, r
 }))
 
 app.post('/api/classes/:id/checkin', requireAuth('attendance'), wrap(async (req, res) => {
-  const { person_name, phone = '' } = req.body ?? {}
+  const { person_name, phone = '', session_date } = req.body ?? {}
   if (!person_name?.trim()) return res.status(400).json({ error: 'Name is required' })
-  const today = new Date().toISOString().slice(0, 10)
+  const date = session_date || new Date().toISOString().slice(0, 10)
   const { rows: [session] } = await pool.query(
     `INSERT INTO class_sessions(class_id,session_date) VALUES($1,$2)
      ON CONFLICT (class_id,session_date) DO UPDATE SET class_id=EXCLUDED.class_id
      RETURNING id, to_char(session_date,'YYYY-MM-DD') AS session_date`,
-    [req.params.id, today]
+    [req.params.id, date]
   )
   const { rows: existing } = await pool.query(
     `SELECT id FROM class_attendance WHERE session_id=$1 AND lower(trim(person_name))=lower(trim($2))`,
     [session.id, person_name]
   )
-  if (existing.length > 0) return res.status(409).json({ error: 'Already checked in today' })
+  if (existing.length > 0) return res.status(409).json({ error: 'Already checked in', date })
   const { rows: [record] } = await pool.query(
     'INSERT INTO class_attendance(session_id,person_name,phone) VALUES($1,$2,$3) RETURNING *',
     [session.id, person_name.trim(), phone.trim()]
