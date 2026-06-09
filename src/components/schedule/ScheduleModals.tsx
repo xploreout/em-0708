@@ -108,6 +108,15 @@ export function NewTeamModal({ onSave, onClose }: {
 
 // ── New Contact modal ─────────────────────────────────────────────────────────
 
+function formatPhone(raw: string): string {
+  let digits = raw.replace(/\D/g, '')
+  if (digits.length > 10 && digits.startsWith('1')) digits = digits.slice(1)
+  digits = digits.slice(0, 10)
+  if (digits.length <= 3) return digits
+  if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`
+  return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`
+}
+
 export function NewContactModal({ initialName = '', onSave, onClose }: {
   initialName?: string
   onSave: (m: CongMember) => void
@@ -150,7 +159,7 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
       const res = await authFetch('/api/congregation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), phone: phone.trim(), email: email.trim(), photoUrl }),
+        body: JSON.stringify({ name: name.trim(), phone: phone.replace(/-/g, ''), email: email.trim(), photoUrl }),
       })
       const m = await res.json()
       if (!res.ok) throw new Error(m.error)
@@ -162,7 +171,7 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
   }
 
   return (
-    <MiniModal title="New Contact" onClose={onClose}>
+    <MiniModal title="Add to Contacts" onClose={onClose}>
       <div className="flex flex-col gap-3">
         {/* Photo upload */}
         <div className="flex flex-col items-center gap-1.5">
@@ -180,12 +189,21 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
         </div>
 
-        <input autoFocus type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Full name *"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
-        <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
-        <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
+        <div>
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Name *</label>
+          <input autoFocus type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Full name"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
+        </div>
+        <div>
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Phone</label>
+          <input type="tel" value={phone} onChange={e => setPhone(formatPhone(e.target.value))} placeholder="___-___-____"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
+        </div>
+        <div>
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Email</label>
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
+        </div>
         {error && <p className="text-red-500 text-xs">{error}</p>}
         <div className="flex gap-2 mt-1">
           <button onClick={handleSave} disabled={saving || uploading}
@@ -424,11 +442,16 @@ export function NameInput({ value, onChange, congregation, onContactCreated, pla
               {m.name}
             </button>
           ))}
+          {isNew && suggestions.length === 0 && (
+            <div className="px-3 py-2 text-xs text-gray-400 italic border-b border-gray-50">
+              No contact found for "{value.trim()}"
+            </div>
+          )}
           {isNew && (
             <button type="button"
               onMouseDown={e => { e.preventDefault(); setShowNew(true); setOpen(false) }}
-              className="w-full text-left px-3 py-2 text-sm text-purple-600 bg-purple-50 hover:bg-purple-100 font-medium flex items-center gap-1 border-t border-gray-100">
-              <Plus className="w-3 h-3" /> Add "{value.trim()}"
+              className="w-full text-left px-3 py-2 text-sm text-purple-700 bg-purple-50 hover:bg-purple-100 font-semibold flex items-center gap-1.5 border-t border-gray-100">
+              <Plus className="w-3.5 h-3.5" /> Add "{value.trim()}" to contacts…
             </button>
           )}
           {!isNew && (
