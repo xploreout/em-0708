@@ -453,7 +453,7 @@ app.post('/api/congregation/upload-photo', requireAuth('admin'), upload.single('
 }))
 
 // ── Send reminders ────────────────────────────────────────────────────────────
-app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
+app.post('/api/reminders/send', requireAuth('admin'), wrap(async (req, res) => {
   const { year, month } = req.body ?? {}
   if (year == null || month == null) return res.status(400).json({ error: 'year and month are required' })
 
@@ -530,7 +530,7 @@ app.post('/api/reminders/send', requireAuth('admin'), async (req, res) => {
   }
 
   res.json({ sent, skipped, errors })
-})
+}))
 
 // ── Cross-class attendance search ─────────────────────────────────────────────
 app.get('/api/attendance/search', requireAuth('attendance'), wrap(async (req, res) => {
