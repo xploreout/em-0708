@@ -66,7 +66,7 @@ const Children = () => {
 
         <div className='flex flex-col md:flex-row gap-8 items-start'>
           {/* Video */}
-          <div className='w-full md:w-1/2 rounded-2xl overflow-hidden shadow-md aspect-video'>
+          <div className='w-full md:w-1/2 rounded-lg overflow-hidden shadow-md aspect-video'>
             <LoopingYouTube videoId='xHtr34Kr0j4' />
           </div>
 
@@ -105,7 +105,7 @@ const Children = () => {
           {childrenEvents.map((event) => (
             <div
               key={event.id}
-              className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col'
+              className='bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm flex flex-col'
             >
               {event.video ? (
                 <video

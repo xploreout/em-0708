@@ -144,12 +144,12 @@ export default function EmFeudForm() {
         </div>
 
         {/* Instructions */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6">
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 mb-6">
           <h2 className="font-black text-gray-800 mb-3">How to prepare your file</h2>
           <p className="text-sm text-gray-600 mb-3">
             Upload a <strong>.csv</strong> file with exactly <strong>3 columns</strong>. Each answer gets its own row under the same question text.
           </p>
-          <div className="bg-gray-50 rounded-xl p-4 font-mono text-xs text-gray-700 leading-relaxed overflow-x-auto">
+          <div className="bg-gray-50 rounded-lg p-4 font-mono text-xs text-gray-700 leading-relaxed overflow-x-auto">
             <div className="text-gray-400 mb-1">Question, Answer, Points</div>
             <div>Name something people do when sermon runs long, Check their phone, 38</div>
             <div>Name something people do when sermon runs long, Take notes, 22</div>
@@ -167,7 +167,7 @@ export default function EmFeudForm() {
 
         {/* Drop zone */}
         <div
-          className={`rounded-2xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center py-12 px-6 mb-6 ${dragging ? 'border-pink-400 bg-pink-50' : 'border-gray-200 bg-white hover:border-pink-300 hover:bg-pink-50/40'}`}
+          className={`rounded-lg border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center py-12 px-6 mb-6 ${dragging ? 'border-pink-400 bg-pink-50' : 'border-gray-200 bg-white hover:border-pink-300 hover:bg-pink-50/40'}`}
           onClick={() => fileRef.current?.click()}
           onDragOver={e => { e.preventDefault(); setDragging(true) }}
           onDragLeave={() => setDragging(false)}
@@ -182,7 +182,7 @@ export default function EmFeudForm() {
 
         {/* Preview */}
         {questions.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-100 mb-6 overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h2 className="font-black text-gray-800">
                 Preview — {questions.length} question{questions.length !== 1 ? 's' : ''}
@@ -222,14 +222,14 @@ export default function EmFeudForm() {
             <div className="flex items-center gap-3 px-6 py-4 border-t border-gray-100">
               <button
                 onClick={saveToGame}
-                className="flex-1 py-3 rounded-2xl font-black text-white text-sm uppercase tracking-widest transition-all hover:opacity-90 active:scale-95"
+                className="flex-1 py-3 rounded-lg font-black text-white text-sm uppercase tracking-widest transition-all hover:opacity-90 active:scale-95"
                 style={{ background: 'linear-gradient(135deg,#ec4899,#38bdf8)' }}
               >
                 {saved ? '✓ Saved to Game!' : '💾 Save & Use in Game'}
               </button>
               <button
                 onClick={clearSaved}
-                className="px-4 py-3 rounded-2xl font-bold text-sm text-gray-400 hover:text-red-500 transition-colors border border-gray-200 hover:border-red-200"
+                className="px-4 py-3 rounded-lg font-bold text-sm text-gray-400 hover:text-red-500 transition-colors border border-gray-200 hover:border-red-200"
               >
                 Clear
               </button>

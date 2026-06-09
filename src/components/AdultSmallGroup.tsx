@@ -35,7 +35,7 @@ const AdultSmallGroup = () => {
 
         {/* Photo + description layout */}
         <div className='flex flex-col md:flex-row gap-8 items-stretch mb-10'>
-          <div className='relative w-full md:w-1/3 rounded-2xl overflow-hidden shadow-md'>
+          <div className='relative w-full md:w-1/3 rounded-lg overflow-hidden shadow-md'>
             <img
               src='./images/bible.jpg'
               alt='Adult Small Group'
@@ -55,7 +55,7 @@ const AdultSmallGroup = () => {
 
           <div className='w-full md:w-1/2 space-y-4'>
             {/* Adult Small Group - Salt n Light card */}
-            <div className='bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-2 text-sm text-gray-500'>
+            <div className='bg-gray-50 rounded-lg border border-gray-100 p-5 space-y-2 text-sm text-gray-500'>
               <p className='font-semibold text-gray-800 text-base'>
                 Salt n Light (SnL)
               </p>
@@ -96,7 +96,7 @@ const AdultSmallGroup = () => {
             <Link
               key={study.title}
               to={study.href}
-              className='bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200 flex flex-col group'
+              className='bg-gray-50 rounded-lg overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200 flex flex-col group'
             >
               <img
                 src={study.image}

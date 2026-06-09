@@ -286,7 +286,7 @@ function SetupScreen({ onStart }: { onStart: (names: [string, string]) => void }
                   maxLength={20}
                   onChange={e => { const n: [string, string] = [names[0], names[1]]; n[idx] = e.target.value; setNames(n) }}
                   onKeyDown={e => e.key === 'Enter' && onStart([names[0].trim() || 'Team 1', names[1].trim() || 'Team 2'])}
-                  className="w-full text-center text-xl font-black bg-white/10 rounded-xl px-3 py-2.5 outline-none text-white placeholder-white/20 transition-all"
+                  className="w-full text-center text-xl font-black bg-white/10 rounded-lg px-3 py-2.5 outline-none text-white placeholder-white/20 transition-all"
                   style={{ border: `2px solid ${accent}33` }}
                   onFocus={e => (e.target.style.borderColor = accent + '99')}
                   onBlur={e => (e.target.style.borderColor = accent + '33')}
@@ -298,7 +298,7 @@ function SetupScreen({ onStart }: { onStart: (names: [string, string]) => void }
 
         <button
           onClick={() => onStart([names[0].trim() || 'Team 1', names[1].trim() || 'Team 2'])}
-          className="w-full py-4 rounded-2xl font-black text-xl uppercase tracking-widest text-white transition-all hover:scale-[1.03] active:scale-95"
+          className="w-full py-4 rounded-lg font-black text-xl uppercase tracking-widest text-white transition-all hover:scale-[1.03] active:scale-95"
           style={{
             background: 'linear-gradient(135deg,#ec4899,#f9a8d4)',
             boxShadow: '0 8px 32px rgba(236,72,153,0.45)',
@@ -403,7 +403,7 @@ function FinalScreen({ scores, teamNames, onRestart }: {
 
       <button
         onClick={onRestart}
-        className="px-12 py-4 rounded-2xl font-black text-lg uppercase tracking-widest text-white transition-all hover:scale-105 active:scale-95"
+        className="px-12 py-4 rounded-lg font-black text-lg uppercase tracking-widest text-white transition-all hover:scale-105 active:scale-95"
         style={{ background: 'linear-gradient(135deg,#ec4899,#38bdf8)', boxShadow: '0 8px 32px rgba(236,72,153,0.4)' }}
       >
         ↩ Play Again
@@ -423,7 +423,7 @@ function AnswerTile({ answer, rank, revealed, onClick, slideColor }: {
     <button
       onClick={onClick}
       disabled={revealed}
-      className="rounded-xl px-4 py-2 transition-all duration-500 text-left w-full"
+      className="rounded-lg px-4 py-2 transition-all duration-500 text-left w-full"
       style={
         revealed
           ? { background: revealedBg, border: `1px solid ${revealedBorder}`, cursor: 'default' }
@@ -471,7 +471,7 @@ function TeamPanel({ name, totalScore, isActive, color, onSetActive, onEditName,
 
   return (
     <div
-      className="w-32 shrink-0 self-start flex flex-col items-center gap-3 rounded-2xl p-4 transition-all duration-300"
+      className="w-32 shrink-0 self-start flex flex-col items-center gap-3 rounded-lg p-4 transition-all duration-300"
       style={{
         background: 'white',
         boxShadow: isActive ? `0 8px 32px ${accent}55` : '0 2px 12px rgba(0,0,0,0.25)',
@@ -768,7 +768,7 @@ export default function EmFeud() {
                 const accent = idx === 0 ? '#38bdf8' : '#ec4899'
                 const grad = idx === 0 ? 'linear-gradient(135deg,#0ea5e9,#38bdf8)' : 'linear-gradient(135deg,#be185d,#ec4899)'
                 return (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 rounded-2xl p-3 transition-all"
+                  <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 rounded-lg p-3 transition-all"
                     style={{ background: 'rgba(255,255,255,0.08)', border: `1.5px solid ${isActive ? accent : 'rgba(255,255,255,0.12)'}` }}>
                     <div className="text-xs font-black uppercase tracking-wider truncate w-full text-center" style={{ color: accent }}>
                       {teamNames[idx]}
@@ -846,7 +846,7 @@ export default function EmFeud() {
 
               {/* Question box */}
               <div
-                className="rounded-2xl px-5 py-3 text-center shrink-0 mb-4"
+                className="rounded-lg px-5 py-3 text-center shrink-0 mb-4"
                 style={{ background: 'hsla(92, 88%, 84%, 0.06)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}
               >
                 <div className="text-sky-400 text-[10px] font-black uppercase tracking-[0.3em] mb-1">
@@ -870,20 +870,20 @@ export default function EmFeud() {
                 {/* Steal controls (after 3 strikes) */}
                 {showStealControls && (
                   <div
-                    className="flex flex-wrap items-center justify-center gap-3 px-4 py-3 rounded-2xl"
+                    className="flex flex-wrap items-center justify-center gap-3 px-4 py-3 rounded-lg"
                     style={{ background: 'rgba(190,24,93,0.15)', border: '1px solid rgba(249,168,212,0.4)' }}
                   >
                     <span className="text-pink-200 text-sm font-bold">Reveal if correct, then:</span>
                     <button
                       onClick={stealWon}
-                      className="px-4 py-2 rounded-xl font-black text-sm uppercase tracking-wider text-white transition-all hover:scale-105 active:scale-95"
+                      className="px-4 py-2 rounded-lg font-black text-sm uppercase tracking-wider text-white transition-all hover:scale-105 active:scale-95"
                       style={{ background: 'linear-gradient(135deg,#22c55e,#16a34a)' }}
                     >
                       ✅ Steal Won → {teamNames[stealingTeam]}
                     </button>
                     <button
                       onClick={stealLost}
-                      className="px-4 py-2 rounded-xl font-black text-sm uppercase tracking-wider text-white transition-all hover:scale-105 active:scale-95"
+                      className="px-4 py-2 rounded-lg font-black text-sm uppercase tracking-wider text-white transition-all hover:scale-105 active:scale-95"
                       style={{ background: 'linear-gradient(135deg,#64748b,#475569)' }}
                     >
                       ❌ Steal Failed → {teamNames[activeTeam]}
@@ -896,7 +896,7 @@ export default function EmFeud() {
                   <div className="flex justify-center">
                     <button
                       onClick={awardCurrentTeam}
-                      className="px-8 py-2.5 rounded-2xl font-black text-base uppercase tracking-widest text-white transition-all hover:scale-105 active:scale-95 animate-pulse"
+                      className="px-8 py-2.5 rounded-lg font-black text-base uppercase tracking-widest text-white transition-all hover:scale-105 active:scale-95 animate-pulse"
                       style={{
                         background: activeTeam === 0 ? 'linear-gradient(135deg,#0ea5e9,#38bdf8)' : 'linear-gradient(135deg,#be185d,#ec4899)',
                         boxShadow: `0 0 24px ${activeTeam === 0 ? '#38bdf8' : '#ec4899'}66`,
@@ -911,7 +911,7 @@ export default function EmFeud() {
                 {!showStealControls && !isRoundDone && (
                   <div className="flex flex-wrap items-center justify-center gap-3">
                     {/* Strikes */}
-                    <div className="flex items-center gap-1 bg-white/5 rounded-2xl px-4 py-2">
+                    <div className="flex items-center gap-1 bg-white/5 rounded-lg px-4 py-2">
                       {[0, 1, 2].map(i => (
                         <span key={i} className="text-2xl font-black transition-all duration-300"
                           style={{ color: i < round.strikes ? '#ef4444' : 'rgba(255,255,255,0.1)', filter: i < round.strikes ? 'drop-shadow(0 0 8px #ef444499)' : 'none' }}>
@@ -922,14 +922,14 @@ export default function EmFeud() {
                     <button
                       onClick={addStrike}
                       disabled={round.strikes >= 3}
-                      className="px-5 py-2 rounded-2xl font-black text-sm uppercase tracking-wider text-white transition-all hover:scale-105 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="px-5 py-2 rounded-lg font-black text-sm uppercase tracking-wider text-white transition-all hover:scale-105 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
                       style={{ background: 'linear-gradient(135deg,#ef4444,#f97316)' }}
                     >
                       + Strike
                     </button>
                     <button
                       onClick={resetRound}
-                      className="px-4 py-2 rounded-2xl font-black text-sm uppercase tracking-wider text-white/60 hover:text-white transition-all"
+                      className="px-4 py-2 rounded-lg font-black text-sm uppercase tracking-wider text-white/60 hover:text-white transition-all"
                       style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}
                     >
                       Reset Round
@@ -940,10 +940,10 @@ export default function EmFeud() {
                 {/* After round awarded: manual award overrides */}
                 {isRoundDone && !showStealControls && !allRevealed && (
                   <div className="flex justify-center gap-3">
-                    <button onClick={() => awardPoints(0)} className="px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider text-white transition-all hover:opacity-80" style={{ background: 'linear-gradient(135deg,#0ea5e9,#38bdf8)' }}>
+                    <button onClick={() => awardPoints(0)} className="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider text-white transition-all hover:opacity-80" style={{ background: 'linear-gradient(135deg,#0ea5e9,#38bdf8)' }}>
                       +pts → {teamNames[0]}
                     </button>
-                    <button onClick={() => awardPoints(1)} className="px-4 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider text-white transition-all hover:opacity-80" style={{ background: 'linear-gradient(135deg,#be185d,#ec4899)' }}>
+                    <button onClick={() => awardPoints(1)} className="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider text-white transition-all hover:opacity-80" style={{ background: 'linear-gradient(135deg,#be185d,#ec4899)' }}>
                       +pts → {teamNames[1]}
                     </button>
                   </div>

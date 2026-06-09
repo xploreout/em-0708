@@ -49,7 +49,7 @@ export default function LoginModal({ onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className='bg-white rounded-2xl shadow-2xl w-full max-w-sm p-7 relative'
+        className='bg-white rounded-lg shadow-2xl w-full max-w-sm p-7 relative'
         onClick={(e) => e.stopPropagation()}
       >
         <button

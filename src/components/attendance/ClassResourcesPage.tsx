@@ -8,9 +8,13 @@ type ClassDoc = {
 }
 type ClassWithDocs = {
   id: number; name: string; lead_name: string; description: string
-  location: string; meeting_day: string; meeting_time: string
+  location: string; meeting_day: string; meeting_time: string; end_time: string | null
   recurrence: string; end_date: string | null; archived: boolean
   documents: ClassDoc[]
+}
+
+function fmtDate(d: string) {
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 // Force Cloudinary to serve with Content-Disposition: attachment (download)
@@ -69,7 +73,7 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
         onClose={() => setViewingPdf(null)}
       />
     )}
-    <div className={`bg-white border rounded-2xl overflow-hidden shadow-sm ${cls.archived ? 'border-dashed border-gray-200 opacity-70' : 'border-gray-200'}`}>
+    <div className={`bg-white border rounded-lg overflow-hidden shadow-sm ${cls.archived ? 'border-dashed border-gray-200 opacity-70' : 'border-gray-200'}`}>
       <button
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-start justify-between px-5 py-4 text-left hover:bg-gray-50 transition"
@@ -103,8 +107,13 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
             )}
             {cls.meeting_day && cls.meeting_time && (
               <span className="flex items-center gap-1 text-xs text-gray-400">
-                <Clock className="w-3 h-3" />{cls.meeting_day}s · {cls.meeting_time}
+                <Clock className="w-3 h-3" />
+                {cls.recurrence === 'weekly' ? `every ${cls.meeting_day}` : `${cls.meeting_day}s`}
+                {' · '}{cls.meeting_time}{cls.end_time ? ` – ${cls.end_time}` : ''}
               </span>
+            )}
+            {cls.end_date && (
+              <span className="text-xs text-gray-400">ends {fmtDate(cls.end_date)}</span>
             )}
             {cls.location && (
               <span className="flex items-center gap-1 text-xs text-gray-400">
@@ -254,7 +263,7 @@ export default function ClassResourcesPage() {
       {/* Hero */}
       <div className="bg-white border-b border-gray-100 px-4 py-10">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-4">
             <BookOpen className="w-6 h-6 text-blue-600" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Class Resources</h1>
@@ -269,7 +278,7 @@ export default function ClassResourcesPage() {
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search by class name or description…"
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-2xl text-sm outline-none focus:border-blue-400 transition bg-white shadow-sm"
+              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-400 transition bg-white shadow-sm"
             />
             {query && (
               <button
@@ -304,7 +313,7 @@ export default function ClassResourcesPage() {
               <div className="mt-8">
                 <button
                   onClick={() => setShowArchived(s => !s)}
-                  className="w-full flex items-center justify-between px-5 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition mb-2"
+                  className="w-full flex items-center justify-between px-5 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition mb-2"
                 >
                   <div className="flex items-center gap-2">
                     <Archive className="w-4 h-4 text-gray-500" />

@@ -25,7 +25,7 @@ const Footer = () => {
           {/* Church Info */}
           <div className='col-span-1 md:col-span-2'>
             <div className='flex items-center space-x-3 mb-4'>
-              {/* <div className='bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-xl'>
+              {/* <div className='bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-lg'>
                 <Church className='h-6 w-6 text-white' />
               </div> */}
               <h3 className='text-xl font-bold text-white'>
@@ -181,7 +181,7 @@ const Footer = () => {
         {/* Google Map */}
         {showMap && (
           <div className='mt-8 border-t border-gray-800 pt-8'>
-            <div className='bg-white rounded-2xl p-4 shadow-2xl'>
+            <div className='bg-white rounded-lg p-4 shadow-2xl'>
               <div className='flex items-center justify-between mb-4'>
                 <h4 className='text-lg font-semibold text-gray-900 flex items-center'>
                   <MapPin className='h-5 w-5 mr-2 text-orange-500' />
@@ -194,7 +194,7 @@ const Footer = () => {
                   ✕
                 </button>
               </div>
-              <div className='relative w-full h-80 rounded-xl overflow-hidden'>
+              <div className='relative w-full h-80 rounded-lg overflow-hidden'>
                 <iframe
                   src={googleMapsUrl}
                   width='100%'
@@ -203,7 +203,7 @@ const Footer = () => {
                   allowFullScreen
                   loading='lazy'
                   referrerPolicy='no-referrer-when-downgrade'
-                  className='rounded-xl'
+                  className='rounded-lg'
                   title='ACBCC English Ministry Location'
                 ></iframe>
               </div>

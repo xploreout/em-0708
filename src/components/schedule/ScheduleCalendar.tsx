@@ -144,7 +144,7 @@ export function CalendarContent() {
             )
           })}
         </div>
-        <div className="hidden md:block rounded-2xl border border-gray-700 shadow-sm overflow-hidden">
+        <div className="hidden md:block rounded-lg border border-gray-700 shadow-sm overflow-hidden">
           <table className="w-full table-fixed text-sm border-collapse">
             <CalColGroup />
             <tbody>
@@ -178,7 +178,7 @@ export function CalendarContent() {
               shared={shared} asTd={false} readOnly={readOnly} />
           ))}
         </div>
-        <div className="hidden md:block rounded-2xl border border-gray-700 shadow-sm overflow-hidden">
+        <div className="hidden md:block rounded-lg border border-gray-700 shadow-sm overflow-hidden">
           <table className="w-full table-fixed text-sm border-collapse">
             <CalColGroup />
             <tbody>
@@ -232,6 +232,20 @@ export function CalendarContent() {
             </button>
           </div>
 
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+            <input ref={searchRef} type="text" placeholder="Search…"
+              value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+              className="w-full pl-8 pr-7 py-1.5 text-sm border border-gray-200 rounded-lg outline-none shadow-sm bg-white" />
+            {searchQuery && (
+              <button onClick={() => { setSearchQuery(''); searchRef.current?.focus() }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
           <div className="flex-1" />
 
           {/* Month / Week / Day toggle */}
@@ -245,20 +259,6 @@ export function CalendarContent() {
               </button>
             ))}
           </div>
-
-          {/* Search */}
-          <div className="relative shrink-0">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-            <input ref={searchRef} type="text" placeholder="Search…"
-              value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              className="w-36 pl-8 pr-7 py-1.5 text-sm border border-gray-200 rounded-lg outline-none focus:border-blue-300 focus:ring-1 focus:ring-blue-100 bg-white" />
-            {searchQuery && (
-              <button onClick={() => { setSearchQuery(''); searchRef.current?.focus() }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
         </div>
       </div>
 
@@ -271,7 +271,7 @@ export function CalendarContent() {
               : <span><strong>{searchResults.length}</strong> date{searchResults.length !== 1 ? 's' : ''} matching <strong>"{searchQuery}"</strong></span>}
           </p>
           {searchResults.map(({ date, matched }) => (
-            <div key={dateKey(date)} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <div key={dateKey(date)} className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
               <div className="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-100">
                 <span className="text-xs font-bold text-gray-700">
                   {DOW_SHORT[date.getDay()]}, {MONTH_NAMES[date.getMonth()]} {date.getDate()}, {date.getFullYear()}

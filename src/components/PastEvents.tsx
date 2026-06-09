@@ -187,7 +187,7 @@ const LoopingYouTube = ({
             >
               <iframe
                 src={expandSrc}
-                className='absolute inset-0 w-full h-full rounded-xl'
+                className='absolute inset-0 w-full h-full rounded-lg'
                 allowFullScreen
                 allow='autoplay; fullscreen'
               />
@@ -400,7 +400,7 @@ const PastEvents = () => {
               {featured.isShort ? (
                 /* Portrait Short — fills frame edge-to-edge, no letterbox */
                 <div
-                  className='relative rounded-2xl overflow-hidden shadow-xl bg-black'
+                  className='relative rounded-lg overflow-hidden shadow-xl bg-black'
                   style={{ width: '260px', height: '462px' }}
                 >
                   <iframe
@@ -430,7 +430,7 @@ const PastEvents = () => {
                   href={`https://youtu.be/${featured.id}`}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl block group w-full'
+                  className='bg-white rounded-lg shadow-xl overflow-hidden hover:shadow-2xl block group w-full'
                 >
                   <div className='relative w-full' style={{ paddingBottom: '56.25%' }}>
                     <LoopingYouTube
@@ -463,7 +463,7 @@ const PastEvents = () => {
                   <button
                     key={video.id}
                     onClick={() => setFeatured(video)}
-                    className='relative w-full rounded-xl overflow-hidden shadow hover:shadow-md transition-shadow group'
+                    className='relative w-full rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow group'
                   >
                     <div
                       className='relative w-full'
@@ -510,7 +510,7 @@ const PastEvents = () => {
             {pastEvents.map((event) => (
               <div
                 key={event.id}
-                className='bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group relative'
+                className='bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group relative'
               >
                 <div className='relative'>
                   <PhotoCollage images={event.images} title={event.title} />

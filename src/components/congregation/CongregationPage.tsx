@@ -78,7 +78,7 @@ function MemberModal({ member, onSave, onClose }: {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
           <X className="w-5 h-5" />
         </button>
@@ -114,17 +114,17 @@ function MemberModal({ member, onSave, onClose }: {
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Name *</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Full name"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
           </div>
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Phone</label>
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 (555) 000-0000"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
           </div>
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Email</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
           </div>
         </div>
 
@@ -132,10 +132,10 @@ function MemberModal({ member, onSave, onClose }: {
 
         <div className="flex gap-2 mt-5">
           <button onClick={handleSave} disabled={saving}
-            className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2">
+            className="flex-1 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2">
             {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</> : <><Check className="w-4 h-4" /> Save</>}
           </button>
-          <button onClick={onClose} className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
+          <button onClick={onClose} className="px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
             Cancel
           </button>
         </div>
@@ -154,7 +154,7 @@ function MemberCard({ member, onEdit, onDelete }: {
   const initials = member.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 flex gap-3">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex gap-3">
       {/* Photo / initials */}
       <div className="shrink-0">
         {member.photoUrl ? (
@@ -230,7 +230,7 @@ function RemindersPanel() {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
       <div className="flex items-center gap-2 mb-4">
         <Send className="w-4 h-4 text-blue-500" />
         <h2 className="text-sm font-bold text-gray-800">Send Monthly Reminders</h2>
@@ -243,7 +243,7 @@ function RemindersPanel() {
         <select
           value={selectedIdx}
           onChange={e => { setSelectedIdx(Number(e.target.value)); setResult(null) }}
-          className="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white"
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white"
         >
           {months.map((m, i) => <option key={i} value={i}>{m.label}</option>)}
         </select>
@@ -251,7 +251,7 @@ function RemindersPanel() {
         <button
           onClick={sendReminders}
           disabled={status === 'sending'}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition disabled:opacity-50"
         >
           {status === 'sending'
             ? <><Loader2 className="w-4 h-4 animate-spin" /> Sending…</>
@@ -268,19 +268,19 @@ function RemindersPanel() {
           {result.message && <p className="text-gray-500 italic">{result.message}</p>}
 
           {result.sent.length > 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+            <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2">
               <span className="font-bold text-green-700">✓ Sent ({result.sent.length}):</span>{' '}
               <span className="text-green-700">{result.sent.map(s => s.name).join(', ')}</span>
             </div>
           )}
           {result.skipped.length > 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
               <span className="font-bold text-amber-700">⚠ Skipped ({result.skipped.length}):</span>{' '}
               <span className="text-amber-700">{result.skipped.map(s => `${s.name} (${s.reason})`).join(', ')}</span>
             </div>
           )}
           {result.errors.length > 0 && (
-            <div className="bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+            <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2">
               <span className="font-bold text-red-700">✗ Errors ({result.errors.length}):</span>{' '}
               <span className="text-red-700">{result.errors.map(e => `${e.name}: ${e.error}`).join(', ')}</span>
             </div>
@@ -369,7 +369,7 @@ function CongregationContent() {
             placeholder="Search by name, email or phone…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:border-blue-300 focus:ring-1 focus:ring-blue-100 bg-white"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-blue-300 focus:ring-1 focus:ring-blue-100 bg-white"
           />
           {search && (
             <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -379,7 +379,7 @@ function CongregationContent() {
         </div>
         <button
           onClick={() => setModal('add')}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition shrink-0"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition shrink-0"
         >
           <Plus className="w-4 h-4" /> Add Member
         </button>

@@ -137,6 +137,7 @@ async function initDB() {
       `ALTER TABLE classes ADD COLUMN IF NOT EXISTS lead_password_hash TEXT DEFAULT ''`,
       `ALTER TABLE classes ADD COLUMN IF NOT EXISTS archived BOOLEAN DEFAULT false`,
       `ALTER TABLE classes ADD COLUMN IF NOT EXISTS start_date DATE`,
+      `ALTER TABLE classes ADD COLUMN IF NOT EXISTS end_time VARCHAR(20) DEFAULT ''`,
       `ALTER TABLE class_sessions ADD COLUMN IF NOT EXISTS session_lead_name VARCHAR(200) DEFAULT ''`,
     ]) { await client.query(ddl) }
 
@@ -609,7 +610,7 @@ app.get('/api/classes/:id', requireAuth('attendance'), wrap(async (req, res) => 
 const toClass = r => ({
   id: r.id, name: r.name, lead_name: r.lead_name || '', lead_email: r.lead_email || '',
   description: r.description || '', location: r.location || '',
-  meeting_day: r.meeting_day || '', meeting_time: r.meeting_time || '',
+  meeting_day: r.meeting_day || '', meeting_time: r.meeting_time || '', end_time: r.end_time || '',
   recurrence: r.recurrence || 'none',
   start_date: r.start_date ? new Date(r.start_date).toISOString().slice(0, 10) : null,
   end_date: r.end_date ? new Date(r.end_date).toISOString().slice(0, 10) : null,
@@ -618,13 +619,13 @@ const toClass = r => ({
 })
 
 app.post('/api/classes', requireAuth('admin'), wrap(async (req, res) => {
-  const { name, lead_name='', lead_email='', description='', location='', meeting_day='', meeting_time='', recurrence='none', start_date=null, end_date=null, lead_password='' } = req.body ?? {}
+  const { name, lead_name='', lead_email='', description='', location='', meeting_day='', meeting_time='', end_time='', recurrence='none', start_date=null, end_date=null, lead_password='' } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
   const hash = lead_password ? bcrypt.hashSync(lead_password, 10) : ''
   const { rows: [cls] } = await pool.query(
-    `INSERT INTO classes(name,lead_name,lead_email,description,location,meeting_day,meeting_time,recurrence,start_date,end_date,lead_password_hash)
-     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
-    [name.trim(), lead_name.trim(), lead_email.trim(), description.trim(), location.trim(), meeting_day.trim(), meeting_time.trim(), recurrence, start_date || null, end_date || null, hash]
+    `INSERT INTO classes(name,lead_name,lead_email,description,location,meeting_day,meeting_time,end_time,recurrence,start_date,end_date,lead_password_hash)
+     VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`,
+    [name.trim(), lead_name.trim(), lead_email.trim(), description.trim(), location.trim(), meeting_day.trim(), meeting_time.trim(), end_time.trim(), recurrence, start_date || null, end_date || null, hash]
   ).catch(err => {
     if (err.code === '23505') { res.status(409).json({ error: 'Class already exists' }); return { rows: [] } }
     throw err
@@ -633,19 +634,19 @@ app.post('/api/classes', requireAuth('admin'), wrap(async (req, res) => {
 }))
 
 app.put('/api/classes/:id', requireAuth('attendance'), wrap(async (req, res) => {
-  const { name, lead_name='', lead_email='', description='', location='', meeting_day='', meeting_time='', recurrence='none', start_date=null, end_date=null, lead_password } = req.body ?? {}
+  const { name, lead_name='', lead_email='', description='', location='', meeting_day='', meeting_time='', end_time='', recurrence='none', start_date=null, end_date=null, lead_password } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
-  const base = [name.trim(), lead_name.trim(), lead_email.trim(), description.trim(), location.trim(), meeting_day.trim(), meeting_time.trim(), recurrence, start_date || null, end_date || null]
+  const base = [name.trim(), lead_name.trim(), lead_email.trim(), description.trim(), location.trim(), meeting_day.trim(), meeting_time.trim(), end_time.trim(), recurrence, start_date || null, end_date || null]
   let rows, rowCount
   if (lead_password !== undefined) {
     const hash = lead_password ? bcrypt.hashSync(lead_password, 10) : ''
     ;({ rows, rowCount } = await pool.query(
-      `UPDATE classes SET name=$1,lead_name=$2,lead_email=$3,description=$4,location=$5,meeting_day=$6,meeting_time=$7,recurrence=$8,start_date=$9,end_date=$10,lead_password_hash=$11 WHERE id=$12 RETURNING *`,
+      `UPDATE classes SET name=$1,lead_name=$2,lead_email=$3,description=$4,location=$5,meeting_day=$6,meeting_time=$7,end_time=$8,recurrence=$9,start_date=$10,end_date=$11,lead_password_hash=$12 WHERE id=$13 RETURNING *`,
       [...base, hash, req.params.id]
     ))
   } else {
     ;({ rows, rowCount } = await pool.query(
-      `UPDATE classes SET name=$1,lead_name=$2,lead_email=$3,description=$4,location=$5,meeting_day=$6,meeting_time=$7,recurrence=$8,start_date=$9,end_date=$10 WHERE id=$11 RETURNING *`,
+      `UPDATE classes SET name=$1,lead_name=$2,lead_email=$3,description=$4,location=$5,meeting_day=$6,meeting_time=$7,end_time=$8,recurrence=$9,start_date=$10,end_date=$11 WHERE id=$12 RETURNING *`,
       [...base, req.params.id]
     ))
   }

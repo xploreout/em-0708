@@ -114,7 +114,7 @@ function LeadPasswordModal({ classId, onSuccess, onClose, authFetch }:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 relative" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm p-6 relative" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
         <div className="flex items-center gap-2 mb-4">
           <Key className="w-5 h-5 text-indigo-600" />
@@ -128,7 +128,7 @@ function LeadPasswordModal({ classId, onSuccess, onClose, authFetch }:
               value={pw}
               onChange={e => { setPw(e.target.value); setError('') }}
               placeholder="Enter leader password"
-              className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 pr-10 text-sm outline-none focus:border-indigo-400 transition"
+              className="w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 pr-10 text-sm outline-none focus:border-indigo-400 transition"
             />
             <button type="button" onClick={() => setShow(s => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
               {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -138,7 +138,7 @@ function LeadPasswordModal({ classId, onSuccess, onClose, authFetch }:
           <button
             type="submit"
             disabled={loading || !pw}
-            className="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition disabled:opacity-50"
+            className="py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition disabled:opacity-50"
           >
             {loading ? 'Verifying…' : 'Enter leader mode'}
           </button>
@@ -172,7 +172,7 @@ function NotifyModal({ name, classId, onClose, authFetch }:
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 relative" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm p-6 relative" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
         <div className="flex items-center gap-2 mb-3">
           <UserX className="w-5 h-5 text-orange-500" />
@@ -190,7 +190,7 @@ function NotifyModal({ name, classId, onClose, authFetch }:
             <button
               onClick={send}
               disabled={busy}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50 mb-3"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50 mb-3"
             >
               <Mail className="w-4 h-4" />
               {busy ? 'Sending…' : 'Email class leader'}
@@ -198,7 +198,7 @@ function NotifyModal({ name, classId, onClose, authFetch }:
             {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
           </>
         )}
-        <div className="text-center text-sm bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+        <div className="text-center text-sm bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
           <strong className="text-amber-700">Tell the class leader in person</strong>
           <br /><span className="text-amber-600 text-xs">so they can add you to the roster.</span>
         </div>
@@ -284,13 +284,13 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
           onChange={e => setQ(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && q.trim() && results.length === 0) doCheckin(q.trim()) }}
           placeholder="Enter your name or phone number…"
-          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm outline-none focus:border-blue-400 transition bg-white"
+          className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-400 transition bg-white"
           autoComplete="off"
         />
       </div>
 
       {flash && (
-        <div className={`flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl mb-3 ${flash.ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+        <div className={`flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-lg mb-3 ${flash.ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
           {flash.ok && <CheckCircle2 className="w-4 h-4" />}
           {flash.msg}
         </div>
@@ -304,7 +304,7 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
             <button
               key={r.name}
               onClick={() => doCheckin(r.name, r.phone)}
-              className="flex items-center justify-between px-4 py-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl text-left transition"
+              className="flex items-center justify-between px-4 py-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-left transition"
             >
               <div>
                 <div className="font-semibold text-blue-800 text-sm">{r.name}</div>
@@ -318,7 +318,7 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
       )}
 
       {noResults && (
-        <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-4 mb-3">
+        <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-4 mb-3">
           <div className="flex items-center gap-2 text-orange-700 font-semibold text-sm mb-3">
             <UserX className="w-4 h-4" />
             "{q}" not found
@@ -343,7 +343,7 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
       {q.trim() && results.length > 0 && (
         <button
           onClick={() => doCheckin(q.trim())}
-          className="w-full py-2 rounded-xl border-2 border-dashed border-blue-200 text-blue-500 hover:bg-blue-50 text-sm font-medium transition mb-3"
+          className="w-full py-2 rounded-lg border-2 border-dashed border-blue-200 text-blue-500 hover:bg-blue-50 text-sm font-medium transition mb-3"
         >
           Or check in as "{q}" directly
         </button>
@@ -358,7 +358,7 @@ function KioskCheckinPanel({ classId, isLeadMode, onCheckedIn, authFetch }:
         ) : (
           <div className="flex flex-col gap-1.5">
             {todayList.map(a => (
-              <div key={a.id} className="flex items-center gap-3 px-4 py-2.5 bg-white border border-gray-100 rounded-xl shadow-sm">
+              <div key={a.id} className="flex items-center gap-3 px-4 py-2.5 bg-white border border-gray-100 rounded-lg shadow-sm">
                 <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-gray-800 truncate">{a.person_name}</div>
@@ -459,26 +459,26 @@ function RosterPanel({ classId, sessions, onRefresh, authFetch }:
       </div>
 
       {flash && (
-        <div className="flex items-center gap-2 text-green-700 bg-green-50 px-4 py-2.5 rounded-xl text-sm font-medium mb-3">
+        <div className="flex items-center gap-2 text-green-700 bg-green-50 px-4 py-2.5 rounded-lg text-sm font-medium mb-3">
           <CheckCircle2 className="w-4 h-4" /> {flash}
         </div>
       )}
 
       {showAdd && (
-        <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 mb-4 flex flex-col gap-3">
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4 flex flex-col gap-3">
           <h4 className="font-semibold text-blue-800 text-sm">Add New Member</h4>
           <input
             value={newName}
             onChange={e => setNewName(e.target.value)}
             placeholder="Full name *"
-            className="w-full border-2 border-blue-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-400 bg-white"
+            className="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-400 bg-white"
             autoFocus
           />
           <input
             value={newPhone}
             onChange={e => setNewPhone(e.target.value)}
             placeholder="Phone (optional)"
-            className="w-full border-2 border-blue-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-400 bg-white"
+            className="w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-400 bg-white"
           />
           <label className="flex items-center gap-2 text-sm text-blue-800 cursor-pointer">
             <input
@@ -493,13 +493,13 @@ function RosterPanel({ classId, sessions, onRefresh, authFetch }:
             <button
               onClick={addMember}
               disabled={saving || !newName.trim()}
-              className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50"
+              className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50"
             >
               {saving ? 'Saving…' : 'Add'}
             </button>
             <button
               onClick={() => { setShowAdd(false); setNewName(''); setNewPhone('') }}
-              className="px-4 py-2 rounded-xl border border-blue-200 text-blue-600 text-sm hover:bg-white transition"
+              className="px-4 py-2 rounded-lg border border-blue-200 text-blue-600 text-sm hover:bg-white transition"
             >
               Cancel
             </button>
@@ -512,7 +512,7 @@ function RosterPanel({ classId, sessions, onRefresh, authFetch }:
       ) : (
         <div className="flex flex-col gap-1.5">
           {members.map(m => (
-            <div key={m.name} className="flex items-center justify-between bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm">
+            <div key={m.name} className="flex items-center justify-between bg-white border border-gray-100 rounded-lg px-4 py-3 shadow-sm">
               <div>
                 <div className="font-medium text-gray-800 text-sm">{m.name}</div>
                 {m.phone && <div className="text-xs text-gray-400">{m.phone}</div>}
@@ -613,7 +613,7 @@ function SessionSchedulePanel({ cls, sessions, classId, authFetch, onRefresh }: 
         Click any field to edit. Auto-saves when you move away.
       </p>
 
-      <div className="rounded-xl border border-gray-200 overflow-hidden">
+      <div className="rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
@@ -803,14 +803,14 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
     showFlash('Note saved!')
   }
 
-  const inp = 'w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-800 font-medium outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-200 transition bg-white'
+  const inp = 'w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-800 font-medium outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-200 transition bg-white'
   const lbl = 'text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5 block'
   const sectionH = 'font-bold text-indigo-700 mb-3 text-sm uppercase tracking-wider flex items-center gap-2 border-b border-indigo-100 pb-1.5'
 
   return (
     <div className="flex flex-col gap-6">
       {flash && (
-        <div className="flex items-center gap-2 text-green-700 bg-green-50 px-4 py-2.5 rounded-xl text-sm font-medium">
+        <div className="flex items-center gap-2 text-green-700 bg-green-50 px-4 py-2.5 rounded-lg text-sm font-medium">
           <CheckCircle2 className="w-4 h-4" /> {flash}
         </div>
       )}
@@ -820,7 +820,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
         <button
           onClick={handleSave}
           disabled={savingClass}
-          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50"
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           {savingClass ? 'Saving…' : 'Save'}
@@ -828,7 +828,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
         <button
           onClick={handleCancel}
           disabled={savingClass}
-          className="px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition disabled:opacity-50"
+          className="px-5 py-2.5 rounded-lg border-2 border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold text-sm transition disabled:opacity-50"
         >
           Cancel
         </button>
@@ -878,7 +878,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
                   key={r}
                   type="button"
                   onClick={() => setForm(f => ({ ...f, recurrence: r }))}
-                  className={`flex-1 py-2 rounded-xl text-sm font-semibold border-2 transition capitalize ${
+                  className={`flex-1 py-2 rounded-lg text-sm font-semibold border-2 transition capitalize ${
                     form.recurrence === r ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-500 hover:border-gray-300'
                   }`}
                 >
@@ -938,7 +938,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
           </h3>
           <div className="flex flex-col gap-2">
             {[...sessions].sort((a, b) => a.session_date.localeCompare(b.session_date)).map(s => (
-              <div key={s.id} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5">
+              <div key={s.id} className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5">
                 <div className="w-28 flex-shrink-0">
                   <div className="text-xs font-semibold text-gray-700">{fmtDate(s.session_date)}</div>
                   {s.topic && <div className="text-xs text-gray-400 truncate">{s.topic}</div>}
@@ -969,7 +969,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
           <h3 className={sectionH}>Attendee Notes — Today</h3>
           <div className="flex flex-col gap-3">
             {todaySession.attendees.map(a => (
-              <div key={a.id} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+              <div key={a.id} className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
                 <div className="font-medium text-gray-800 text-sm mb-1.5">{a.person_name}</div>
                 <textarea
                   value={attendeeNotes[a.id] ?? ''}
@@ -1004,7 +1004,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
               type="button"
               onClick={archiveClass}
               disabled={dangerBusy}
-              className="flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-amber-300 text-amber-700 hover:bg-amber-50 font-semibold text-sm transition disabled:opacity-50"
+              className="flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-amber-300 text-amber-700 hover:bg-amber-50 font-semibold text-sm transition disabled:opacity-50"
             >
               {cls.archived
                 ? <><ArchiveRestore className="w-4 h-4" /> Restore Class</>
@@ -1016,12 +1016,12 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
               <button
                 type="button"
                 onClick={() => setConfirmDelete(true)}
-                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-red-300 text-red-600 hover:bg-red-50 font-semibold text-sm transition"
+                className="flex items-center justify-center gap-2 py-2.5 rounded-lg border-2 border-red-300 text-red-600 hover:bg-red-50 font-semibold text-sm transition"
               >
                 <Trash2 className="w-4 h-4" /> Delete Class
               </button>
             ) : (
-              <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4">
+              <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4">
                 <p className="text-sm text-red-700 font-medium mb-3 text-center">
                   Delete <strong>"{cls.name}"</strong>? All sessions and attendance will be permanently removed.
                 </p>
@@ -1029,7 +1029,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
                   <button
                     type="button"
                     onClick={() => setConfirmDelete(false)}
-                    className="flex-1 py-2 rounded-xl border border-red-200 text-red-500 text-sm font-semibold hover:bg-white transition"
+                    className="flex-1 py-2 rounded-lg border border-red-200 text-red-500 text-sm font-semibold hover:bg-white transition"
                   >
                     Cancel
                   </button>
@@ -1037,7 +1037,7 @@ function EditPanel({ cls, classId, sessions, onClassSaved, onDeleted, onRefresh,
                     type="button"
                     onClick={deleteClass}
                     disabled={dangerBusy}
-                    className="flex-1 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition disabled:opacity-50"
+                    className="flex-1 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition disabled:opacity-50"
                   >
                     {dangerBusy ? 'Deleting…' : 'Yes, Delete'}
                   </button>
@@ -1068,7 +1068,7 @@ function SummaryPanel({ cls, sessions }: { cls: ClassInfo; sessions: Session[] }
   return (
     <div>
       {/* Class info card */}
-      <div className="bg-white border border-gray-200 rounded-2xl px-5 py-4 mb-5 flex flex-col gap-2">
+      <div className="bg-white border border-gray-200 rounded-lg px-5 py-4 mb-5 flex flex-col gap-2">
         <h2 className="text-base font-bold text-gray-800">{cls.name}</h2>
         {cls.description && <p className="text-sm text-gray-500">{cls.description}</p>}
         <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-1">
@@ -1115,7 +1115,7 @@ function SummaryPanel({ cls, sessions }: { cls: ClassInfo; sessions: Session[] }
         ].map(({ val, label, bg }) => {
           const [bg1, bg2, t1, t2] = bg.split(' ')
           return (
-            <div key={label} className={`${bg1} border ${bg2} rounded-xl px-3 py-3 text-center`}>
+            <div key={label} className={`${bg1} border ${bg2} rounded-lg px-3 py-3 text-center`}>
               <div className={`text-2xl font-bold ${t1}`}>{val}</div>
               <div className={`text-xs mt-0.5 ${t2}`}>{label}</div>
             </div>
@@ -1128,7 +1128,7 @@ function SummaryPanel({ cls, sessions }: { cls: ClassInfo; sessions: Session[] }
       ) : (
         <>
           <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Attendance Matrix</h3>
-          <div className="overflow-x-auto rounded-xl border border-gray-200 mb-6">
+          <div className="overflow-x-auto rounded-lg border border-gray-200 mb-6">
             <table className="text-xs min-w-full">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
@@ -1163,7 +1163,7 @@ function SummaryPanel({ cls, sessions }: { cls: ClassInfo; sessions: Session[] }
           <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Sessions</h3>
           <div className="flex flex-col gap-3">
             {[...sorted].reverse().map(s => (
-              <details key={s.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+              <details key={s.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <summary className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 select-none list-none">
                   <div className="flex items-center gap-2">
                     <ChevronRight className="w-4 h-4 text-gray-400" />
@@ -1318,7 +1318,7 @@ function DocumentsPanel({ classId, authFetch }: {
       )}
 
       {/* Upload section */}
-      <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
         {/* Tab toggle */}
         <div className="flex gap-1 mb-3 bg-white border border-gray-200 rounded-lg p-0.5 w-fit">
           <button onClick={() => setTab('file')}
@@ -1505,7 +1505,7 @@ function ClassNotesPanel({ classId, authFetch }: {
   return (
     <div className="flex flex-col gap-4">
       {/* Add note */}
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
         <h3 className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
           <StickyNote className="w-3.5 h-3.5" /> Add Note
         </h3>
@@ -1537,7 +1537,7 @@ function ClassNotesPanel({ classId, authFetch }: {
         ) : notes.length === 0 ? (
           <p className="text-sm text-gray-400 text-center py-4">No notes yet.</p>
         ) : (
-          <div className="rounded-xl border border-gray-200 overflow-hidden">
+          <div className="rounded-lg border border-gray-200 overflow-hidden">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="bg-gray-100 border-b border-gray-200">

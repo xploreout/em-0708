@@ -19,7 +19,7 @@ const Events = () => {
               key={event.id}
               to={event.link ?? '#'}
               onClick={event.link ? undefined : (e) => e.preventDefault()}
-              className='bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col'
+              className='bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col'
             >
               {event.video ? (
                 <video

@@ -113,7 +113,7 @@ const NewcomerForm = () => {
         {showPopup && (
           <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
             <div className="absolute inset-0 bg-black/40" onClick={() => setShowPopup(false)} />
-            <div className="relative bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+            <div className="relative bg-white rounded-lg shadow-2xl p-8 max-w-md w-full text-center">
               <CheckCircle className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-stone-700 mb-3">Thank you for submitting the form.</h2>
               <p className="text-stone-500 leading-relaxed">
@@ -130,7 +130,7 @@ const NewcomerForm = () => {
         )}
         <section id="newcomer-form" className="py-8">
           <div className="text-center">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12">
+            <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-12">
               <CheckCircle className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Thanks for reaching out!</h2>
               <p className="text-gray-500">We'll be in touch soon to welcome you to our community.</p>
@@ -157,7 +157,7 @@ const NewcomerForm = () => {
 
           {/* Form */}
           <div>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+        <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
 
             {/* Name & Email */}
@@ -174,7 +174,7 @@ const NewcomerForm = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Your full name"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                 />
               </div>
               <div>
@@ -188,7 +188,7 @@ const NewcomerForm = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                 />
               </div>
             </div>
@@ -207,7 +207,7 @@ const NewcomerForm = () => {
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="(xxx) xxx-xxxx"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                 />
               </div>
               <div>
@@ -221,7 +221,7 @@ const NewcomerForm = () => {
                   value={formData.availableToServe}
                   onChange={handleChange}
                   placeholder="e.g. music, hospitality, youth"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                 />
               </div>
             </div>
@@ -253,7 +253,7 @@ const NewcomerForm = () => {
 
               {/* Activity details */}
               {formData.purposes.activityInterest && (
-                <div className="mt-3 ml-7 grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                <div className="mt-3 ml-7 grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-blue-50 rounded-lg border border-blue-100">
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">Event or activity name</label>
                     <input
@@ -288,7 +288,7 @@ const NewcomerForm = () => {
                     onChange={handleChange}
                     placeholder="Tell us a little more about why you're reaching out..."
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
                 </div>
               )}
@@ -306,7 +306,7 @@ const NewcomerForm = () => {
                 value={formData.note}
                 onChange={handleChange}
                 placeholder="Feel free to share anything — questions, background, how you heard about us..."
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
               />
             </div>
 
@@ -321,7 +321,7 @@ const NewcomerForm = () => {
 
             {/* Error */}
             {submitError && (
-              <div className="p-4 bg-red-50 border border-red-100 rounded-xl">
+              <div className="p-4 bg-red-50 border border-red-100 rounded-lg">
                 <p className="text-sm text-red-600 text-center">{submitError}</p>
               </div>
             )}
@@ -330,7 +330,7 @@ const NewcomerForm = () => {
             <button
               type="submit"
               disabled={!recaptchaValue || isSubmitting}
-              className="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl text-sm transition-colors duration-200"
+              className="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg text-sm transition-colors duration-200"
             >
               <Send className="h-4 w-4" />
               {isSubmitting ? 'Sending...' : 'Send Message'}

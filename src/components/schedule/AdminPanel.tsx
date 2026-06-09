@@ -100,7 +100,7 @@ function MemberModal({ member, onSave, onClose }: {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
           <X className="w-5 h-5" />
         </button>
@@ -132,20 +132,20 @@ function MemberModal({ member, onSave, onClose }: {
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Name *</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)}
               placeholder="Full name"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
           </div>
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Phone</label>
             <input type="tel" value={phone}
               onChange={e => setPhone(formatPhone(e.target.value))}
               placeholder="___-___-____"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
           </div>
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Email</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)}
               placeholder="email@example.com"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
           </div>
         </div>
 
@@ -153,10 +153,10 @@ function MemberModal({ member, onSave, onClose }: {
 
         <div className="flex gap-2 mt-5">
           <button onClick={handleSave} disabled={saving}
-            className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2">
+            className="flex-1 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2">
             {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</> : <><Check className="w-4 h-4" /> Save</>}
           </button>
-          <button onClick={onClose} className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
+          <button onClick={onClose} className="px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
             Cancel
           </button>
         </div>
@@ -203,11 +203,11 @@ function RemindersPanel() {
       </p>
       <div className="flex flex-wrap gap-2 items-center">
         <select value={selectedIdx} onChange={e => { setSelectedIdx(Number(e.target.value)); setResult(null) }}
-          className="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white">
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white">
           {months.map((m, i) => <option key={i} value={i}>{m.label}</option>)}
         </select>
         <button onClick={sendReminders} disabled={status === 'sending'}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition disabled:opacity-50">
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition disabled:opacity-50">
           {status === 'sending'
             ? <><Loader2 className="w-4 h-4 animate-spin" /> Sending…</>
             : <><Send className="w-4 h-4" /> Send Reminders</>}
@@ -218,19 +218,19 @@ function RemindersPanel() {
         <div className="mt-4 flex flex-col gap-2 text-xs">
           {result.message && <p className="text-gray-500 italic">{result.message}</p>}
           {result.sent.length > 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+            <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2">
               <span className="font-bold text-green-700">✓ Sent ({result.sent.length}):</span>{' '}
               <span className="text-green-700">{result.sent.map(s => s.name).join(', ')}</span>
             </div>
           )}
           {result.skipped.length > 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
               <span className="font-bold text-amber-700">⚠ Skipped ({result.skipped.length}):</span>{' '}
               <span className="text-amber-700">{result.skipped.map(s => `${s.name} (${s.reason})`).join(', ')}</span>
             </div>
           )}
           {result.errors.length > 0 && (
-            <div className="bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+            <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2">
               <span className="font-bold text-red-700">✗ Errors ({result.errors.length}):</span>{' '}
               <span className="text-red-700">{result.errors.map(e => `${e.name}: ${e.error}`).join(', ')}</span>
             </div>
@@ -326,7 +326,7 @@ function ContactsPanel() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-8">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         {/* Toolbar */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
           <Users className="w-4 h-4 text-gray-400 shrink-0" />
@@ -410,9 +410,6 @@ function ContactsPanel() {
           </div>
         )}
 
-        <div className="px-4 pb-5">
-          <RemindersPanel />
-        </div>
       </div>
 
       {modal !== null && (
@@ -426,7 +423,7 @@ function ContactsPanel() {
       {deleteConfirm && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 px-4"
           onClick={() => setDeleteConfirm(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
             <h3 className="text-base font-bold text-gray-800 mb-2">Remove Contact?</h3>
             <p className="text-sm text-gray-600 mb-1">
               <strong>{deleteConfirm.name}</strong> appears in{' '}
@@ -436,11 +433,11 @@ function ContactsPanel() {
             <div className="flex gap-2">
               <button
                 onClick={() => { performDelete(deleteConfirm.id); setDeleteConfirm(null) }}
-                className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition">
+                className="flex-1 py-2.5 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition">
                 Yes, Remove
               </button>
               <button onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
+                className="px-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
                 Cancel
               </button>
             </div>
@@ -452,7 +449,7 @@ function ContactsPanel() {
         <div className="fixed inset-0 z-[200] flex items-center justify-center"
           onClick={() => { if (previewTimer.current) clearTimeout(previewTimer.current); setPreviewUrl(null) }}>
           <img src={previewUrl} alt="Preview"
-            className="w-48 h-48 rounded-2xl object-cover shadow-2xl ring-4 ring-white" />
+            className="w-48 h-48 rounded-lg object-cover shadow-2xl ring-4 ring-white" />
         </div>
       )}
     </div>
@@ -468,22 +465,22 @@ function dayFromDate(dateStr: string): string {
 
 type ClassInfo = {
   id: number; name: string; lead_name: string; lead_email: string
-  description: string; location: string; meeting_day: string; meeting_time: string
+  description: string; location: string; meeting_day: string; meeting_time: string; end_time: string
   recurrence: string; start_date: string | null; end_date: string | null
   has_lead_password: boolean; archived: boolean
 }
 
 type ClassFormState = {
   name: string; lead_name: string; lead_email: string; description: string
-  location: string; meeting_day: string; meeting_time: string
+  location: string; meeting_day: string; meeting_time: string; end_time: string
   recurrence: string; start_date: string; end_date: string; lead_password: string
 }
 
 function emptyForm(): ClassFormState {
-  return { name:'', lead_name:'', lead_email:'', description:'', location:'', meeting_day:'', meeting_time:'', recurrence:'none', start_date:'', end_date:'', lead_password:'' }
+  return { name:'', lead_name:'', lead_email:'', description:'', location:'', meeting_day:'', meeting_time:'', end_time:'', recurrence:'none', start_date:'', end_date:'', lead_password:'' }
 }
 function classToForm(c: ClassInfo): ClassFormState {
-  return { name: c.name, lead_name: c.lead_name, lead_email: c.lead_email, description: c.description, location: c.location, meeting_day: c.meeting_day, meeting_time: c.meeting_time, recurrence: c.recurrence, start_date: c.start_date || '', end_date: c.end_date || '', lead_password: '' }
+  return { name: c.name, lead_name: c.lead_name, lead_email: c.lead_email, description: c.description, location: c.location, meeting_day: c.meeting_day, meeting_time: c.meeting_time, end_time: c.end_time || '', recurrence: c.recurrence, start_date: c.start_date || '', end_date: c.end_date || '', lead_password: '' }
 }
 
 function fmtDate(d: string) {
@@ -501,12 +498,12 @@ function ClassFormModal({ title, form, setForm, onSubmit, onClose, saving, error
   error: string
   hasPassword?: boolean
 }) {
-  const inp = 'w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-400 transition bg-white'
+  const inp = 'w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-400 transition bg-white'
   const lbl = 'text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5 block'
 
   return (
     <div className="fixed inset-0 z-[200] flex items-start justify-center bg-black/50 px-4 py-4 overflow-y-auto" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 sm:p-8 relative my-4" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl p-6 sm:p-8 relative my-4" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
         <h3 className="font-bold text-indigo-700 text-lg mb-5">{title}</h3>
 
@@ -542,10 +539,14 @@ function ClassFormModal({ title, form, setForm, onSubmit, onClose, saving, error
               <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Schedule</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className={lbl}>Time</label>
+                <label className={lbl}>Begin Time</label>
                 <input type="time" value={form.meeting_time} onChange={e => setForm(f => ({...f, meeting_time: e.target.value}))} className={inp} />
+              </div>
+              <div>
+                <label className={lbl}>End Time</label>
+                <input type="time" value={form.end_time} onChange={e => setForm(f => ({...f, end_time: e.target.value}))} className={inp} />
               </div>
               <div>
                 <label className={lbl}>Recurring</label>
@@ -553,7 +554,7 @@ function ClassFormModal({ title, form, setForm, onSubmit, onClose, saving, error
                   {(['none','weekly','monthly'] as const).map(r => (
                     <button key={r} type="button"
                       onClick={() => setForm(f => ({...f, recurrence: r}))}
-                      className={`flex-1 rounded-xl text-xs font-semibold border-2 transition capitalize ${
+                      className={`flex-1 rounded-lg text-xs font-semibold border-2 transition capitalize ${
                         form.recurrence === r ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-500 hover:border-gray-300'
                       }`}
                     >{r === 'none' ? 'None' : r}</button>
@@ -585,7 +586,7 @@ function ClassFormModal({ title, form, setForm, onSubmit, onClose, saving, error
           {error && <p className="text-red-500 text-xs">{error}</p>}
 
           <button type="submit" disabled={saving || !form.name.trim()}
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
+            className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
             <Save className="w-4 h-4" />
             {saving ? 'Saving…' : 'Save'}
           </button>
@@ -825,7 +826,8 @@ const showFlash = (msg: string) => { setFlash(msg); setTimeout(() => setFlash(''
       lead_email: createForm.lead_email.trim(), description: createForm.description.trim(),
       location: createForm.location.trim(),
       meeting_day: createForm.start_date ? dayFromDate(createForm.start_date) : '',
-      meeting_time: createForm.meeting_time, recurrence: createForm.recurrence,
+      meeting_time: createForm.meeting_time, end_time: createForm.end_time || null,
+      recurrence: createForm.recurrence,
       start_date: createForm.start_date || null,
       end_date: createForm.recurrence !== 'none' ? createForm.end_date || null : null,
     }
@@ -852,7 +854,8 @@ const showFlash = (msg: string) => { setFlash(msg); setTimeout(() => setFlash(''
       lead_email: editForm.lead_email.trim(), description: editForm.description.trim(),
       location: editForm.location.trim(),
       meeting_day: editForm.start_date ? dayFromDate(editForm.start_date) : '',
-      meeting_time: editForm.meeting_time, recurrence: editForm.recurrence,
+      meeting_time: editForm.meeting_time, end_time: editForm.end_time || null,
+      recurrence: editForm.recurrence,
       start_date: editForm.start_date || null,
       end_date: editForm.recurrence !== 'none' ? editForm.end_date || null : null,
     }
@@ -946,7 +949,9 @@ const activeClasses   = classes.filter(c => !c.archived)
           {c.meeting_day && c.meeting_time
             ? <>
                 <div className="text-sm text-gray-800 font-medium">{c.meeting_day}s</div>
-                <div className="text-xs text-gray-500">{c.meeting_time}</div>
+                <div className="text-xs text-gray-500">
+                  {c.meeting_time}{c.end_time ? ` – ${c.end_time}` : ''}
+                </div>
               </>
             : <span className="text-xs text-gray-300">—</span>
           }
@@ -1027,7 +1032,7 @@ const activeClasses   = classes.filter(c => !c.archived)
 
   // Plain function, NOT a React component — avoids remounting on every ClassesPanel render
   const classTable = (rows: ClassInfo[]) => (
-    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
@@ -1065,7 +1070,7 @@ const activeClasses   = classes.filter(c => !c.archived)
       </div>
 
       {flash && (
-        <div className="flex items-center gap-2 bg-green-50 text-green-700 text-sm font-medium px-4 py-2 rounded-xl mb-3">
+        <div className="flex items-center gap-2 bg-green-50 text-green-700 text-sm font-medium px-4 py-2 rounded-lg mb-3">
           <Check className="w-4 h-4" /> {flash}
         </div>
       )}
@@ -1084,7 +1089,7 @@ const activeClasses   = classes.filter(c => !c.archived)
         <div className="mt-6">
           <button
             onClick={() => setShowArchived(s => !s)}
-            className="w-full flex items-center justify-between px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl transition mb-2"
+            className="w-full flex items-center justify-between px-4 py-3 bg-gray-100 hover:bg-gray-200 rounded-lg transition mb-2"
           >
             <div className="flex items-center gap-2">
               <Archive className="w-4 h-4 text-gray-500" />
@@ -1123,7 +1128,7 @@ const activeClasses   = classes.filter(c => !c.archived)
       {/* Delete confirm */}
       {deletingClass && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 px-4" onClick={() => setDeletingClass(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-2 mb-3">
               <Trash2 className="w-5 h-5 text-red-500" />
               <h3 className="font-bold text-gray-800">Delete Class</h3>
@@ -1133,11 +1138,11 @@ const activeClasses   = classes.filter(c => !c.archived)
             </p>
             <div className="flex gap-3">
               <button onClick={() => setDeletingClass(null)}
-                className="flex-1 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 text-sm font-semibold hover:bg-gray-50 transition">
+                className="flex-1 py-2.5 rounded-lg border-2 border-gray-200 text-gray-600 text-sm font-semibold hover:bg-gray-50 transition">
                 Cancel
               </button>
               <button onClick={handleDelete}
-                className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition">
+                className="flex-1 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition">
                 Delete
               </button>
             </div>
@@ -1158,7 +1163,7 @@ function AdminContent() {
       {/* Top bar */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-4">
         <h1 className="text-2xl font-bold text-gray-900 mb-3">Admin</h1>
-        <div className="flex rounded-xl border border-gray-200 overflow-hidden text-sm font-semibold w-full">
+        <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm font-semibold w-full">
           <button
             onClick={() => setTab('calendar')}
             className={`flex flex-1 items-center justify-center gap-1.5 px-4 py-2.5 transition-colors ${
@@ -1193,6 +1198,9 @@ function AdminContent() {
       {tab === 'calendar' ? (
         <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-8">
           <CalendarContent />
+          <div className="mt-2 bg-white rounded-lg border border-gray-200 shadow-sm px-4 py-4">
+            <RemindersPanel />
+          </div>
         </div>
       ) : tab === 'contacts' ? (
         <ContactsPanel />

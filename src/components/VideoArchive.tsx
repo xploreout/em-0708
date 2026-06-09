@@ -135,7 +135,7 @@ const VideoArchive: React.FC<VideoArchiveProps> = ({ onBack }) => {
         </div>
 
         {/* Search and Filter */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg mb-8">
+        <div className="bg-white rounded-lg p-6 shadow-lg mb-8">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
@@ -145,7 +145,7 @@ const VideoArchive: React.FC<VideoArchiveProps> = ({ onBack }) => {
                 placeholder="Search videos, speakers, or topics..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
             
@@ -155,7 +155,7 @@ const VideoArchive: React.FC<VideoArchiveProps> = ({ onBack }) => {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="pl-10 pr-8 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white min-w-[150px]"
+                className="pl-10 pr-8 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white min-w-[150px]"
               >
                 {categories.map(category => (
                   <option key={category} value={category}>{category}</option>
@@ -180,7 +180,7 @@ const VideoArchive: React.FC<VideoArchiveProps> = ({ onBack }) => {
               href={video.videoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group block cursor-pointer"
+              className="bg-white rounded-lg shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group block cursor-pointer"
             >
               <div className="relative">
                 <img 

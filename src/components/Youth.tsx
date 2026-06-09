@@ -22,7 +22,7 @@ const Youth = () => {
 
         <div className='flex flex-col md:flex-row gap-8 items-start'>
           {/* Image with overlay */}
-          <div className='relative w-full md:w-1/2 rounded-2xl overflow-hidden shadow-md min-h-64'>
+          <div className='relative w-full md:w-1/2 rounded-lg overflow-hidden shadow-md min-h-64'>
             <img
               src='./images/IMG_0179.jpg'
               alt='Youth Ministry'
@@ -109,7 +109,7 @@ const Youth = () => {
             )
 
             const cardClass =
-              'bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col'
+              'bg-white rounded-lg overflow-hidden border border-gray-100 shadow-sm flex flex-col'
 
             return event.link ? (
               <Link

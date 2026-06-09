@@ -50,7 +50,7 @@ const OtherResources = () => {
                 href={item.url}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200 flex flex-col group'
+                className='bg-gray-50 rounded-lg overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200 flex flex-col group'
               >
                 <div className='relative'>
                   <img

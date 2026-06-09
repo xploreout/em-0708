@@ -44,7 +44,7 @@ const PurposeDrivenLife = () => {
         </div>
 
         {/* Playlist card */}
-        <div className='w-full md:w-1/3 bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 shadow-sm'>
+        <div className='w-full md:w-1/3 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 shadow-sm'>
           <img
             src={playlist.thumbnail}
             alt={playlist.title}
@@ -67,7 +67,7 @@ const PurposeDrivenLife = () => {
               href={playlist.playlistUrl}
               target='_blank'
               rel='noopener noreferrer'
-              className='inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-colors duration-200 mb-4'
+              className='inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold px-6 py-3 rounded-lg transition-colors duration-200 mb-4'
             >
               <Play className='h-4 w-4 fill-white' />
               Listen on YouTube

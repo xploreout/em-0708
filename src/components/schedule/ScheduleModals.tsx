@@ -14,7 +14,7 @@ export function MiniModal({ title, onClose, children }: {
 }) {
   return createPortal(
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 px-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 relative" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm p-5 relative" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
           <X className="w-4 h-4" />
         </button>
@@ -51,7 +51,7 @@ export function NewEventTypeModal({ initialName = '', onSave, onClose }: {
         <input autoFocus type="text" value={name} onChange={e => setName(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') onClose() }}
           placeholder="Event name…"
-          className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400" />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
         <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
           <input type="checkbox" checked={recurring} onChange={e => setRecurring(e.target.checked)} className="rounded" />
           Recurring event
@@ -59,10 +59,10 @@ export function NewEventTypeModal({ initialName = '', onSave, onClose }: {
         {error && <p className="text-red-500 text-xs">{error}</p>}
         <div className="flex gap-2 mt-1">
           <button onClick={handleSave} disabled={saving}
-            className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
+            className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
             {saving ? 'Saving…' : 'Create'}
           </button>
-          <button onClick={onClose} className="px-4 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">Cancel</button>
+          <button onClick={onClose} className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">Cancel</button>
         </div>
       </div>
     </MiniModal>
@@ -92,14 +92,14 @@ export function NewTeamModal({ onSave, onClose }: {
         <input autoFocus type="text" value={name} onChange={e => setName(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') onClose() }}
           placeholder="Team name…"
-          className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400" />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
         {error && <p className="text-red-500 text-xs">{error}</p>}
         <div className="flex gap-2 mt-1">
           <button onClick={handleSave} disabled={saving}
-            className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
+            className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
             {saving ? 'Saving…' : 'Create'}
           </button>
-          <button onClick={onClose} className="px-4 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">Cancel</button>
+          <button onClick={onClose} className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">Cancel</button>
         </div>
       </div>
     </MiniModal>
@@ -181,18 +181,18 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
         </div>
 
         <input autoFocus type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Full name *"
-          className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400" />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
         <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone"
-          className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400" />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
         <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email"
-          className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-400" />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
         {error && <p className="text-red-500 text-xs">{error}</p>}
         <div className="flex gap-2 mt-1">
           <button onClick={handleSave} disabled={saving || uploading}
-            className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
+            className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
             {saving ? 'Saving…' : 'Add Contact'}
           </button>
-          <button onClick={onClose} className="px-4 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">Cancel</button>
+          <button onClick={onClose} className="px-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">Cancel</button>
         </div>
       </div>
     </MiniModal>
@@ -537,7 +537,7 @@ export function EntryFormModal({ title, entry, onSave, onClose, shared }: {
 
   return createPortal(
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 px-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[85vh]"
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-md flex flex-col max-h-[85vh]"
         onClick={e => e.stopPropagation()}>
 
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
@@ -586,11 +586,11 @@ export function EntryFormModal({ title, entry, onSave, onClose, shared }: {
 
         <div className="flex gap-2 px-5 py-4 border-t border-gray-100 shrink-0">
           <button onClick={save}
-            className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition">
+            className="flex-1 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition">
             Save
           </button>
           <button onClick={onClose}
-            className="px-5 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
+            className="px-5 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
             Cancel
           </button>
         </div>

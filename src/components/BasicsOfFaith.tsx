@@ -122,7 +122,7 @@ const VideoCard = ({ ep }: { ep: (typeof episodes)[0] }) => {
   const thumbnail = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
 
   return (
-    <div className='bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200 flex flex-col'>
+    <div className='bg-gray-50 rounded-lg overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200 flex flex-col'>
       <div className='aspect-video w-full relative'>
         {playing ? (
           <iframe

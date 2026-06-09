@@ -65,12 +65,12 @@ function ClassFormModal({ cls, authFetch, onSaved, onClose }: {
     onSaved(d)
   }
 
-  const inp = 'w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-400 transition bg-white'
+  const inp = 'w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-400 transition bg-white'
   const lbl = 'text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5 block'
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 px-4 py-4 overflow-y-auto" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 sm:p-8 relative my-4" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl p-6 sm:p-8 relative my-4" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
         <h3 className="font-bold text-indigo-700 text-lg mb-5">{isNew ? 'New Class' : 'Edit Class'}</h3>
         <form onSubmit={submit} className="flex flex-col gap-4">
@@ -88,7 +88,7 @@ function ClassFormModal({ cls, authFetch, onSaved, onClose }: {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div><label className={lbl}>Day</label><select value={form.meeting_day} onChange={e => setForm(f => ({...f, meeting_day: e.target.value}))} className={inp}><option value="">— no day —</option>{DAYS.map(d => <option key={d} value={d}>{d}</option>)}</select></div>
               <div><label className={lbl}>Time</label><input type="time" value={form.meeting_time} onChange={e => setForm(f => ({...f, meeting_time: e.target.value}))} className={inp} /></div>
-              <div><label className={lbl}>Recurring</label><div className="flex gap-1.5 h-[42px]">{(['none','weekly','monthly'] as const).map(r => (<button key={r} type="button" onClick={() => setForm(f => ({...f, recurrence: r}))} className={`flex-1 rounded-xl text-xs font-semibold border-2 transition capitalize ${form.recurrence === r ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}>{r === 'none' ? 'None' : r}</button>))}</div></div>
+              <div><label className={lbl}>Recurring</label><div className="flex gap-1.5 h-[42px]">{(['none','weekly','monthly'] as const).map(r => (<button key={r} type="button" onClick={() => setForm(f => ({...f, recurrence: r}))} className={`flex-1 rounded-lg text-xs font-semibold border-2 transition capitalize ${form.recurrence === r ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}>{r === 'none' ? 'None' : r}</button>))}</div></div>
             </div>
             <div className={`mt-4 grid gap-4 ${form.recurrence !== 'none' ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 max-w-xs'}`}>
               <div><label className={lbl}>Begin Date</label><input type="date" value={form.end_date} onChange={e => setForm(f => ({...f, end_date: e.target.value}))} className={inp} /></div>
@@ -97,7 +97,7 @@ function ClassFormModal({ cls, authFetch, onSaved, onClose }: {
           </div>
           <div className="border-t border-indigo-100 pt-4"><label className={lbl}>Lead Password (leave blank to keep)</label><input type="password" value={form.lead_password} onChange={e => setForm(f => ({...f, lead_password: e.target.value}))} placeholder="Set or change leader password…" className={inp} autoComplete="new-password" /></div>
           {error && <p className="text-red-500 text-xs">{error}</p>}
-          <button type="submit" disabled={saving || !form.name.trim()} className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
+          <button type="submit" disabled={saving || !form.name.trim()} className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50">
             <Save className="w-4 h-4" />{saving ? 'Saving…' : isNew ? 'Create Class' : 'Save Changes'}
           </button>
         </form>
@@ -110,13 +110,13 @@ function ClassFormModal({ cls, authFetch, onSaved, onClose }: {
 function ConfirmDeleteModal({ name, onConfirm, onClose }: { name: string; onConfirm: () => void; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 relative" onClick={e => e.stopPropagation()}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm p-6 relative" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
         <div className="flex items-center gap-2 mb-3"><Trash2 className="w-5 h-5 text-red-500" /><h3 className="font-bold text-gray-800">Delete Class</h3></div>
         <p className="text-sm text-gray-600 mb-5">Delete <strong>"{name}"</strong>? This will permanently remove all sessions and attendance records.</p>
         <div className="flex gap-3">
-          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 text-sm font-semibold hover:bg-gray-50 transition">Cancel</button>
-          <button onClick={onConfirm} className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition">Delete</button>
+          <button onClick={onClose} className="flex-1 py-2.5 rounded-lg border-2 border-gray-200 text-gray-600 text-sm font-semibold hover:bg-gray-50 transition">Cancel</button>
+          <button onClick={onConfirm} className="flex-1 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition">Delete</button>
         </div>
       </div>
     </div>
@@ -279,7 +279,7 @@ export default function AttendancePage() {
 
       <div className="max-w-5xl mx-auto px-4 py-6">
         {flash && (
-          <div className="flex items-center gap-2 bg-indigo-50 text-indigo-700 text-sm font-medium px-4 py-2.5 rounded-xl mb-4">
+          <div className="flex items-center gap-2 bg-indigo-50 text-indigo-700 text-sm font-medium px-4 py-2.5 rounded-lg mb-4">
             <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> {flash}
           </div>
         )}
@@ -288,7 +288,7 @@ export default function AttendancePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
           {/* ── Section 1: Attendance Check-in ──────────────────────────── */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <div className="bg-indigo-600 px-5 py-3.5 flex items-center gap-2">
               <ClipboardList className="w-4 h-4 text-white" />
               <h2 className="text-sm font-bold text-white uppercase tracking-wider">Attendance Check-in</h2>
@@ -299,7 +299,7 @@ export default function AttendancePage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)}
                   placeholder="Name or phone…" autoComplete="off"
-                  className="w-full pl-10 pr-8 py-3 border-2 border-gray-200 rounded-xl text-sm outline-none focus:border-indigo-400 transition bg-white" />
+                  className="w-full pl-10 pr-8 py-3 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-indigo-400 transition bg-white" />
                 {query && (
                   <button onClick={() => { setQuery(''); setResults([]) }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
                 )}
@@ -313,7 +313,7 @@ export default function AttendancePage() {
                     Found in {results.length} class{results.length !== 1 ? 'es' : ''}
                   </p>
                   {results.map(m => (
-                    <div key={m.classId} className={`rounded-xl px-4 py-3 border-2 ${m.checkedInToday ? 'border-green-200 bg-green-50' : 'border-gray-100 bg-white'}`}>
+                    <div key={m.classId} className={`rounded-lg px-4 py-3 border-2 ${m.checkedInToday ? 'border-green-200 bg-green-50' : 'border-gray-100 bg-white'}`}>
                       <div className="font-bold text-gray-900 text-sm">{m.className}</div>
                       {m.leadName && <div className="text-xs text-gray-500">Leader: {m.leadName}</div>}
                       <div className="flex flex-wrap gap-3 mt-1 mb-2.5">
@@ -337,13 +337,13 @@ export default function AttendancePage() {
               {/* Not found */}
               {noResults && (
                 <div className="mb-3">
-                  <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-4 py-2.5 mb-3">
+                  <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-lg px-4 py-2.5 mb-3">
                     <UserX className="w-4 h-4 text-orange-500 flex-shrink-0" />
                     <p className="text-sm text-orange-700"><strong>"{query}"</strong> not found in any class.</p>
                   </div>
                   <div className="flex flex-col gap-2">
                     {activeClasses.map(c => (
-                      <div key={c.id} className="bg-white border border-gray-200 rounded-xl px-4 py-3">
+                      <div key={c.id} className="bg-white border border-gray-200 rounded-lg px-4 py-3">
                         <div className="font-semibold text-gray-900 text-sm mb-1">{c.name}</div>
                         {c.lead_name && <div className="text-xs text-gray-400 mb-2">Leader: {c.lead_name}</div>}
                         <div className="flex gap-2">
@@ -382,12 +382,12 @@ export default function AttendancePage() {
                         <div className="relative mb-2">
                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                           <input value={classFilter} onChange={e => setClassFilter(e.target.value)} placeholder="Filter…"
-                            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-xs outline-none focus:border-indigo-300 bg-white" />
+                            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-xs outline-none focus:border-indigo-300 bg-white" />
                         </div>
                       )}
                       <div className="flex flex-col gap-1">
                         {filteredClasses.map(c => (
-                          <div key={c.id} className="flex items-center bg-white border border-gray-100 hover:border-indigo-200 rounded-xl transition group">
+                          <div key={c.id} className="flex items-center bg-white border border-gray-100 hover:border-indigo-200 rounded-lg transition group">
                             <button onClick={() => navigate(`/attendance/class/${c.id}`)}
                               className="flex-1 flex items-center justify-between px-3 py-2.5 text-left min-w-0">
                               <div className="min-w-0">
@@ -414,7 +414,7 @@ export default function AttendancePage() {
                           {showArchived && (
                             <div className="flex flex-col gap-1">
                               {archivedClasses.map(c => (
-                                <div key={c.id} className="flex items-center bg-gray-50 border border-dashed border-gray-200 rounded-xl">
+                                <div key={c.id} className="flex items-center bg-gray-50 border border-dashed border-gray-200 rounded-lg">
                                   <div className="flex-1 px-3 py-2 min-w-0">
                                     <div className="font-semibold text-gray-400 text-sm truncate">{c.name}</div>
                                   </div>
@@ -436,7 +436,7 @@ export default function AttendancePage() {
           </div>
 
           {/* ── Section 2: Class Lead / Coworker ────────────────────────── */}
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <div className="bg-amber-500 px-5 py-3.5 flex items-center gap-2">
               <Key className="w-4 h-4 text-white" />
               <h2 className="text-sm font-bold text-white uppercase tracking-wider">Class Lead / Coworker</h2>
@@ -452,7 +452,7 @@ export default function AttendancePage() {
                   <label className="text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5 block">Select Class</label>
                   <select value={selectedClassId}
                     onChange={e => { setSelectedClassId(e.target.value ? Number(e.target.value) : ''); setLeadError('') }}
-                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-amber-400 transition bg-white">
+                    className="w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-amber-400 transition bg-white">
                     <option value="">— choose a class —</option>
                     {activeClasses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
@@ -466,7 +466,7 @@ export default function AttendancePage() {
                       <input type={showPw ? 'text' : 'password'} value={leadPw}
                         onChange={e => { setLeadPw(e.target.value); setLeadError('') }}
                         placeholder="Enter leader password"
-                        className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 pr-10 text-sm outline-none focus:border-amber-400 transition" />
+                        className="w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 pr-10 text-sm outline-none focus:border-amber-400 transition" />
                       <button type="button" onClick={() => setShowPw(s => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                         {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -478,7 +478,7 @@ export default function AttendancePage() {
 
                 <button type="submit"
                   disabled={leadLoading || !selectedClassId || (!isAdmin && !leadPw)}
-                  className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm transition disabled:opacity-50">
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm transition disabled:opacity-50">
                   {leadLoading ? 'Verifying…' : <><Key className="w-4 h-4" /> Access Class Details</>}
                 </button>
               </form>
@@ -489,7 +489,7 @@ export default function AttendancePage() {
                   <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">All Classes</p>
                   <div className="flex flex-col gap-1">
                     {activeClasses.map(c => (
-                      <div key={c.id} className="flex items-center justify-between px-3 py-2.5 bg-gray-50 rounded-xl border border-gray-100">
+                      <div key={c.id} className="flex items-center justify-between px-3 py-2.5 bg-gray-50 rounded-lg border border-gray-100">
                         <div className="min-w-0">
                           <div className="font-semibold text-gray-800 text-sm truncate">{c.name}</div>
                           <div className="flex gap-3 flex-wrap">

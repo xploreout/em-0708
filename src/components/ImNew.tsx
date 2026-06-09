@@ -19,7 +19,7 @@ const ImNew = () => {
           </h1>
         </div>
 
-        <div className='relative rounded-2xl overflow-hidden shadow-sm'>
+        <div className='relative rounded-lg overflow-hidden shadow-sm'>
           <video
             src='/images/church1.mp4'
             autoPlay
@@ -40,7 +40,7 @@ const ImNew = () => {
           </div>
         </div>
 
-        <div className='bg-white rounded-2xl shadow-sm border border-stone-100 p-6 sm:p-8 space-y-4'>
+        <div className='bg-white rounded-lg shadow-sm border border-stone-100 p-6 sm:p-8 space-y-4'>
           <h2 className='text-xl font-semibold text-stone-700'>
             What to Expect
           </h2>
@@ -81,7 +81,7 @@ const ImNew = () => {
           </p>
         </div>
 
-        <div className='bg-white rounded-2xl shadow-sm border border-stone-100 p-6 sm:p-8 space-y-4'>
+        <div className='bg-white rounded-lg shadow-sm border border-stone-100 p-6 sm:p-8 space-y-4'>
           <h2 className='text-xl font-semibold text-stone-700'>
             Join Us On Friday
           </h2>

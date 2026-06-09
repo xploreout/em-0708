@@ -49,7 +49,7 @@ const About = () => {
 
         {/* Photo + Intro */}
         <div
-          className='rounded-2xl border border-stone-200 shadow-sm overflow-hidden relative min-h-72 sm:min-h-80'
+          className='rounded-lg border border-stone-200 shadow-sm overflow-hidden relative min-h-72 sm:min-h-80'
           style={{
             backgroundImage: 'url(./images/acbccgrp.jpg)',
             backgroundSize: 'cover',
@@ -72,7 +72,7 @@ const About = () => {
         </div>
 
         {/* Timeline */}
-        <div className='bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8'>
+        <div className='bg-white rounded-lg border border-stone-200 shadow-sm p-6 sm:p-8'>
           <p className='text-xs font-medium uppercase tracking-[0.2em] text-stone-400 mb-6'>
             Our Story
           </p>
@@ -92,7 +92,7 @@ const About = () => {
 
         {/* Today + Location */}
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-          <div className='bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8'>
+          <div className='bg-white rounded-lg border border-stone-200 shadow-sm p-6 sm:p-8'>
             <p className='text-xs font-medium uppercase tracking-[0.2em] text-stone-400 mb-3'>
               Today
             </p>
@@ -103,7 +103,7 @@ const About = () => {
             </p>
           </div>
 
-          <div className='bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8'>
+          <div className='bg-white rounded-lg border border-stone-200 shadow-sm p-6 sm:p-8'>
             <p className='text-xs font-medium uppercase tracking-[0.2em] text-stone-400 mb-3'>
               Location
             </p>
@@ -134,7 +134,7 @@ const About = () => {
         {/* Welcome */}
         <div
           ref={ref}
-          className='bg-stone-800 rounded-2xl p-8 sm:p-12 text-center'
+          className='bg-stone-800 rounded-lg p-8 sm:p-12 text-center'
         >
           <p
             className='text-stone-400 text-sm sm:text-base uppercase tracking-widest mb-4'

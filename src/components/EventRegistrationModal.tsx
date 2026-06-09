@@ -114,7 +114,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   if (isSubmitted) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-2xl">
+        <div className="bg-white rounded-lg p-8 max-w-md w-full text-center shadow-2xl">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
           <h3 className="text-2xl font-bold text-gray-900 mb-2">Registration Successful! 🎉</h3>
           <p className="text-gray-600 mb-4">
@@ -130,7 +130,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
         <div className="sticky top-0 bg-blue-500 text-white p-6 rounded-t-2xl">
           <div className="flex items-center justify-between">
@@ -165,7 +165,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   required
                   value={contactInfo.name}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -179,7 +179,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   required
                   value={contactInfo.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                   placeholder="Enter your email"
                 />
               </div>
@@ -192,7 +192,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   name="phone"
                   value={contactInfo.phone}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="Enter your phone number"
                 />
               </div>
@@ -204,7 +204,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
                   name="note"
                   value={contactInfo.note}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="Any questions or special requests?"
                   rows={2}
                 />
@@ -222,7 +222,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
               {allEvents.map((event) => (
                 <div
                   key={event.id}
-                  className={`border rounded-xl p-4 transition-all duration-200 ${
+                  className={`border rounded-lg p-4 transition-all duration-200 ${
                     selectedEvents.includes(event.id)
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
@@ -262,7 +262,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
           </div>
 
           {/* Contact Information Display */}
-          {/* <div className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-xl p-4">
+          {/* <div className="bg-gradient-to-r from-orange-50 to-pink-50 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
               <Phone className="h-5 w-5 mr-2 text-orange-500" />
               Need Help? Contact Us
@@ -297,14 +297,14 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={selectedEvents.length === 0 || !contactInfo.name || !contactInfo.email || !recaptchaValue || isSubmitting}
-              className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-green-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-green-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               <Send className="h-5 w-5" />
               <span>{isSubmitting ? 'Sending...' : 'Register Now! 🚀'}</span>
@@ -313,7 +313,7 @@ const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
           
           {/* Error Message */}
           {submitError && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-700 text-sm text-center">{submitError}</p>
             </div>
           )}
