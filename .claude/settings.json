@@ -15,7 +15,9 @@
       "Bash(PATH=__TRACKED_VAR__/.nvm/versions/node/v22.2.0/bin:__TRACKED_VAR__ node -e 'console.log\\(require\\('\\\\''./node_modules/react-pdf/package.json'\\\\''\\).version\\)')",
       "Bash(xargs sed -i '' 's/rounded-2xl/rounded-xl/g')",
       "Bash(xargs sed -i '' 's/rounded-xl/rounded-lg/g')",
-      "Bash(xargs cat)"
+      "Bash(xargs cat)",
+      "Bash(/Users/tanlui/.nvm/versions/node/v22.2.0/bin/node /Users/tanlui/projects/acbcc/em-first/emfirst-0708/node_modules/.bin/tsc --noEmit)",
+      "Bash(/Users/tanlui/.nvm/versions/node/v22.16.0/bin/npx tsc *)"
     ]
   }
 }

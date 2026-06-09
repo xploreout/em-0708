@@ -125,6 +125,13 @@ async function initDB() {
         size_bytes  INTEGER DEFAULT 0,
         created_at  TIMESTAMPTZ DEFAULT NOW()
       );
+
+      CREATE TABLE IF NOT EXISTS class_roster (
+        id          SERIAL PRIMARY KEY,
+        class_id    INTEGER NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+        person_name VARCHAR(200) NOT NULL,
+        added_at    TIMESTAMPTZ DEFAULT NOW()
+      );
     `)
 
     // Migration: add columns to classes table for existing installations
@@ -141,7 +148,17 @@ async function initDB() {
       `ALTER TABLE class_sessions ADD COLUMN IF NOT EXISTS session_lead_name VARCHAR(200) DEFAULT ''`,
       `ALTER TABLE class_sessions ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEFAULT ''`,
       `ALTER TABLE class_documents ADD COLUMN IF NOT EXISTS session_id INTEGER REFERENCES class_sessions(id) ON DELETE SET NULL`,
+      `CREATE UNIQUE INDEX IF NOT EXISTS class_roster_unique_idx ON class_roster (class_id, lower(trim(person_name)))`,
     ]) { await client.query(ddl) }
+
+    // Backfill class_roster from existing attendance records so all historical names are preserved
+    await client.query(`
+      INSERT INTO class_roster (class_id, person_name)
+      SELECT DISTINCT cs.class_id, ca.person_name
+      FROM class_attendance ca
+      JOIN class_sessions cs ON ca.session_id = cs.id
+      ON CONFLICT DO NOTHING
+    `)
 
     // Seed default passwords for any missing roles
     const defaults = {
@@ -1024,6 +1041,11 @@ app.post('/api/classes/:id/checkin', requireAuth('attendance'), wrap(async (req,
     'INSERT INTO class_attendance(session_id,person_name,phone) VALUES($1,$2,$3) RETURNING *',
     [session.id, person_name.trim(), phone.trim()]
   )
+  // Keep roster in sync — person stays even if attendance is later removed
+  await pool.query(
+    `INSERT INTO class_roster(class_id,person_name) VALUES($1,$2) ON CONFLICT DO NOTHING`,
+    [req.params.id, person_name.trim()]
+  )
   res.json(record)
 }))
 
@@ -1040,12 +1062,69 @@ app.put('/api/classes/:classId/attendance/:aid', requireAuth('attendance'), wrap
 }))
 
 app.delete('/api/classes/:classId/attendance/:aid', requireAuth('attendance'), wrap(async (req, res) => {
+  // Fetch name before deleting so we can preserve it in the roster
+  const { rows: [attendee] } = await pool.query(
+    `SELECT ca.person_name FROM class_attendance ca
+     JOIN class_sessions cs ON ca.session_id=cs.id
+     WHERE ca.id=$1 AND cs.class_id=$2`,
+    [req.params.aid, req.params.classId]
+  )
   const { rowCount } = await pool.query(
     `DELETE FROM class_attendance WHERE id=$1
      AND session_id IN (SELECT id FROM class_sessions WHERE class_id=$2)`,
     [req.params.aid, req.params.classId]
   )
   if (rowCount === 0) return res.status(404).json({ error: 'Not found' })
+  // Ensure the person stays in the roster even though their check-in was removed
+  if (attendee) {
+    await pool.query(
+      `INSERT INTO class_roster(class_id,person_name) VALUES($1,$2) ON CONFLICT DO NOTHING`,
+      [req.params.classId, attendee.person_name]
+    )
+  }
+  res.json({ success: true })
+}))
+
+app.get('/api/classes/:id/roster', requireAuth('attendance'), wrap(async (req, res) => {
+  // Return the union of explicitly-added roster members and all historical attendance names
+  const { rows } = await pool.query(`
+    SELECT DISTINCT person_name FROM (
+      SELECT person_name FROM class_roster WHERE class_id=$1
+      UNION
+      SELECT ca.person_name
+      FROM class_attendance ca
+      JOIN class_sessions cs ON ca.session_id=cs.id
+      WHERE cs.class_id=$1
+    ) t ORDER BY person_name
+  `, [req.params.id])
+  res.json(rows.map(r => r.person_name))
+}))
+
+app.post('/api/classes/:id/roster', requireAuth('attendance'), wrap(async (req, res) => {
+  const { names = [] } = req.body ?? {}
+  const list = (Array.isArray(names) ? names : [names]).map(n => n?.trim()).filter(Boolean)
+  for (const name of list) {
+    await pool.query(
+      `INSERT INTO class_roster(class_id,person_name) VALUES($1,$2) ON CONFLICT DO NOTHING`,
+      [req.params.id, name]
+    )
+  }
+  res.json({ success: true })
+}))
+
+app.delete('/api/classes/:id/roster/:name', requireAuth('attendance'), wrap(async (req, res) => {
+  const { id } = req.params
+  const name = req.params.name
+  await pool.query(
+    `DELETE FROM class_attendance
+     WHERE lower(trim(person_name))=lower(trim($1))
+     AND session_id IN (SELECT id FROM class_sessions WHERE class_id=$2)`,
+    [name, id]
+  )
+  await pool.query(
+    'DELETE FROM class_roster WHERE class_id=$1 AND lower(trim(person_name))=lower(trim($2))',
+    [id, name]
+  )
   res.json({ success: true })
 }))
 
