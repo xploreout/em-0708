@@ -461,7 +461,10 @@ function ContactsPanel() {
 
 // ── Classes Panel ─────────────────────────────────────────────────────────────
 
-const CLASS_DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+const WEEK_DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+function dayFromDate(dateStr: string): string {
+  return WEEK_DAYS[new Date(dateStr + 'T00:00:00').getDay()]
+}
 
 type ClassInfo = {
   id: number; name: string; lead_name: string; lead_email: string
@@ -488,7 +491,7 @@ function fmtDate(d: string) {
 }
 
 // ── Class Form Modal ──────────────────────────────────────────────────────────
-function ClassFormModal({ title, form, setForm, onSubmit, onClose, saving, error }: {
+function ClassFormModal({ title, form, setForm, onSubmit, onClose, saving, error, hasPassword = false }: {
   title: string
   form: ClassFormState
   setForm: React.Dispatch<React.SetStateAction<ClassFormState>>
@@ -496,6 +499,7 @@ function ClassFormModal({ title, form, setForm, onSubmit, onClose, saving, error
   onClose: () => void
   saving: boolean
   error: string
+  hasPassword?: boolean
 }) {
   const inp = 'w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-blue-400 transition bg-white'
   const lbl = 'text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5 block'
@@ -507,34 +511,28 @@ function ClassFormModal({ title, form, setForm, onSubmit, onClose, saving, error
         <h3 className="font-bold text-indigo-700 text-lg mb-5">{title}</h3>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
-          {/* Row 1: Name (full width) */}
-          <div>
-            <label className={lbl}>Class Name *</label>
-            <input value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))} className={inp} required autoFocus />
-          </div>
-
-          {/* Row 2: Leader Name + Leader Email */}
+          {/* Row 1: Class Name + Location */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className={lbl}>Leader Name</label>
-              <input value={form.lead_name} onChange={e => setForm(f => ({...f, lead_name: e.target.value}))} placeholder="e.g. Pastor John" className={inp} />
-            </div>
-            <div>
-              <label className={lbl}>Leader Email</label>
-              <input value={form.lead_email} onChange={e => setForm(f => ({...f, lead_email: e.target.value}))} type="email" className={inp} />
-            </div>
-          </div>
-
-          {/* Row 3: Description + Location */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={lbl}>Description</label>
-              <textarea value={form.description} onChange={e => setForm(f => ({...f, description: e.target.value}))} rows={2} className={`${inp} resize-none`} />
+              <label className={lbl}>Class Name *</label>
+              <input value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))} className={inp} required autoFocus />
             </div>
             <div>
               <label className={lbl}>Location</label>
               <input value={form.location} onChange={e => setForm(f => ({...f, location: e.target.value}))} placeholder="e.g. Room 201" className={inp} />
             </div>
+          </div>
+
+          {/* Row 2: Leader Name */}
+          <div>
+            <label className={lbl}>Leader Names</label>
+            <input value={form.lead_name} onChange={e => setForm(f => ({...f, lead_name: e.target.value}))} placeholder="e.g. Pastor John" className={inp} />
+          </div>
+
+          {/* Row 3: Description (full width) */}
+          <div>
+            <label className={lbl}>Description</label>
+            <textarea value={form.description} onChange={e => setForm(f => ({...f, description: e.target.value}))} rows={2} className={`${inp} resize-none`} />
           </div>
 
           {/* Schedule section */}
@@ -544,14 +542,7 @@ function ClassFormModal({ title, form, setForm, onSubmit, onClose, saving, error
               <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Schedule</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className={lbl}>Day</label>
-                <select value={form.meeting_day} onChange={e => setForm(f => ({...f, meeting_day: e.target.value}))} className={inp}>
-                  <option value="">— no day —</option>
-                  {CLASS_DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={lbl}>Time</label>
                 <input type="time" value={form.meeting_time} onChange={e => setForm(f => ({...f, meeting_time: e.target.value}))} className={inp} />
@@ -588,7 +579,7 @@ function ClassFormModal({ title, form, setForm, onSubmit, onClose, saving, error
           {/* Lead password */}
           <div className="border-t border-gray-100 pt-4">
             <label className={lbl}>Lead Password (leave blank to keep)</label>
-            <input type="password" value={form.lead_password} onChange={e => setForm(f => ({...f, lead_password: e.target.value}))} placeholder="Set or change leader password…" className={inp} autoComplete="new-password" />
+            <input type="password" value={form.lead_password} onChange={e => setForm(f => ({...f, lead_password: e.target.value}))} placeholder={hasPassword && !form.lead_password ? '••••' : 'Set leader password…'} className={inp} autoComplete="new-password" />
           </div>
 
           {error && <p className="text-red-500 text-xs">{error}</p>}
@@ -625,12 +616,6 @@ function ytVideoId(url: string): string | null {
 
 function dlUrl(url: string) {
   return url.replace('/upload/', '/upload/fl_attachment/')
-}
-
-function fmtBytes(b: number) {
-  if (!b) return ''
-  if (b < 1024 * 1024) return `${(b / 1024).toFixed(0)} KB`
-  return `${(b / (1024 * 1024)).toFixed(1)} MB`
 }
 
 function ClassDocManager({ classId, authFetch }: {
@@ -696,7 +681,7 @@ function ClassDocManager({ classId, authFetch }: {
   }
 
   return (
-    <div className="mt-2 border-t border-gray-100 pt-2">
+    <div className="mt-2">
       <button onClick={toggle}
         className="flex items-center gap-1.5 text-xs text-blue-500 hover:text-blue-700 font-medium transition">
         {open ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
@@ -819,12 +804,7 @@ function ClassesPanel() {
   // Per-row busy state (archive/delete in flight)
   const [busyId, setBusyId] = useState<number | null>(null)
 
-  // Password inline
-  const [pwEdit, setPwEdit]     = useState<number | null>(null)
-  const [pwValue, setPwValue]   = useState('')
-  const [pwSaving, setPwSaving] = useState(false)
-
-  const showFlash = (msg: string) => { setFlash(msg); setTimeout(() => setFlash(''), 3000) }
+const showFlash = (msg: string) => { setFlash(msg); setTimeout(() => setFlash(''), 3000) }
 
   useEffect(() => { load() }, [])
 
@@ -843,7 +823,8 @@ function ClassesPanel() {
     const body: Record<string, unknown> = {
       name: createForm.name.trim(), lead_name: createForm.lead_name.trim(),
       lead_email: createForm.lead_email.trim(), description: createForm.description.trim(),
-      location: createForm.location.trim(), meeting_day: createForm.meeting_day,
+      location: createForm.location.trim(),
+      meeting_day: createForm.start_date ? dayFromDate(createForm.start_date) : '',
       meeting_time: createForm.meeting_time, recurrence: createForm.recurrence,
       start_date: createForm.start_date || null,
       end_date: createForm.recurrence !== 'none' ? createForm.end_date || null : null,
@@ -869,7 +850,8 @@ function ClassesPanel() {
     const body: Record<string, unknown> = {
       name: editForm.name.trim(), lead_name: editForm.lead_name.trim(),
       lead_email: editForm.lead_email.trim(), description: editForm.description.trim(),
-      location: editForm.location.trim(), meeting_day: editForm.meeting_day,
+      location: editForm.location.trim(),
+      meeting_day: editForm.start_date ? dayFromDate(editForm.start_date) : '',
       meeting_time: editForm.meeting_time, recurrence: editForm.recurrence,
       start_date: editForm.start_date || null,
       end_date: editForm.recurrence !== 'none' ? editForm.end_date || null : null,
@@ -930,22 +912,7 @@ function ClassesPanel() {
     }
   }
 
-  async function savePassword(classId: number) {
-    if (!pwValue.trim()) return
-    setPwSaving(true)
-    const r = await authFetch(`/api/classes/${classId}/lead-password`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pwValue }),
-    })
-    setPwSaving(false)
-    if (r.ok) {
-      setClasses(prev => prev.map(c => c.id === classId ? { ...c, has_lead_password: true } : c))
-      setPwEdit(null); setPwValue('')
-      showFlash('Lead password saved!')
-    }
-  }
-
-  const activeClasses   = classes.filter(c => !c.archived)
+const activeClasses   = classes.filter(c => !c.archived)
   const archivedClasses = classes.filter(c => c.archived)
 
   // Inline row renderer — avoids defining a component inside a component
@@ -955,11 +922,11 @@ function ClassesPanel() {
       <tr className={`border-b border-gray-100 last:border-0 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'} ${c.archived ? 'opacity-60' : ''} hover:bg-blue-50/30 transition-colors`}>
         {/* Class name + description */}
         <td className="px-4 py-3 align-top min-w-[180px]">
-          <div className={`font-semibold text-sm ${c.archived ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
+          <div className={`font-bold text-sm ${c.archived ? 'text-gray-400 line-through' : 'text-indigo-700'}`}>
             {c.name}
           </div>
           {c.description && (
-            <div className="text-xs text-gray-500 mt-0.5 leading-snug">{c.description}</div>
+            <div className="text-xs text-gray-400 mt-0.5 leading-snug">{c.description}</div>
           )}
         </td>
 
@@ -1015,26 +982,6 @@ function ClassesPanel() {
           }
         </td>
 
-        {/* Lead password */}
-        <td className="px-4 py-3 align-top whitespace-nowrap">
-          {c.archived ? (
-            <span className="text-xs text-gray-300">—</span>
-          ) : (
-            <div className="flex flex-col gap-1">
-              {c.has_lead_password
-                ? <span className="text-xs text-green-600 font-medium flex items-center gap-1"><Check className="w-3 h-3" /> Set</span>
-                : <span className="text-xs text-gray-400">Not set</span>
-              }
-              <button
-                onClick={() => { setPwEdit(pwEdit === c.id ? null : c.id); setPwValue('') }}
-                className="text-xs text-blue-600 hover:text-blue-800 font-medium transition text-left"
-              >
-                {c.has_lead_password ? 'Change' : 'Set'}
-              </button>
-            </div>
-          )}
-        </td>
-
         {/* Actions */}
         <td className="px-4 py-3 align-top">
           <div className="flex items-center gap-0.5">
@@ -1069,34 +1016,9 @@ function ClassesPanel() {
         </td>
       </tr>
 
-      {/* Inline password editor */}
-      {pwEdit === c.id && (
-        <tr className="bg-blue-50 border-b border-blue-100">
-          <td colSpan={7} className="px-4 py-3">
-            <div className="flex gap-2 max-w-md">
-              <input
-                type="password" value={pwValue}
-                onChange={e => setPwValue(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') savePassword(c.id) }}
-                placeholder="New lead password" autoFocus
-                className="flex-1 border-2 border-blue-200 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-blue-400 bg-white"
-              />
-              <button onClick={() => savePassword(c.id)} disabled={pwSaving || !pwValue.trim()}
-                className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition disabled:opacity-50">
-                {pwSaving ? '…' : 'Save'}
-              </button>
-              <button onClick={() => { setPwEdit(null); setPwValue('') }}
-                className="px-2 py-1.5 text-gray-400 hover:text-gray-600 transition">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </td>
-        </tr>
-      )}
-
       {/* Documents sub-row */}
       <tr className={`border-b border-gray-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'} ${c.archived ? 'opacity-60' : ''}`}>
-        <td colSpan={6} className="px-4 pb-3 pt-0">
+        <td colSpan={5} className="px-4 py-0.5">
           <ClassDocManager classId={c.id} authFetch={authFetch} />
         </td>
       </tr>
@@ -1109,14 +1031,13 @@ function ClassesPanel() {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-gray-100 border-b border-gray-200">
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Class</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Leader</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Schedule</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Dates</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Location</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Lead PW</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+            <tr className="bg-indigo-600 border-b border-indigo-700">
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Class</th>
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Leader</th>
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Schedule</th>
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Dates</th>
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Location</th>
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -1195,7 +1116,7 @@ function ClassesPanel() {
           title={`Edit — ${editClass.name}`}
           form={editForm} setForm={setEditForm}
           onSubmit={handleEdit} onClose={() => setEditClass(null)}
-          saving={editSaving} error={editError}
+          saving={editSaving} error={editError} hasPassword={editClass.has_lead_password}
         />
       )}
 

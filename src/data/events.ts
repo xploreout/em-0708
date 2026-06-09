@@ -68,16 +68,17 @@ export const upcomingEvents: Event[] = [
   },
   {
     id: 6,
-    title: 'EM Summer Sport Day',
-    date: 'July Saturday TBD',
+    title: 'FIFA Summer Sport Day',
+    date: 'July 18 Saturday',
     time: '4:00pm – 7:30pm',
-    location: 'Details after Rsvp',
+    location: 'Johns Creek',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      "Join us for a fun-filled Summer Sport Day! We'll have exciting games, delicious food, and great fellowship. It's a perfect opportunity to connect with others and enjoy the summer vibes together. Don't miss out on the fun!",
+      "Join us for a fun-filled Summer Sport Day and Fifa watch party! We'll have exciting games, delicious bbq, and great fun. It's a perfect opportunity to enjoy the summer together. Don't miss out on the fun!",
     image:
       'https://images.pexels.com/photos/17206408/pexels-photo-17206408.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+    video: '/images/pool2.mp4',
   },
   {
     id: 9,
