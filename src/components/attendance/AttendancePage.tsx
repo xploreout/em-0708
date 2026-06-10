@@ -291,7 +291,7 @@ export default function AttendancePage() {
           <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <div className="bg-indigo-600 px-5 py-3.5 flex items-center gap-2">
               <ClipboardList className="w-4 h-4 text-white" />
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">Class Check-in</h2>
+              <h2 className="text-sm font-bold text-white uppercase tracking-wider">Class Check-in now</h2>
             </div>
             <div className="p-5">
               <p className="text-sm text-gray-500 mb-3">Enter name or phone number to check in.</p>
@@ -483,44 +483,6 @@ export default function AttendancePage() {
                 </button>
               </form>
 
-              {/* Quick-access class list */}
-              {activeClasses.length > 0 && (
-                <div className="mt-5 border-t border-gray-100 pt-4">
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">All Classes</p>
-                  <div className="flex flex-col gap-1">
-                    {activeClasses.map(c => (
-                      <div key={c.id} className="flex items-center justify-between px-3 py-2.5 bg-gray-50 rounded-lg border border-gray-100">
-                        <div className="min-w-0">
-                          <div className="font-semibold text-gray-800 text-sm truncate">{c.name}</div>
-                          <div className="flex gap-3 flex-wrap">
-                            {c.lead_name && <span className="text-xs text-gray-400">Leader: {c.lead_name}</span>}
-                            {c.meeting_day && c.meeting_time && (
-                              <span className="text-xs text-gray-400 flex items-center gap-1">
-                                <Clock className="w-3 h-3" />{c.meeting_day}s · {c.meeting_time}
-                              </span>
-                            )}
-                            {c.location && (
-                              <span className="text-xs text-gray-400 flex items-center gap-1">
-                                <MapPin className="w-3 h-3" />{c.location}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => {
-                            setSelectedClassId(c.id)
-                            const el = document.querySelector('select')
-                            el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                          }}
-                          className="ml-3 text-xs text-amber-600 hover:text-amber-800 font-semibold flex-shrink-0"
-                        >
-                          Select
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 

@@ -1900,7 +1900,7 @@ function SummaryPanel({
   const sessionDateMap = new Map(sorted.map((s) => [s.session_date, s]))
   const allMatrixDates = [
     ...new Set([...genDates, ...sorted.map((s) => s.session_date)]),
-  ].sort()
+  ].sort().filter((d) => d <= TODAY)
 
   const firstSession = sorted[0]?.session_date
   const lastSession = sorted[sorted.length - 1]?.session_date
