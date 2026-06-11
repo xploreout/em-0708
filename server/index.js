@@ -252,6 +252,8 @@ function createMailer() {
     port: parseInt(process.env.EMAIL_PORT || '587'),
     secure: process.env.EMAIL_PORT === '465',
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+    pool: true,
+    maxConnections: 5,
   })
 }
 
@@ -526,14 +528,15 @@ app.post('/api/reminders/send', requireAuth('admin'), wrap(async (req, res) => {
 
   const sent = [], skipped = [], errors = []
 
+  const emailTasks = []
   for (const [personName, duties] of Object.entries(dutyMap)) {
     const pLower = personName.toLowerCase()
     const member = congregation.find(m => {
       const mLower = m.name.toLowerCase()
       return mLower === pLower || mLower.includes(pLower) || pLower.includes(mLower)
     })
-    if (!member)        { skipped.push({ name: personName, reason: 'not in database' }); continue }
-    if (!member.email)  { skipped.push({ name: personName, reason: 'no email on file' }); continue }
+    if (!member)       { skipped.push({ name: personName, reason: 'not in database' }); continue }
+    if (!member.email) { skipped.push({ name: personName, reason: 'no email on file' }); continue }
 
     const dutyRows = duties
       .sort((a, b) => a.date - b.date)
@@ -550,19 +553,20 @@ app.post('/api/reminders/send', requireAuth('admin'), wrap(async (req, res) => {
   <p style="color:#6b7280;font-size:0.85em;margin-top:24px">— ACBCC English Ministry Team</p>
 </div>`
 
-    try {
-      await mailer.sendMail({
-        from: process.env.EMAIL_FROM || `ACBCC EM <${process.env.EMAIL_USER}>`,
-        to: member.email,
-        subject: `Your ${MONTH_NAMES[month]} ${year} Schedule — ACBCC English Ministry`,
-        html,
-        text: duties.map(d => `• ${d.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} — ${d.eventName}`).join('\n'),
-      })
-      sent.push({ name: member.name, email: member.email })
-    } catch (err) {
-      errors.push({ name: member.name, email: member.email, error: err.message })
-    }
+    emailTasks.push({ member, duties, html })
   }
+
+  await Promise.allSettled(emailTasks.map(({ member, duties, html }) =>
+    mailer.sendMail({
+      from: process.env.EMAIL_FROM || `ACBCC EM <${process.env.EMAIL_USER}>`,
+      to: member.email,
+      subject: `Your ${MONTH_NAMES[month]} ${year} Schedule — ACBCC English Ministry`,
+      html,
+      text: duties.map(d => `• ${d.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} — ${d.eventName}`).join('\n'),
+    })
+    .then(() => sent.push({ name: member.name, email: member.email }))
+    .catch(err => errors.push({ name: member.name, email: member.email, error: err.message }))
+  ))
 
   res.json({ sent, skipped, errors })
 }))

@@ -219,8 +219,12 @@ function RemindersPanel() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ year, month }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      const text = await res.text()
+      let data: ReminderResult & { error?: string }
+      try { data = JSON.parse(text) } catch {
+        throw new Error(`Server error (${res.status}) — ${text.slice(0, 120) || 'empty response'}`)
+      }
+      if (!res.ok) throw new Error(data.error ?? `Server error ${res.status}`)
       setResult(data)
       setStatus('done')
     } catch (err: any) {
