@@ -108,6 +108,7 @@ npm run build
 - **EmailJS** - Email service
 - **Lucide React** - Icons
 - **React Google reCAPTCHA** - Spam protection
+- `ffmpeg -i public/audio/ding.m4a public/audio/ding.mp3`
 
 ## Deployment
 

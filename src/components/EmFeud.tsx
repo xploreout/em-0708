@@ -161,7 +161,7 @@ function TypewriterText({ text, speed = 40, className = '' }: { text: string; sp
 
 function SetupScreen({ onStart }: { onStart: (names: [string, string]) => void }) {
   const [names, setNames] = useState<[string, string]>(['', ''])
-  const [bgPlaying, setBgPlaying] = useState(true)
+  const [bgPlaying, setBgPlaying] = useState(false)
   const bgRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
@@ -170,27 +170,9 @@ function SetupScreen({ onStart }: { onStart: (names: [string, string]) => void }
     audio.volume = 0.5
     bgRef.current = audio
 
-    const tryPlay = () => {
-      audio.play().catch(() => {})
-      document.removeEventListener('click', tryPlay)
-      document.removeEventListener('keydown', tryPlay)
-      document.removeEventListener('touchstart', tryPlay)
-    }
-
-    // Try immediately; browsers allow it if triggered by navigation from a user gesture
-    audio.play().catch(() => {
-      // Autoplay blocked — wait for first user interaction
-      document.addEventListener('click', tryPlay)
-      document.addEventListener('keydown', tryPlay)
-      document.addEventListener('touchstart', tryPlay)
-    })
-
     return () => {
       audio.pause()
       audio.src = ''
-      document.removeEventListener('click', tryPlay)
-      document.removeEventListener('keydown', tryPlay)
-      document.removeEventListener('touchstart', tryPlay)
     }
   }, [])
 
@@ -553,7 +535,7 @@ export default function EmFeud() {
   const [teamNames, setTeamNames] = useState<[string, string]>(['Team 1', 'Team 2'])
   const [activeTeam, setActiveTeam] = useState<0 | 1>(0)
   const [editingTeam, setEditingTeam] = useState<number | null>(null)
-  const [muted, setMuted] = useState(false)
+  const [muted, setMuted] = useState(true)
   const [strikeFlash, setStrikeFlash] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
@@ -576,7 +558,7 @@ export default function EmFeud() {
     if (audioRef.current) {
       audioRef.current.volume = 0.35
       audioRef.current.loop = true
-      audioRef.current.play().catch(() => {})
+      audioRef.current.muted = true
     }
   }
 
@@ -585,6 +567,9 @@ export default function EmFeud() {
     const next = [...round.revealed]
     next[i] = true
     updateRound({ revealed: next })
+    const ding = new Audio('/audio/ding.mp3')
+    ding.volume = 0.8
+    ding.play().catch(() => {})
   }
 
   function addStrike() {
@@ -633,7 +618,12 @@ export default function EmFeud() {
   function endGame() { setPhase('final') }
 
   function toggleMute() {
-    if (audioRef.current) { audioRef.current.muted = !muted; setMuted(m => !m) }
+    if (audioRef.current) {
+      const nextMuted = !muted
+      audioRef.current.muted = nextMuted
+      if (!nextMuted) audioRef.current.play().catch(() => {})
+      setMuted(nextMuted)
+    }
   }
 
   // Determine control mode
