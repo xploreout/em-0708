@@ -2,9 +2,13 @@
 
 This guide explains the three login roles available in the ministry portal, what each role can do, and how passwords are managed.
 
+![Login Screen](login.jpg)
+
 ---
 
 ## Login Roles Overview
+
+![Role Login Overview](rolelogin.jpg)
 
 There are three login roles, each serving a different area of ministry administration:
 
