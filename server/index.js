@@ -556,7 +556,15 @@ app.post('/api/reminders/send', requireAuth('admin'), wrap(async (req, res) => {
     emailTasks.push({ member, duties, html })
   }
 
-  await Promise.allSettled(emailTasks.map(({ member, duties, html }) =>
+  // Pre-populate sent list so we can respond immediately (before SMTP completes).
+  // This avoids Netlify's ~26s proxy timeout on slow mobile connections.
+  for (const { member } of emailTasks) {
+    sent.push({ name: member.name, email: member.email })
+  }
+  res.json({ sent, skipped, errors })
+
+  // Send emails in the background after responding
+  Promise.allSettled(emailTasks.map(({ member, duties, html }) =>
     mailer.sendMail({
       from: process.env.EMAIL_FROM || `ACBCC EM <${process.env.EMAIL_USER}>`,
       to: member.email,
@@ -564,11 +572,8 @@ app.post('/api/reminders/send', requireAuth('admin'), wrap(async (req, res) => {
       html,
       text: duties.map(d => `• ${d.date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} — ${d.eventName}`).join('\n'),
     })
-    .then(() => sent.push({ name: member.name, email: member.email }))
-    .catch(err => errors.push({ name: member.name, email: member.email, error: err.message }))
+    .catch(err => console.error(`Reminder email failed for ${member.name} (${member.email}): ${err.message}`))
   ))
-
-  res.json({ sent, skipped, errors })
 }))
 
 // ── Cross-class attendance search ─────────────────────────────────────────────
