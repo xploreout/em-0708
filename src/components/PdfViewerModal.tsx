@@ -14,9 +14,10 @@ interface Props {
   name: string
   onClose: () => void
   downloadUrl?: string
+  hideDownload?: boolean
 }
 
-export default function PdfViewerModal({ url, name, onClose, downloadUrl }: Props) {
+export default function PdfViewerModal({ url, name, onClose, downloadUrl, hideDownload }: Props) {
   const [numPages, setNumPages] = useState(0)
   const [pageNumber, setPageNumber] = useState(1)
   const [scale, setScale] = useState(1.0)
@@ -50,14 +51,16 @@ export default function PdfViewerModal({ url, name, onClose, downloadUrl }: Prop
       <div className="flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-gray-700 flex-shrink-0">
         <span className="text-white text-sm font-semibold truncate max-w-xs sm:max-w-sm">{name}</span>
         <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-          <a
-            href={dlLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition"
-          >
-            <Download className="w-3.5 h-3.5" /> Download
-          </a>
+          {!hideDownload && (
+            <a
+              href={dlLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition"
+            >
+              <Download className="w-3.5 h-3.5" /> Download
+            </a>
+          )}
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition"

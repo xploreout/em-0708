@@ -156,10 +156,10 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
     setSaving(true)
     setError('')
     try {
-      const res = await authFetch('/api/congregation', {
+      const res = await authFetch('/api/congregation/quick-add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), phone: phone.replace(/-/g, ''), email: email.trim(), photoUrl }),
+        body: JSON.stringify({ name: name.trim(), phone: phone.replace(/-/g, ''), email: email.trim() }),
       })
       const m = await res.json()
       if (!res.ok) throw new Error(m.error)

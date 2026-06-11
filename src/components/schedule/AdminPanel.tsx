@@ -4,9 +4,11 @@ import {
   Upload, Send, Users, CalendarDays, BookUser, GraduationCap,
   Archive, ArchiveRestore, Save, Calendar,
   FileText, File, FileImage, Download, ChevronDown, ChevronRight, Youtube, Link,
+  FolderOpen, Key, Eye, EyeOff, Copy,
 } from 'lucide-react'
 import { RequireAuth, useAuth } from '../../context/AuthContext'
 import { CalendarContent } from './ScheduleCalendar'
+import DocReposAdmin from '../docs/DocReposAdmin'
 
 type Member = {
   id: string
@@ -809,6 +811,32 @@ function ClassesPanel() {
   // Per-row busy state (archive/delete in flight)
   const [busyId, setBusyId] = useState<number | null>(null)
 
+  // Password view modal
+  const [viewingPwd, setViewingPwd]     = useState<{ id: number; name: string } | null>(null)
+  const [revealedPwd, setRevealedPwd]   = useState<string | null>(null)
+  const [pwdLoading, setPwdLoading]     = useState(false)
+  const [showPwd, setShowPwd]           = useState(false)
+  const [pwdCopied, setPwdCopied]       = useState(false)
+
+  function openPasswordView(c: ClassInfo) {
+    setViewingPwd({ id: c.id, name: c.name })
+    setRevealedPwd(null)
+    setShowPwd(false)
+    setPwdLoading(true)
+    authFetch(`/api/classes/${c.id}/lead-password`)
+      .then(r => r.json())
+      .then(d => { setRevealedPwd(d.password || ''); setPwdLoading(false) })
+      .catch(() => { setRevealedPwd(''); setPwdLoading(false) })
+  }
+
+  function copyPwd() {
+    if (!revealedPwd) return
+    navigator.clipboard.writeText(revealedPwd).then(() => {
+      setPwdCopied(true)
+      setTimeout(() => setPwdCopied(false), 2000)
+    })
+  }
+
 const showFlash = (msg: string) => { setFlash(msg); setTimeout(() => setFlash(''), 3000) }
 
   useEffect(() => { load() }, [])
@@ -1000,6 +1028,12 @@ const activeClasses   = classes.filter(c => !c.archived)
                 <Pencil className="w-3.5 h-3.5" />
               </button>
             )}
+            {c.has_lead_password && (
+              <button onClick={() => openPasswordView(c)} title="View Lead Password"
+                className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-100 transition">
+                <Key className="w-3.5 h-3.5" />
+              </button>
+            )}
             <button
               onClick={() => handleArchive(c)}
               disabled={busyId === c.id}
@@ -1153,6 +1187,54 @@ const activeClasses   = classes.filter(c => !c.archived)
           </div>
         </div>
       )}
+
+      {/* Password view modal */}
+      {viewingPwd && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 px-4"
+          onClick={() => setViewingPwd(null)}>
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <Key className="w-4 h-4 text-indigo-500" />
+                <h3 className="font-bold text-gray-800">Lead Password</h3>
+              </div>
+              <button onClick={() => setViewingPwd(null)} className="text-gray-400 hover:text-gray-600 transition">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mb-4 truncate">{viewingPwd.name}</p>
+
+            {pwdLoading ? (
+              <div className="flex justify-center py-4">
+                <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+              </div>
+            ) : revealedPwd ? (
+              <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5">
+                <span className="flex-1 font-mono text-sm text-gray-800 tracking-wider">
+                  {showPwd ? revealedPwd : '•'.repeat(revealedPwd.length)}
+                </span>
+                <button onClick={() => setShowPwd(s => !s)} title={showPwd ? 'Hide' : 'Show'}
+                  className="text-gray-400 hover:text-gray-700 transition">
+                  {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+                <button onClick={copyPwd} title="Copy"
+                  className="text-gray-400 hover:text-gray-700 transition">
+                  {pwdCopied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
+            ) : (
+              <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2.5 rounded-lg leading-snug">
+                Password was set before plaintext storage was available. Reset it in the edit form to enable viewing.
+              </p>
+            )}
+
+            <button onClick={() => setViewingPwd(null)}
+              className="w-full mt-4 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition">
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -1160,17 +1242,17 @@ const activeClasses   = classes.filter(c => !c.archived)
 // ── Admin Panel ───────────────────────────────────────────────────────────────
 
 function AdminContent() {
-  const [tab, setTab] = useState<'calendar' | 'contacts' | 'classes'>('calendar')
+  const [tab, setTab] = useState<'calendar' | 'contacts' | 'classes' | 'docs'>('calendar')
 
   return (
     <div>
       {/* Top bar */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-4">
         <h1 className="text-2xl font-bold text-gray-900 mb-3">Admin</h1>
-        <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm font-semibold w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-4 rounded-lg border border-gray-200 overflow-hidden text-sm font-semibold w-full">
           <button
             onClick={() => setTab('calendar')}
-            className={`flex flex-1 items-center justify-center gap-1.5 px-4 py-2.5 transition-colors ${
+            className={`flex items-center justify-center gap-1.5 px-4 py-2.5 transition-colors ${
               tab === 'calendar' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
@@ -1179,7 +1261,7 @@ function AdminContent() {
           </button>
           <button
             onClick={() => setTab('classes')}
-            className={`flex flex-1 items-center justify-center gap-1.5 px-4 py-2.5 border-l border-gray-200 transition-colors ${
+            className={`flex items-center justify-center gap-1.5 px-4 py-2.5 border-l border-gray-200 transition-colors ${
               tab === 'classes' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
@@ -1187,8 +1269,17 @@ function AdminContent() {
             Classes
           </button>
           <button
+            onClick={() => setTab('docs')}
+            className={`flex items-center justify-center gap-1.5 px-4 py-2.5 border-t border-gray-200 sm:border-t-0 sm:border-l transition-colors ${
+              tab === 'docs' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <FolderOpen className="w-4 h-4" />
+            Docs
+          </button>
+          <button
             onClick={() => setTab('contacts')}
-            className={`flex flex-1 items-center justify-center gap-1.5 px-4 py-2.5 border-l border-gray-200 transition-colors ${
+            className={`flex items-center justify-center gap-1.5 px-4 py-2.5 border-t border-l border-gray-200 sm:border-t-0 transition-colors ${
               tab === 'contacts' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
@@ -1206,6 +1297,8 @@ function AdminContent() {
             <RemindersPanel />
           </div>
         </div>
+      ) : tab === 'docs' ? (
+        <DocReposAdmin />
       ) : tab === 'contacts' ? (
         <ContactsPanel />
       ) : (

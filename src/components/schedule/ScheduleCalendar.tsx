@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { Loader2, Search, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Loader2, Search, X, ChevronLeft, ChevronRight, CalendarDays, FolderOpen } from 'lucide-react'
 import { RequireAuth, useAuth } from '../../context/AuthContext'
+import DocReposViewer from '../docs/DocReposViewer'
 import type { Schedule, FormShared, ViewMode } from './scheduleTypes'
 import { MONTH_NAMES, MON_SHORT, DOW_SHORT } from './scheduleConstants'
 import { dateKey, getWeekRows, getWeekDays, highlight } from './scheduleHelpers'
@@ -266,6 +267,12 @@ export function CalendarContent() {
         </div>
       </div>
 
+      {/* Legend */}
+      <div className="flex items-start gap-2 mb-4 px-3 py-2 rounded-lg bg-red-50 border border-red-100 text-xs text-red-600">
+        <span className="w-2 h-2 rounded-full bg-red-500 shrink-0 mt-0.5" />
+        <span>Red dot = contact not found in contacts record, or no email on file. These people won't receive email reminders.</span>
+      </div>
+
       {/* Search results */}
       {searchResults ? (
         <div className="flex flex-col gap-3">
@@ -316,15 +323,43 @@ export function CalendarContent() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+function CoworkerContent() {
+  const [view, setView] = useState<'calendar' | 'docs'>('calendar')
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold text-gray-900">Coworker</h1>
+        <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm font-semibold">
+          <button
+            onClick={() => setView('calendar')}
+            className={`flex items-center gap-1.5 px-4 py-2 transition-colors ${
+              view === 'calendar' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <CalendarDays className="w-4 h-4" />
+            Calendar
+          </button>
+          <button
+            onClick={() => setView('docs')}
+            className={`flex items-center gap-1.5 px-4 py-2 border-l border-gray-200 transition-colors ${
+              view === 'docs' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <FolderOpen className="w-4 h-4" />
+            Docs
+          </button>
+        </div>
+      </div>
+      {view === 'calendar' ? <CalendarContent /> : <DocReposViewer />}
+    </div>
+  )
+}
+
 export default function ScheduleCalendar() {
   return (
     <RequireAuth role="calendar">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <div className="mb-4">
-          <h1 className="text-2xl font-bold text-gray-900">CoWorker Calendar</h1>
-        </div>
-        <CalendarContent />
-      </div>
+      <CoworkerContent />
     </RequireAuth>
   )
 }

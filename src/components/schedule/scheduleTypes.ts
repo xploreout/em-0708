@@ -2,7 +2,7 @@ export type Person     = { name: string; task: string }
 export type Entry      = { eventName: string; teamId?: number | null; persons: Person[] }
 export type Schedule   = Record<string, Entry[]>
 export type ViewMode   = 'month' | 'week' | 'day'
-export type CongMember = { id: string; name: string }
+export type CongMember = { id: string; name: string; email?: string }
 export type EventType  = { id: number; name: string; recurring: boolean }
 export type Team       = { id: number; name: string }
 

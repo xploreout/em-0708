@@ -18,7 +18,10 @@
       "Bash(xargs cat)",
       "Bash(/Users/tanlui/.nvm/versions/node/v22.2.0/bin/node /Users/tanlui/projects/acbcc/em-first/emfirst-0708/node_modules/.bin/tsc --noEmit)",
       "Bash(/Users/tanlui/.nvm/versions/node/v22.16.0/bin/npx tsc *)",
-      "Bash(xargs ls)"
+      "Bash(xargs ls)",
+      "Bash(ls /usr/local/bin/node /opt/homebrew/bin/node ~/.nvm/versions/node/*/bin/node ~/.volta/bin/node 2>/dev/null | head -5)",
+      "Read(//Users/tanlui/.volta/bin/**)",
+      "Bash(PATH=/Users/tanlui/.nvm/versions/node/v22.2.0/bin:__TRACKED_VAR__ /Users/tanlui/projects/acbcc/em-first/emfirst-0708/node_modules/.bin/tsc --noEmit)"
     ]
   }
 }
