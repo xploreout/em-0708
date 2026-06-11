@@ -26,6 +26,8 @@ Each role has its own password. On the login screen, select your role from the d
 
 ## Class Role
 
+<img src="public/images/checkin.jpg" alt="Class Screen" width="33%" />
+
 Intended for **class leaders and teachers** who manage a Bible study or education group.
 
 ### What the Class Role Can Do
@@ -47,6 +49,8 @@ Each class can have its own **lead password** set by an Admin. This is not the s
 ## Coworker Role
 
 Intended for **ministry coworkers** who can view the full calendar. Also able to add New Event to calendar.
+
+<img src="public/images/cowkerdoc.jpg" alt="Coworker Screen" width="33%" />
 
 ### What the Coworker Role Can Do
 
