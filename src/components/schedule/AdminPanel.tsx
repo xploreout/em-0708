@@ -1178,15 +1178,6 @@ function AdminContent() {
             Calendar
           </button>
           <button
-            onClick={() => setTab('contacts')}
-            className={`flex flex-1 items-center justify-center gap-1.5 px-4 py-2.5 border-l border-gray-200 transition-colors ${
-              tab === 'contacts' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <BookUser className="w-4 h-4" />
-            Contacts
-          </button>
-          <button
             onClick={() => setTab('classes')}
             className={`flex flex-1 items-center justify-center gap-1.5 px-4 py-2.5 border-l border-gray-200 transition-colors ${
               tab === 'classes' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
@@ -1194,6 +1185,15 @@ function AdminContent() {
           >
             <GraduationCap className="w-4 h-4" />
             Classes
+          </button>
+          <button
+            onClick={() => setTab('contacts')}
+            className={`flex flex-1 items-center justify-center gap-1.5 px-4 py-2.5 border-l border-gray-200 transition-colors ${
+              tab === 'contacts' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <BookUser className="w-4 h-4" />
+            Contacts
           </button>
         </div>
       </div>

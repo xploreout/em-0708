@@ -7,12 +7,15 @@ export type EventType  = { id: number; name: string; recurring: boolean }
 export type Team       = { id: number; name: string }
 
 export type FormShared = {
-  congregation:       CongMember[]
-  eventTypes:         EventType[]
-  teams:              Team[]
-  tasks:              string[]
-  onEventTypeCreated: (et: EventType) => void
-  onTeamCreated:      (t: Team) => void
-  onContactCreated:   (m: CongMember) => void
-  onTaskCreated:      (task: string) => void
+  congregation:        CongMember[]
+  eventTypes:          EventType[]
+  teams:               Team[]
+  tasks:               string[]
+  onEventTypeCreated:  (et: EventType) => void
+  onTeamCreated:       (t: Team) => void
+  onContactCreated:    (m: CongMember) => void
+  onTaskCreated:       (task: string) => void
+  onEventTypeDeleted:  (id: number) => void
+  onTeamDeleted:       (id: number) => void
+  onTaskDeleted:       (task: string) => void
 }

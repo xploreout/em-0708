@@ -11,6 +11,7 @@ import { DayCell, CalColGroup } from './DayCell'
 export function CalendarContent() {
   const { authFetch, role } = useAuth()
   const readOnly = role !== 'admin'
+  const canAdd   = role === 'admin' || role === 'calendar'
 
   const [schedule,     setSchedule]     = useState<Schedule>({})
   const [congregation, setCongregation] = useState<Parameters<FormShared['onContactCreated']>[0][]>([])
@@ -19,7 +20,7 @@ export function CalendarContent() {
   const [tasks,        setTasks]        = useState<string[]>([])
   const [loading,      setLoading]      = useState(true)
   const [savingKeys,   setSavingKeys]   = useState<Set<string>>(new Set())
-  const [viewMode,     setViewMode]     = useState<ViewMode>('month')
+  const [viewMode,     setViewMode]     = useState<ViewMode>(() => window.innerWidth < 768 ? 'week' : 'month')
   const [cursor,       setCursor]       = useState(() => new Date())
   const [searchQuery,  setSearchQuery]  = useState('')
   const searchRef = useRef<HTMLInputElement>(null)
@@ -109,10 +110,13 @@ export function CalendarContent() {
 
   const shared: FormShared = {
     congregation, eventTypes, teams, tasks,
-    onEventTypeCreated: et   => setEventTypes(prev => [...prev, et].sort((a, b) => a.name.localeCompare(b.name))),
-    onTeamCreated:      t    => setTeams(prev => [...prev, t].sort((a, b) => a.name.localeCompare(b.name))),
-    onContactCreated:   m    => setCongregation(prev => [...prev, m].sort((a, b) => a.name.localeCompare(b.name))),
-    onTaskCreated:      task => setTasks(prev => [...new Set([...prev, task])].sort()),
+    onEventTypeCreated:  et   => setEventTypes(prev => [...prev, et].sort((a, b) => a.name.localeCompare(b.name))),
+    onTeamCreated:       t    => setTeams(prev => [...prev, t].sort((a, b) => a.name.localeCompare(b.name))),
+    onContactCreated:    m    => setCongregation(prev => [...prev, m].sort((a, b) => a.name.localeCompare(b.name))),
+    onTaskCreated:       task => setTasks(prev => [...new Set([...prev, task])].sort()),
+    onEventTypeDeleted:  id   => setEventTypes(prev => prev.filter(et => et.id !== id)),
+    onTeamDeleted:       id   => setTeams(prev => prev.filter(t => t.id !== id)),
+    onTaskDeleted:       task => setTasks(prev => prev.filter(t => t !== task)),
   }
 
   if (loading) {
@@ -138,7 +142,7 @@ export function CalendarContent() {
                 {days.map((date, di) => date ? (
                   <DayCell key={di} date={date} entries={schedule[dateKey(date)] ?? []}
                     onSave={handleSave} saving={savingKeys.has(dateKey(date))}
-                    shared={shared} asTd={false} readOnly={readOnly} />
+                    shared={shared} asTd={false} readOnly={readOnly} canAdd={canAdd} />
                 ) : null)}
               </div>
             )
@@ -154,7 +158,7 @@ export function CalendarContent() {
                   <tr key={wi} className="bg-white">
                     {days.map((date, di) => date
                       ? <DayCell key={di} date={date} entries={schedule[dateKey(date)] ?? []}
-                          onSave={handleSave} saving={savingKeys.has(dateKey(date))} shared={shared} readOnly={readOnly} />
+                          onSave={handleSave} saving={savingKeys.has(dateKey(date))} shared={shared} readOnly={readOnly} canAdd={canAdd} />
                       : <td key={di} className="border-l border-t border-gray-300 first:border-l-0" />
                     )}
                   </tr>
@@ -175,7 +179,7 @@ export function CalendarContent() {
           {days.map((date, di) => (
             <DayCell key={di} date={date} entries={schedule[dateKey(date)] ?? []}
               onSave={handleSave} saving={savingKeys.has(dateKey(date))}
-              shared={shared} asTd={false} readOnly={readOnly} />
+              shared={shared} asTd={false} readOnly={readOnly} canAdd={canAdd} />
           ))}
         </div>
         <div className="hidden md:block rounded-lg border border-gray-700 shadow-sm overflow-hidden">
@@ -185,7 +189,7 @@ export function CalendarContent() {
               <tr className="bg-white">
                 {days.map((date, di) => (
                   <DayCell key={di} date={date} entries={schedule[dateKey(date)] ?? []}
-                    onSave={handleSave} saving={savingKeys.has(dateKey(date))} shared={shared} readOnly={readOnly} />
+                    onSave={handleSave} saving={savingKeys.has(dateKey(date))} shared={shared} readOnly={readOnly} canAdd={canAdd} />
                 ))}
               </tr>
             </tbody>
@@ -200,7 +204,7 @@ export function CalendarContent() {
       <div className="max-w-sm">
         <DayCell date={cursor} entries={schedule[dateKey(cursor)] ?? []}
           onSave={handleSave} saving={savingKeys.has(dateKey(cursor))}
-          shared={shared} asTd={false} readOnly={readOnly} />
+          shared={shared} asTd={false} readOnly={readOnly} canAdd={canAdd} />
       </div>
     )
   }

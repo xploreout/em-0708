@@ -8,15 +8,17 @@ import { EntryFormModal } from './ScheduleModals'
 
 // ── Day Detail Modal (full-screen popup when clicking a date header) ───────────
 
-export function DayDetailModal({ date, entries, onSave, onClose, shared, readOnly = false }: {
+export function DayDetailModal({ date, entries, onSave, onClose, shared, readOnly = false, canAdd }: {
   date: Date
   entries: Entry[]
   onSave: (key: string, entries: Entry[]) => void
   onClose: () => void
   shared: FormShared
   readOnly?: boolean
+  canAdd?: boolean
 }) {
   const [editingIdx, setEditingIdx] = useState<number | 'new' | null>(null)
+  const showAdd = canAdd ?? !readOnly
 
   const key     = dateKey(date)
   const isToday = dateKey(new Date()) === key
@@ -92,7 +94,7 @@ export function DayDetailModal({ date, entries, onSave, onClose, shared, readOnl
               )}
             </div>
           ))}
-          {!readOnly && (
+          {showAdd && (
             <button onClick={() => setEditingIdx('new')}
               className="flex items-center justify-center gap-1 w-full px-2.5 py-1 rounded-lg bg-blue-50 text-blue-400 hover:bg-blue-100 hover:text-blue-600 transition-colors text-xs font-semibold">
               <Plus className="w-3.5 h-3.5" /> Add
@@ -107,7 +109,7 @@ export function DayDetailModal({ date, entries, onSave, onClose, shared, readOnl
   return (
     <>
       {dayPortal}
-      {editingIdx !== null && !readOnly && (
+      {editingIdx !== null && (editingIdx === 'new' ? showAdd : !readOnly) && (
         <EntryFormModal
           title={editingIdx === 'new' ? 'Add Entry' : 'Edit Entry'}
           entry={editingIdx !== 'new' ? entries[editingIdx as number] : undefined}
@@ -122,7 +124,7 @@ export function DayDetailModal({ date, entries, onSave, onClose, shared, readOnl
 
 // ── Day Cell (calendar grid cell / mobile card) ───────────────────────────────
 
-export function DayCell({ date, entries, onSave, saving, asTd = true, shared, readOnly = false }: {
+export function DayCell({ date, entries, onSave, saving, asTd = true, shared, readOnly = false, canAdd }: {
   date: Date
   entries: Entry[]
   onSave: (key: string, entries: Entry[]) => void
@@ -130,8 +132,10 @@ export function DayCell({ date, entries, onSave, saving, asTd = true, shared, re
   asTd?: boolean
   shared: FormShared
   readOnly?: boolean
+  canAdd?: boolean
 }) {
   const [editingIdx, setEditingIdx] = useState<number | 'new' | null>(null)
+  const showAdd = canAdd ?? !readOnly
   const [expanded,   setExpanded]   = useState(false)
   const [showModal,  setShowModal]  = useState(false)
 
@@ -206,7 +210,7 @@ export function DayCell({ date, entries, onSave, saving, asTd = true, shared, re
             : <><ChevronDown className="w-3 h-3" /> +{entries.length - COLLAPSE_AT} more</>}
         </button>
       )}
-      {!readOnly && (
+      {showAdd && (
         <button onClick={() => setEditingIdx('new')}
           className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-400 hover:bg-blue-100 hover:text-blue-600 transition-colors text-xs font-semibold">
           <Plus className="w-3.5 h-3.5" /> Add
@@ -215,7 +219,7 @@ export function DayCell({ date, entries, onSave, saving, asTd = true, shared, re
     </div>
   )
 
-  const entryPopup = editingIdx !== null && !readOnly && (
+  const entryPopup = editingIdx !== null && (editingIdx === 'new' ? showAdd : !readOnly) && (
     <EntryFormModal
       title={editingIdx === 'new' ? 'Add Entry' : 'Edit Entry'}
       entry={editingIdx !== 'new' ? entries[editingIdx as number] : undefined}
@@ -227,7 +231,7 @@ export function DayCell({ date, entries, onSave, saving, asTd = true, shared, re
 
   const modal = showModal && (
     <DayDetailModal date={date} entries={entries} onSave={onSave}
-      shared={shared} onClose={() => setShowModal(false)} readOnly={readOnly} />
+      shared={shared} onClose={() => setShowModal(false)} readOnly={readOnly} canAdd={showAdd} />
   )
 
   if (!asTd) {

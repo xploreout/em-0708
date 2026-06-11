@@ -17,7 +17,8 @@
       "Bash(xargs sed -i '' 's/rounded-xl/rounded-lg/g')",
       "Bash(xargs cat)",
       "Bash(/Users/tanlui/.nvm/versions/node/v22.2.0/bin/node /Users/tanlui/projects/acbcc/em-first/emfirst-0708/node_modules/.bin/tsc --noEmit)",
-      "Bash(/Users/tanlui/.nvm/versions/node/v22.16.0/bin/npx tsc *)"
+      "Bash(/Users/tanlui/.nvm/versions/node/v22.16.0/bin/npx tsc *)",
+      "Bash(xargs ls)"
     ]
   }
 }

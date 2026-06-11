@@ -219,13 +219,15 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
 
 // ── Event name combobox ───────────────────────────────────────────────────────
 
-export function EventNameSelect({ value, onChange, eventTypes, onCreated }: {
+export function EventNameSelect({ value, onChange, eventTypes, onCreated, onDeleted }: {
   value: string
   onChange: (name: string) => void
   eventTypes: EventType[]
   onCreated: (et: EventType) => void
+  onDeleted: (id: number) => void
 }) {
-  const { authFetch } = useAuth()
+  const { authFetch, role } = useAuth()
+  const isAdmin = role === 'admin'
   const [open,    setOpen]    = useState(false)
   const [showNew, setShowNew] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -245,6 +247,11 @@ export function EventNameSelect({ value, onChange, eventTypes, onCreated }: {
     const et = await res.json()
     if (res.ok) { onCreated(et); onChange(et.name) }
     setOpen(false)
+  }
+
+  async function deleteEventType(id: number) {
+    const res = await authFetch(`/api/event-types/${id}`, { method: 'DELETE' })
+    if (res.ok) onDeleted(id)
   }
 
   useEffect(() => {
@@ -269,12 +276,21 @@ export function EventNameSelect({ value, onChange, eventTypes, onCreated }: {
       {open && (
         <div className="absolute top-full left-0 right-0 mt-0.5 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
           {filtered.map(et => (
-            <button key={et.id} type="button"
-              onMouseDown={e => { e.preventDefault(); onChange(et.name); setOpen(false) }}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-gray-50 last:border-0 flex items-center justify-between">
-              <span>{et.name}</span>
-              {et.recurring && <span className="text-xs text-gray-400 shrink-0 ml-2">recurring</span>}
-            </button>
+            <div key={et.id} className="flex items-center border-b border-gray-50 last:border-0 hover:bg-blue-50 group">
+              <button type="button"
+                onMouseDown={e => { e.preventDefault(); onChange(et.name); setOpen(false) }}
+                className="flex-1 text-left px-3 py-2 text-sm hover:text-blue-700 transition-colors flex items-center justify-between">
+                <span>{et.name}</span>
+                {et.recurring && <span className="text-xs text-gray-400 shrink-0 ml-2">recurring</span>}
+              </button>
+              {isAdmin && (
+                <button type="button"
+                  onMouseDown={e => { e.preventDefault(); deleteEventType(et.id) }}
+                  className="px-2 py-2 text-gray-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100 shrink-0" title="Delete">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           ))}
           {isNew && (
             <button type="button"
@@ -313,13 +329,15 @@ export function EventNameSelect({ value, onChange, eventTypes, onCreated }: {
 
 // ── Team combobox ─────────────────────────────────────────────────────────────
 
-export function TeamSelect({ teamId, onChange, teams, onCreated }: {
+export function TeamSelect({ teamId, onChange, teams, onCreated, onDeleted }: {
   teamId: number | null
   onChange: (id: number | null) => void
   teams: Team[]
   onCreated: (t: Team) => void
+  onDeleted: (id: number) => void
 }) {
-  const { authFetch } = useAuth()
+  const { authFetch, role } = useAuth()
+  const isAdmin = role === 'admin'
   const [open,     setOpen]     = useState(false)
   const [inputVal, setInputVal] = useState(() => teams.find(t => t.id === teamId)?.name ?? '')
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -343,6 +361,11 @@ export function TeamSelect({ teamId, onChange, teams, onCreated }: {
     const t = await res.json()
     if (res.ok) { onCreated(t); onChange(t.id); setInputVal(t.name) }
     setOpen(false)
+  }
+
+  async function deleteTeam(id: number) {
+    const res = await authFetch(`/api/teams/${id}`, { method: 'DELETE' })
+    if (res.ok) onDeleted(id)
   }
 
   useEffect(() => {
@@ -372,11 +395,20 @@ export function TeamSelect({ teamId, onChange, teams, onCreated }: {
             — no team —
           </button>
           {filtered.map(t => (
-            <button key={t.id} type="button"
-              onMouseDown={e => { e.preventDefault(); onChange(t.id); setInputVal(t.name); setOpen(false) }}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-gray-50 last:border-0">
-              {t.name}
-            </button>
+            <div key={t.id} className="flex items-center border-b border-gray-50 last:border-0 hover:bg-blue-50 group">
+              <button type="button"
+                onMouseDown={e => { e.preventDefault(); onChange(t.id); setInputVal(t.name); setOpen(false) }}
+                className="flex-1 text-left px-3 py-2 text-sm hover:text-blue-700 transition-colors">
+                {t.name}
+              </button>
+              {isAdmin && (
+                <button type="button"
+                  onMouseDown={e => { e.preventDefault(); deleteTeam(t.id) }}
+                  className="px-2 py-2 text-gray-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100 shrink-0" title="Delete">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           ))}
           {isNew && (
             <button type="button"
@@ -476,12 +508,15 @@ export function NameInput({ value, onChange, congregation, onContactCreated, pla
 
 // ── Task / role combobox ──────────────────────────────────────────────────────
 
-export function TaskInput({ value, onChange, tasks, onTaskCreated }: {
+export function TaskInput({ value, onChange, tasks, onTaskCreated, onTaskDeleted }: {
   value: string
   onChange: (v: string) => void
   tasks: string[]
   onTaskCreated: (task: string) => void
+  onTaskDeleted: (task: string) => void
 }) {
+  const { role } = useAuth()
+  const isAdmin = role === 'admin'
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -514,11 +549,20 @@ export function TaskInput({ value, onChange, tasks, onTaskCreated }: {
       {open && (
         <div className="absolute top-full left-0 right-0 mt-0.5 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
           {filtered.map((t, i) => (
-            <button key={i} type="button"
-              onMouseDown={e => { e.preventDefault(); onChange(t); setOpen(false) }}
-              className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 hover:text-blue-700 transition-colors border-b border-gray-50 last:border-0">
-              {t}
-            </button>
+            <div key={i} className="flex items-center border-b border-gray-50 last:border-0 hover:bg-blue-50 group">
+              <button type="button"
+                onMouseDown={e => { e.preventDefault(); onChange(t); setOpen(false) }}
+                className="flex-1 text-left px-3 py-2 text-sm hover:text-blue-700 transition-colors">
+                {t}
+              </button>
+              {isAdmin && (
+                <button type="button"
+                  onMouseDown={e => { e.preventDefault(); onTaskDeleted(t); setOpen(false) }}
+                  className="px-2 py-2 text-gray-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100 shrink-0" title="Delete">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           ))}
           {filtered.length === 0 && !isNew && (
             <div className="px-3 py-2 text-xs text-gray-400 italic">No tasks yet — type to add</div>
@@ -550,13 +594,17 @@ export function EntryFormModal({ title, entry, onSave, onClose, shared }: {
   const [persons,   setPersons]   = useState<Person[]>(
     entry?.persons?.length ? entry.persons.map(p => ({ ...p })) : [{ name: '', task: '' }]
   )
+  const [eventError, setEventError] = useState('')
 
   function updatePerson(idx: number, field: keyof Person, value: string) {
     setPersons(prev => prev.map((p, i) => i === idx ? { ...p, [field]: value } : p))
   }
   function removePerson(idx: number) { setPersons(prev => prev.filter((_, i) => i !== idx)) }
   function addPerson()               { setPersons(prev => [...prev, { name: '', task: '' }]) }
-  function save()                    { onSave({ eventName, teamId, persons: persons.filter(p => p.name.trim()) }) }
+  function save() {
+    if (!eventName.trim()) { setEventError('Event name is required'); return }
+    onSave({ eventName, teamId, persons: persons.filter(p => p.name.trim()) })
+  }
 
   return createPortal(
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 px-4" onClick={onClose}>
@@ -572,14 +620,19 @@ export function EntryFormModal({ title, entry, onSave, onClose, shared }: {
 
         <div className="flex flex-col gap-5 px-5 py-5 overflow-y-auto flex-1">
           <div>
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 block">Event Name</label>
-            <EventNameSelect value={eventName} onChange={setEventName}
-              eventTypes={shared.eventTypes} onCreated={shared.onEventTypeCreated} />
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 block">
+              Event Name <span className="text-red-500">*</span>
+            </label>
+            <EventNameSelect value={eventName} onChange={v => { setEventName(v); if (v.trim()) setEventError('') }}
+              eventTypes={shared.eventTypes} onCreated={shared.onEventTypeCreated}
+              onDeleted={shared.onEventTypeDeleted} />
+            {eventError && <p className="text-red-500 text-xs mt-1">{eventError}</p>}
           </div>
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 block">Team</label>
             <TeamSelect teamId={teamId} onChange={setTeamId}
-              teams={shared.teams} onCreated={shared.onTeamCreated} />
+              teams={shared.teams} onCreated={shared.onTeamCreated}
+              onDeleted={shared.onTeamDeleted} />
           </div>
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 block">People</label>
@@ -591,7 +644,8 @@ export function EntryFormModal({ title, entry, onSave, onClose, shared }: {
                     placeholder="Name…"
                     inputClassName="w-full text-sm border border-purple-200 rounded-lg px-3 py-2 pr-8 outline-none focus:border-purple-400 bg-white" />
                   <TaskInput value={p.task} onChange={v => updatePerson(i, 'task', v)}
-                    tasks={shared.tasks} onTaskCreated={shared.onTaskCreated} />
+                    tasks={shared.tasks} onTaskCreated={shared.onTaskCreated}
+                    onTaskDeleted={shared.onTaskDeleted} />
                   {persons.length > 1 && (
                     <button onClick={() => removePerson(i)} className="p-1 text-red-300 hover:text-red-500 transition shrink-0">
                       <X className="w-3.5 h-3.5" />
