@@ -113,19 +113,8 @@ export function RequireAuth({ role: required, children }: { role: Role; children
   const navigate = useNavigate()
 
   if (!isAuthorized(required)) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-50 px-4">
-        <div className="text-5xl">🔒</div>
-        <h2 className="text-xl font-bold text-gray-700">Access Required</h2>
-        <p className="text-gray-500 text-sm">Please log in as <strong>{ROLE_LABELS[required]}</strong>.</p>
-        <button
-          onClick={() => navigate('/')}
-          className="mt-2 px-5 py-2 rounded-full bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition"
-        >
-          Go Home
-        </button>
-      </div>
-    )
+    navigate('/', { replace: true })
+    return null
   }
   return <>{children}</>
 }

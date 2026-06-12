@@ -44,6 +44,7 @@ async function initDB() {
         phone      VARCHAR(50)  DEFAULT '',
         email      VARCHAR(200) DEFAULT '',
         photo_url  TEXT         DEFAULT '',
+        notes      TEXT         DEFAULT '',
         created_at TIMESTAMPTZ  DEFAULT NOW()
       );
 
@@ -165,6 +166,11 @@ async function initDB() {
       `ALTER TABLE classes ADD COLUMN IF NOT EXISTS lead_password_plain TEXT DEFAULT ''`,
       `ALTER TABLE doc_repos ADD COLUMN IF NOT EXISTS original_filename VARCHAR(300) DEFAULT ''`,
       `ALTER TABLE doc_repos ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW()`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS notes TEXT DEFAULT ''`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS is_student BOOLEAN DEFAULT FALSE`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS school_level VARCHAR(50) DEFAULT ''`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS school_year VARCHAR(20) DEFAULT ''`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS fellowship_groups TEXT[] DEFAULT '{}'`,
     ]) { await client.query(ddl) }
 
     // Backfill class_roster from existing attendance records so all historical names are preserved
@@ -299,7 +305,9 @@ function createMailer() {
 
 const toMember = r => ({
   id: r.id, name: r.name,
-  phone: r.phone || '', email: r.email || '', photoUrl: r.photo_url || '',
+  phone: r.phone || '', email: r.email || '', photoUrl: r.photo_url || '', notes: r.notes || '',
+  isStudent: r.is_student || false, schoolLevel: r.school_level || '', schoolYear: r.school_year || '',
+  fellowshipGroups: r.fellowship_groups || [],
 })
 
 // Wraps async route handlers so unhandled rejections reach the error handler
@@ -458,37 +466,60 @@ app.get('/api/congregation', requireAuth('admin'), wrap(async (_req, res) => {
   res.json(rows.map(toMember))
 }))
 
+app.get('/api/congregation/export-csv', requireAuth('admin'), wrap(async (_req, res) => {
+  const { rows } = await pool.query('SELECT * FROM contacts ORDER BY name')
+  const esc = v => { const s = String(v ?? ''); return /[,"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s }
+  const header = ['Name','Phone','Email','Fellowship Groups','Student','School Level','School Year','Notes']
+  const lines = [
+    header.join(','),
+    ...rows.map(r => [
+      esc(r.name),
+      esc(r.phone),
+      esc(r.email),
+      esc((r.fellowship_groups || []).join('; ')),
+      r.is_student ? 'Yes' : 'No',
+      esc(r.school_level),
+      esc(r.school_year),
+      esc(r.notes),
+    ].join(',')),
+  ]
+  res.setHeader('Content-Type', 'text/csv')
+  res.setHeader('Content-Disposition', 'attachment; filename="contacts.csv"')
+  res.send(lines.join('\r\n'))
+}))
+
 app.post('/api/congregation', requireAuth('admin'), wrap(async (req, res) => {
-  const { name, phone, email, photoUrl } = req.body ?? {}
+  const { name, phone, email, photoUrl, notes, isStudent, schoolLevel, schoolYear, fellowshipGroups } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
   const { rows: [m] } = await pool.query(
-    'INSERT INTO contacts(name,phone,email,photo_url) VALUES($1,$2,$3,$4) RETURNING *',
-    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '']
+    'INSERT INTO contacts(name,phone,email,photo_url,notes,is_student,school_level,school_year,fellowship_groups) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *',
+    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '', notes?.trim() ?? '', !!isStudent, schoolLevel?.trim() ?? '', schoolYear?.trim() ?? '', Array.isArray(fellowshipGroups) ? fellowshipGroups : []]
   )
   res.json(toMember(m))
 }))
 
 app.post('/api/congregation/quick-add', requireAuth(), wrap(async (req, res) => {
-  const { name, phone, email } = req.body ?? {}
+  const { name, phone, email, notes, isStudent, schoolLevel, schoolYear } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
   const { rows: existing } = await pool.query(
     'SELECT id FROM contacts WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))',
     [name.trim()]
   )
   if (existing.length > 0) return res.status(409).json({ error: 'Contact already exists in congregation' })
+  const student = !!isStudent
   const { rows: [m] } = await pool.query(
-    'INSERT INTO contacts(name,phone,email,photo_url) VALUES($1,$2,$3,$4) RETURNING *',
-    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', '']
+    'INSERT INTO contacts(name,phone,email,photo_url,notes,is_student,school_level,school_year) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *',
+    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', '', notes?.trim() ?? '', student, student ? (schoolLevel?.trim() ?? '') : '', student ? (schoolYear?.trim() ?? '') : '']
   )
   res.json(toMember(m))
 }))
 
 app.put('/api/congregation/:id', requireAuth('admin'), wrap(async (req, res) => {
-  const { name, phone, email, photoUrl } = req.body ?? {}
+  const { name, phone, email, photoUrl, notes, isStudent, schoolLevel, schoolYear, fellowshipGroups } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
   const { rows, rowCount } = await pool.query(
-    'UPDATE contacts SET name=$1,phone=$2,email=$3,photo_url=$4 WHERE id=$5 RETURNING *',
-    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '', req.params.id]
+    'UPDATE contacts SET name=$1,phone=$2,email=$3,photo_url=$4,notes=$5,is_student=$6,school_level=$7,school_year=$8,fellowship_groups=$9 WHERE id=$10 RETURNING *',
+    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '', notes?.trim() ?? '', !!isStudent, schoolLevel?.trim() ?? '', schoolYear?.trim() ?? '', Array.isArray(fellowshipGroups) ? fellowshipGroups : [], req.params.id]
   )
   if (rowCount === 0) return res.status(404).json({ error: 'Member not found' })
   res.json(toMember(rows[0]))

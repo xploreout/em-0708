@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Loader2, Plus, Pencil, Trash2, X, Check, Search, Mail, Phone, Upload, Send, Users } from 'lucide-react'
+import { Loader2, Plus, Pencil, Trash2, X, Check, Search, Mail, Phone, Upload, Send, Users, Download } from 'lucide-react'
 import { RequireAuth, useAuth } from '../../context/AuthContext'
 
 type Member = {
@@ -8,6 +8,35 @@ type Member = {
   phone: string
   email: string
   photoUrl: string
+  notes: string
+  isStudent: boolean
+  schoolLevel: string
+  schoolYear: string
+  fellowshipGroups: string[]
+}
+
+const SCHOOL_LEVELS = [
+  ...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`),
+  ...Array.from({ length: 6 },  (_, i) => `College ${i + 1}`),
+  'Other',
+]
+
+function currentSchoolYear() {
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = now.getMonth() + 1
+  return m >= 8 ? `${y}-${y + 1}` : `${y - 1}-${y}`
+}
+
+function schoolYearOptions() {
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = now.getMonth() + 1
+  const base = m >= 8 ? y : y - 1
+  return Array.from({ length: 6 }, (_, i) => {
+    const start = base - 2 + i
+    return `${start}-${start + 1}`
+  })
 }
 
 type ReminderResult = {
@@ -26,18 +55,96 @@ function get12Months() {
   })
 }
 
+// ── Fellowship Group Tag Input ────────────────────────────────────────────────
+
+function GroupTagInput({ groups, onChange, allGroups }: {
+  groups: string[]
+  onChange: (g: string[]) => void
+  allGroups: string[]
+}) {
+  const [input, setInput] = useState('')
+  const [open,  setOpen]  = useState(false)
+
+  const suggestions = allGroups.filter(
+    g => g.toLowerCase().includes(input.toLowerCase()) && !groups.includes(g)
+  )
+
+  function add(g: string) {
+    const t = g.trim()
+    if (t && !groups.includes(t)) onChange([...groups, t])
+    setInput('')
+    setOpen(false)
+  }
+
+  function remove(g: string) {
+    onChange(groups.filter(x => x !== g))
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') { e.preventDefault(); if (input.trim()) add(input) }
+    if (e.key === 'Backspace' && !input && groups.length > 0) remove(groups[groups.length - 1])
+  }
+
+  return (
+    <div className="relative">
+      {groups.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-2">
+          {groups.map(g => (
+            <span key={g} className="flex items-center gap-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1">
+              {g}
+              <button type="button" onClick={() => remove(g)} className="hover:text-indigo-900 transition ml-0.5 p-0.5 -mr-1">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      <input
+        type="text"
+        value={input}
+        onChange={e => { setInput(e.target.value); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        onKeyDown={handleKeyDown}
+        placeholder="Type group name, press Enter to add…"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400 transition"
+      />
+      {open && suggestions.length > 0 && (
+        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+          {suggestions.map(g => (
+            <button
+              key={g}
+              type="button"
+              onMouseDown={() => add(g)}
+              className="w-full text-left px-3 py-3 text-sm text-gray-700 hover:bg-indigo-50 active:bg-indigo-100 transition"
+            >
+              {g}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Member Form Modal ─────────────────────────────────────────────────────────
 
-function MemberModal({ member, onSave, onClose }: {
+function MemberModal({ member, onSave, onClose, allGroups }: {
   member?: Member
   onSave: (data: Omit<Member, 'id'>) => Promise<void>
   onClose: () => void
+  allGroups: string[]
 }) {
   const { authFetch } = useAuth()
-  const [name,     setName]     = useState(member?.name     ?? '')
-  const [phone,    setPhone]    = useState(member?.phone    ?? '')
-  const [email,    setEmail]    = useState(member?.email    ?? '')
-  const [photoUrl, setPhotoUrl] = useState(member?.photoUrl ?? '')
+  const [name,        setName]        = useState(member?.name        ?? '')
+  const [phone,       setPhone]       = useState(member?.phone       ?? '')
+  const [email,       setEmail]       = useState(member?.email       ?? '')
+  const [photoUrl,    setPhotoUrl]    = useState(member?.photoUrl    ?? '')
+  const [notes,       setNotes]       = useState(member?.notes       ?? '')
+  const [isStudent,       setIsStudent]       = useState(member?.isStudent       ?? false)
+  const [schoolLevel,     setSchoolLevel]     = useState(member?.schoolLevel     ?? '')
+  const [schoolYear,      setSchoolYear]      = useState(member?.schoolYear      || currentSchoolYear())
+  const [fellowshipGroups, setFellowshipGroups] = useState<string[]>(member?.fellowshipGroups ?? [])
   const [uploading, setUploading] = useState(false)
   const [saving,    setSaving]    = useState(false)
   const [error,     setError]     = useState<string | null>(null)
@@ -67,7 +174,7 @@ function MemberModal({ member, onSave, onClose }: {
     setSaving(true)
     setError(null)
     try {
-      await onSave({ name, phone, email, photoUrl })
+      await onSave({ name, phone, email, photoUrl, notes, isStudent, schoolLevel: isStudent ? schoolLevel : '', schoolYear: isStudent ? schoolYear : '', fellowshipGroups })
       onClose()
     } catch (err: any) {
       setError(err.message ?? 'Save failed')
@@ -77,8 +184,8 @@ function MemberModal({ member, onSave, onClose }: {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4" onClick={onClose}>
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-black/50 px-4 py-6 overflow-y-auto" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 relative my-auto" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
           <X className="w-5 h-5" />
         </button>
@@ -126,6 +233,63 @@ function MemberModal({ member, onSave, onClose }: {
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com"
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
           </div>
+          <div>
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Notes</label>
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any notes about this member…"
+              rows={3}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition resize-none" />
+          </div>
+
+          {/* Student checkbox */}
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              id="is-student"
+              type="checkbox"
+              checked={isStudent}
+              onChange={e => setIsStudent(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-300 accent-blue-600 cursor-pointer"
+            />
+            <label htmlFor="is-student" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
+              Student
+            </label>
+          </div>
+
+          {/* Fellowship Groups */}
+          <div>
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Fellowship Group(s)</label>
+            <GroupTagInput groups={fellowshipGroups} onChange={setFellowshipGroups} allGroups={allGroups} />
+          </div>
+
+          {/* School level + year — only shown when Student is checked */}
+          {isStudent && (
+            <div className="flex flex-col gap-3 pl-3 border-l-2 border-blue-100">
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">School Level</label>
+                <select
+                  value={schoolLevel}
+                  onChange={e => setSchoolLevel(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white transition"
+                >
+                  <option value="">— Select level —</option>
+                  {SCHOOL_LEVELS.map(lvl => (
+                    <option key={lvl} value={lvl}>{lvl}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">School Year</label>
+                <select
+                  value={schoolYear}
+                  onChange={e => setSchoolYear(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white transition"
+                >
+                  {schoolYearOptions().map(yr => (
+                    <option key={yr} value={yr}>{yr}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
         {error && <p className="text-red-500 text-xs mt-3 font-medium">{error}</p>}
@@ -151,7 +315,12 @@ function MemberCard({ member, onEdit, onDelete }: {
   onEdit: () => void
   onDelete: () => void
 }) {
+  const [expanded, setExpanded] = useState(false)
   const initials = member.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+
+  const groups    = member.fellowshipGroups ?? []
+  const hasMore   = !!member.notes || (member.isStudent && !!member.schoolYear) || groups.length > 2
+  const previewGroups = expanded ? groups : groups.slice(0, 2)
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex gap-3">
@@ -182,6 +351,47 @@ function MemberCard({ member, onEdit, onDelete }: {
         )}
         {!member.phone && !member.email && (
           <div className="text-xs text-gray-300 mt-0.5 italic">No contact info</div>
+        )}
+
+        {/* Always-visible badges: fellowship groups (first 2) + student level */}
+        {(previewGroups.length > 0 || member.isStudent) && (
+          <div className="mt-1.5 flex flex-wrap items-center gap-1">
+            {previewGroups.map(g => (
+              <span key={g} className="rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-semibold px-2 py-0.5">{g}</span>
+            ))}
+            {!expanded && groups.length > 2 && (
+              <span className="text-[10px] text-gray-400">+{groups.length - 2} more</span>
+            )}
+            {member.isStudent && (
+              <span className="rounded-full bg-blue-50 text-blue-600 text-[10px] font-semibold px-2 py-0.5">
+                {member.schoolLevel || 'Student'}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Expanded section */}
+        {expanded && (
+          <div className="mt-2 flex flex-col gap-1.5">
+            {member.isStudent && member.schoolYear && (
+              <div className="flex items-center gap-1 text-xs text-gray-500">
+                <span className="font-medium text-gray-400">School year:</span> {member.schoolYear}
+              </div>
+            )}
+            {member.notes && (
+              <div className="text-xs text-gray-400 italic">{member.notes}</div>
+            )}
+          </div>
+        )}
+
+        {/* More / less toggle */}
+        {hasMore && (
+          <button
+            onClick={() => setExpanded(v => !v)}
+            className="mt-1.5 inline-flex items-center gap-0.5 text-xs font-semibold text-blue-400 hover:text-blue-600 active:text-blue-700 transition py-1 -my-1"
+          >
+            {expanded ? 'less ▲' : 'more ▼'}
+          </button>
         )}
       </div>
 
@@ -299,11 +509,14 @@ function RemindersPanel() {
 
 function CongregationContent() {
   const { authFetch } = useAuth()
-  const [members,  setMembers]  = useState<Member[]>([])
-  const [loading,  setLoading]  = useState(true)
-  const [search,   setSearch]   = useState('')
-  const [modal,    setModal]    = useState<'add' | Member | null>(null)
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [members,          setMembers]          = useState<Member[]>([])
+  const [loading,          setLoading]          = useState(true)
+  const [search,           setSearch]           = useState('')
+  const [modal,            setModal]            = useState<'add' | Member | null>(null)
+  const [deleting,         setDeleting]         = useState<string | null>(null)
+  const [filterGroup,      setFilterGroup]      = useState('')
+  const [filterStudent,    setFilterStudent]    = useState<'all' | 'students' | 'non-students'>('all')
+  const [filterSchoolLevel, setFilterSchoolLevel] = useState('')
 
   useEffect(() => {
     authFetch('/api/congregation')
@@ -314,7 +527,6 @@ function CongregationContent() {
 
   async function handleSave(data: Omit<Member, 'id'>) {
     if (typeof modal === 'object' && modal !== null) {
-      // Edit
       const res = await authFetch(`/api/congregation/${modal.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -324,7 +536,6 @@ function CongregationContent() {
       if (!res.ok) throw new Error(updated.error)
       setMembers(prev => prev.map(m => m.id === modal.id ? updated : m))
     } else {
-      // Add
       const res = await authFetch('/api/congregation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -347,12 +558,52 @@ function CongregationContent() {
     }
   }
 
+  // ── Derived data (computed before any handler that needs them) ────────────────
+
+  const allGroups = [...new Set(members.flatMap(m => m.fellowshipGroups ?? []))].sort()
+
   const filtered = members.filter(m => {
     const q = search.toLowerCase()
-    return m.name.toLowerCase().includes(q)
+    if (q && !(
+      m.name.toLowerCase().includes(q)
       || m.email.toLowerCase().includes(q)
       || m.phone.includes(q)
+      || (m.notes ?? '').toLowerCase().includes(q)
+      || (m.schoolLevel ?? '').toLowerCase().includes(q)
+      || (m.fellowshipGroups ?? []).some(g => g.toLowerCase().includes(q))
+    )) return false
+    if (filterGroup && !(m.fellowshipGroups ?? []).includes(filterGroup)) return false
+    if (filterStudent === 'students'     && !m.isStudent) return false
+    if (filterStudent === 'non-students' &&  m.isStudent) return false
+    if (filterSchoolLevel && m.schoolLevel !== filterSchoolLevel) return false
+    return true
   })
+
+  const hasFilters = !!search || !!filterGroup || filterStudent !== 'all' || !!filterSchoolLevel
+  const studentLevelsInView = [...new Set(
+    members.filter(m => m.isStudent && m.schoolLevel).map(m => m.schoolLevel)
+  )].sort()
+
+  function handleExportCsv() {
+    const esc = (v: string) => { const s = String(v ?? ''); return /[,"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s }
+    const header = ['Name','Phone','Email','Fellowship Groups','Student','School Level','School Year','Notes']
+    const lines = [
+      header.join(','),
+      ...filtered.map(m => [
+        esc(m.name), esc(m.phone), esc(m.email),
+        esc((m.fellowshipGroups ?? []).join('; ')),
+        m.isStudent ? 'Yes' : 'No',
+        esc(m.schoolLevel), esc(m.schoolYear), esc(m.notes),
+      ].join(',')),
+    ].join('\r\n')
+    const blob = new Blob([lines], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `contacts-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   if (loading) {
     return (
@@ -382,6 +633,13 @@ function CongregationContent() {
           )}
         </div>
         <button
+          onClick={handleExportCsv}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium transition shrink-0"
+        >
+          <Download className="w-4 h-4" />
+          Export CSV{hasFilters ? ` (${filtered.length})` : ''}
+        </button>
+        <button
           onClick={() => setModal('add')}
           className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition shrink-0"
         >
@@ -389,9 +647,54 @@ function CongregationContent() {
         </button>
       </div>
 
+      {/* Filter bar */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        <select
+          value={filterGroup}
+          onChange={e => setFilterGroup(e.target.value)}
+          className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs bg-white outline-none focus:border-blue-400 transition text-gray-600"
+        >
+          <option value="">All Groups</option>
+          {allGroups.map(g => <option key={g} value={g}>{g}</option>)}
+        </select>
+
+        <select
+          value={filterStudent}
+          onChange={e => { setFilterStudent(e.target.value as typeof filterStudent); setFilterSchoolLevel('') }}
+          className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs bg-white outline-none focus:border-blue-400 transition text-gray-600"
+        >
+          <option value="all">All Members</option>
+          <option value="students">Students Only</option>
+          <option value="non-students">Non-Students</option>
+        </select>
+
+        {filterStudent === 'students' && studentLevelsInView.length > 0 && (
+          <select
+            value={filterSchoolLevel}
+            onChange={e => setFilterSchoolLevel(e.target.value)}
+            className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs bg-white outline-none focus:border-blue-400 transition text-gray-600"
+          >
+            <option value="">All Levels</option>
+            {studentLevelsInView.map(l => <option key={l} value={l}>{l}</option>)}
+          </select>
+        )}
+
+        {hasFilters && (
+          <button
+            onClick={() => { setSearch(''); setFilterGroup(''); setFilterStudent('all'); setFilterSchoolLevel('') }}
+            className="text-xs text-red-400 hover:text-red-600 font-medium transition px-1"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
       {/* Member count */}
       <p className="text-xs text-gray-400 mb-3">
         {filtered.length} of {members.length} member{members.length !== 1 ? 's' : ''}
+        {hasFilters && filtered.length < members.length && (
+          <span className="ml-1 text-blue-400 font-medium">(filtered)</span>
+        )}
       </p>
 
       {/* Grid */}
@@ -423,6 +726,7 @@ function CongregationContent() {
           member={modal === 'add' ? undefined : modal}
           onSave={handleSave}
           onClose={() => setModal(null)}
+          allGroups={allGroups}
         />
       )}
     </>

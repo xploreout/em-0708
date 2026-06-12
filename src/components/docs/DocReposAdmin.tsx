@@ -430,36 +430,36 @@ export default function DocReposAdmin() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4 pt-2">
-        <div className="flex-1">
+      <div className="flex flex-col gap-2 mb-4 pt-2">
+        <div className="flex items-center gap-2">
           <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">Doc Repos</h2>
           {!loading && (
-            <p className="text-xs text-gray-400 mt-0.5">
-              {filtered.length} of {docs.length} document{docs.length !== 1 ? 's' : ''} · sorted by latest update
-            </p>
+            <span className="text-xs text-gray-400">
+              {filtered.length} of {docs.length}
+            </span>
           )}
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center justify-end">
           <div className="relative">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
+            <Search className="absolute left-2 sm:left-3 top-2 sm:top-2.5 w-3 h-3 sm:w-4 sm:h-4 text-gray-400 pointer-events-none" />
             <input
-              className="w-56 border border-gray-200 rounded-lg pl-9 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-36 sm:w-56 border border-gray-200 rounded-lg pl-7 sm:pl-9 pr-6 sm:pr-8 py-1 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Filter by title, category, owner…"
               value={searchQ}
               onChange={e => setSearchQ(e.target.value)}
             />
             {searchQ && (
               <button onClick={() => setSearchQ('')}
-                className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600 transition">
-                <X className="w-4 h-4" />
+                className="absolute right-2 sm:right-2.5 top-2 sm:top-2.5 text-gray-400 hover:text-gray-600 transition">
+                <X className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
             )}
           </div>
           <button
             onClick={() => setShowUpload(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition shrink-0"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold transition shrink-0"
           >
-            <Plus className="w-4 h-4" /> Add Document
+            <Plus className="w-3 h-3 sm:w-4 sm:h-4" /> Add Document
           </button>
         </div>
       </div>
@@ -481,13 +481,13 @@ export default function DocReposAdmin() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="bg-blue-600 border-b border-blue-700">
-                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider">Document</th>
-                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider">Category</th>
-                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider">Owner</th>
-                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider">Uploaded</th>
-                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider">Last Updated</th>
-                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-blue-100 uppercase tracking-wider">Actions</th>
+                <tr className="bg-gray-300 border-b border-gray-400">
+                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Document</th>
+                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Category</th>
+                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Owner</th>
+                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Uploaded</th>
+                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Last Updated</th>
+                  <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody>

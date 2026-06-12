@@ -24,7 +24,9 @@
       "Bash(PATH=/Users/tanlui/.nvm/versions/node/v22.2.0/bin:__TRACKED_VAR__ /Users/tanlui/projects/acbcc/em-first/emfirst-0708/node_modules/.bin/tsc --noEmit)",
       "Bash(node upload_media.js)",
       "Bash(/Users/tanlui/.nvm/versions/node/v22.2.0/bin/node /Users/tanlui/projects/acbcc/em-first/emfirst-0708/upload_media.js)",
-      "Bash(/Users/tanlui/.nvm/versions/node/v22.2.0/bin/node /Users/tanlui/projects/acbcc/em-first/emfirst-0708/upload_media.cjs)"
+      "Bash(/Users/tanlui/.nvm/versions/node/v22.2.0/bin/node /Users/tanlui/projects/acbcc/em-first/emfirst-0708/upload_media.cjs)",
+      "Bash(/usr/local/bin/node node_modules/.bin/tsc --noEmit)",
+      "Bash(/usr/local/bin/node ./node_modules/.bin/tsc --noEmit)"
     ]
   }
 }

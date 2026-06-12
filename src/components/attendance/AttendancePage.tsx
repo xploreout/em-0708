@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import type { Role } from '../../context/AuthContext'
 import {
-  Search, CheckCircle2, LogOut, Mail, UserX,
-  ChevronRight, ChevronDown, Clock, MapPin, Users,
+  Search, CheckCircle2, Mail, UserX,
+  ChevronRight, ChevronDown, Clock, MapPin,
   Key, Eye, EyeOff, X, Plus, Edit2, Trash2, Archive,
   ArchiveRestore, Save, Calendar, ClipboardList,
 } from 'lucide-react'
@@ -125,9 +124,11 @@ function ConfirmDeleteModal({ name, onConfirm, onClose }: { name: string; onConf
 
 // ── Main ───────────────────────────────────────────────────────────────────────
 export default function AttendancePage() {
-  const { authFetch, logout, role } = useAuth()
+  const { authFetch, role } = useAuth()
   const navigate = useNavigate()
   const isAdmin = role === 'admin'
+
+  const [tab, setTab] = useState<'checkin' | 'update'>('checkin')
 
   // Check-in state
   const [query, setQuery]           = useState('')
@@ -255,45 +256,56 @@ export default function AttendancePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Users className="w-5 h-5 text-indigo-600" />
-            <h1 className="text-base font-bold text-gray-900">Class</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            {isAdmin && (
-              <button onClick={() => { setEditingClass(null); setShowClassForm(true) }}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">
-                <Plus className="w-3.5 h-3.5" /><span className="hidden sm:inline">New Class</span>
-              </button>
-            )}
-            <button onClick={logout}
-              className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition px-2 py-1.5">
-              <LogOut className="w-3.5 h-3.5" /><span className="hidden sm:inline">Sign out</span>
+
+      {/* Admin-style title + tab nav */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-0 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Classes</h1>
+        <div className="overflow-x-auto -mx-4 sm:-mx-6 px-4 sm:px-6">
+          <div className="flex items-end border-b border-gray-200 gap-1 min-w-max pr-16 sm:pr-0">
+            <button
+              onClick={() => setTab('checkin')}
+              className={`flex items-center gap-1 px-2 sm:px-5 py-1.5 sm:py-2.5 -mb-px text-[11px] sm:text-sm font-semibold rounded-t-lg border whitespace-nowrap shrink-0 transition-all duration-150 ${
+                tab === 'checkin'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                  : 'bg-gray-100 text-gray-600 border-transparent hover:text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              <ClipboardList className="w-3 h-3 sm:w-4 sm:h-4" />
+              Check-in
+            </button>
+            <button
+              onClick={() => setTab('update')}
+              className={`flex items-center gap-1 px-2 sm:px-5 py-1.5 sm:py-2.5 -mb-px text-[11px] sm:text-sm font-semibold rounded-t-lg border whitespace-nowrap shrink-0 transition-all duration-150 ${
+                tab === 'update'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                  : 'bg-gray-100 text-gray-600 border-transparent hover:text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              <Key className="w-3 h-3 sm:w-4 sm:h-4" />
+              Class Update
             </button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-8">
         {flash && (
           <div className="flex items-center gap-2 bg-indigo-50 text-indigo-700 text-sm font-medium px-4 py-2.5 rounded-lg mb-4">
             <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> {flash}
           </div>
         )}
 
-        {/* Two-section layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-
-          {/* ── Section 1: Attendance Check-in ──────────────────────────── */}
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-            <div className="bg-indigo-600 px-5 py-3.5 flex items-center gap-2">
-              <ClipboardList className="w-4 h-4 text-white" />
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">Class Check-in now</h2>
-            </div>
+        {tab === 'checkin' ? (
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
             <div className="p-5">
+              {isAdmin && (
+                <div className="flex justify-end mb-4">
+                  <button onClick={() => { setEditingClass(null); setShowClassForm(true) }}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">
+                    <Plus className="w-3.5 h-3.5" /> New Class
+                  </button>
+                </div>
+              )}
               <p className="text-sm text-gray-500 mb-3">Enter name or phone number to check in.</p>
               <div className="relative mb-2">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -306,7 +318,6 @@ export default function AttendancePage() {
               </div>
               {searching && <p className="text-xs text-gray-400 mb-2">Searching…</p>}
 
-              {/* Results */}
               {results.length > 0 && (
                 <div className="flex flex-col gap-2 mb-3">
                   <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">
@@ -334,7 +345,6 @@ export default function AttendancePage() {
                 </div>
               )}
 
-              {/* Not found */}
               {noResults && (
                 <div className="mb-3">
                   <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-lg px-4 py-2.5 mb-3">
@@ -368,7 +378,6 @@ export default function AttendancePage() {
                 </div>
               )}
 
-              {/* Browse all classes */}
               {!noResults && (
                 <div className="mt-4 border-t border-gray-100 pt-4">
                   <button onClick={() => setShowBrowse(s => !s)}
@@ -434,31 +443,22 @@ export default function AttendancePage() {
               )}
             </div>
           </div>
-
-          {/* ── Section 2: Class Lead / Coworker ────────────────────────── */}
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-            <div className="bg-amber-500 px-5 py-3.5 flex items-center gap-2">
-              <Key className="w-4 h-4 text-white" />
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">Class Update</h2>
-            </div>
+        ) : (
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm max-w-lg">
             <div className="p-5">
               <p className="text-sm text-gray-500 mb-4">
                 Select your class{isAdmin ? '.' : ' and enter the leader password to view and update class details.'}
               </p>
-
               <form onSubmit={handleLeadAccess} className="flex flex-col gap-3">
-                {/* Class selector */}
                 <div>
                   <label className="text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5 block">Select Class</label>
                   <select value={selectedClassId}
                     onChange={e => { setSelectedClassId(e.target.value ? Number(e.target.value) : ''); setLeadError('') }}
-                    className="w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-amber-400 transition bg-white">
+                    className="w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-400 transition bg-white">
                     <option value="">— choose a class —</option>
                     {activeClasses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
-
-                {/* Password — hidden for admin */}
                 {!isAdmin && (
                   <div>
                     <label className="text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5 block">Leader Password</label>
@@ -466,30 +466,25 @@ export default function AttendancePage() {
                       <input type={showPw ? 'text' : 'password'} value={leadPw}
                         onChange={e => { setLeadPw(e.target.value); setLeadError('') }}
                         placeholder="Enter leader password"
-                        className="w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 pr-10 text-sm outline-none focus:border-amber-400 transition" />
+                        className="w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 pr-10 text-sm outline-none focus:border-blue-400 transition" />
                       <button type="button" onClick={() => setShowPw(s => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                         {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
                 )}
-
                 {leadError && <p className="text-red-500 text-xs font-medium">{leadError}</p>}
-
                 <button type="submit"
                   disabled={leadLoading || !selectedClassId || (!isAdmin && !leadPw)}
-                  className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm transition disabled:opacity-50">
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition disabled:opacity-50">
                   {leadLoading ? 'Verifying…' : <><Key className="w-4 h-4" /> Access Class Details</>}
                 </button>
               </form>
-
             </div>
           </div>
-
-        </div>
+        )}
       </div>
 
-      {/* Admin modals */}
       {showClassForm && (
         <ClassFormModal cls={editingClass} authFetch={authFetch} onSaved={handleClassSaved}
           onClose={() => { setShowClassForm(false); setEditingClass(null) }} />

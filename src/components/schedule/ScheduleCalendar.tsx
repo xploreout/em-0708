@@ -238,20 +238,18 @@ export function CalendarContent() {
           </div>
 
           {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-            <input ref={searchRef} type="text" placeholder="Search…"
+          <div className="relative w-56 shrink-0">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
+            <input ref={searchRef} type="text" placeholder="Filter by keywords…"
               value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-7 py-1.5 text-sm border border-gray-200 rounded-lg outline-none shadow-sm bg-white" />
+              className="w-full pl-9 pr-8 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white" />
             {searchQuery && (
               <button onClick={() => { setSearchQuery(''); searchRef.current?.focus() }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
-                <X className="w-3.5 h-3.5" />
+                className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600 transition">
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
-
-          <div className="flex-1" />
 
           {/* Month / Week / Day toggle */}
           <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-semibold shrink-0">
@@ -327,30 +325,35 @@ function CoworkerContent() {
   const [view, setView] = useState<'calendar' | 'docs'>('calendar')
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-gray-900">Coworker</h1>
-        <div className="flex rounded-lg border border-gray-200 overflow-hidden text-sm font-semibold">
-          <button
-            onClick={() => setView('calendar')}
-            className={`flex items-center gap-1.5 px-4 py-2 transition-colors ${
-              view === 'calendar' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <CalendarDays className="w-4 h-4" />
-            Calendar
-          </button>
-          <button
-            onClick={() => setView('docs')}
-            className={`flex items-center gap-1.5 px-4 py-2 border-l border-gray-200 transition-colors ${
-              view === 'docs' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <FolderOpen className="w-4 h-4" />
-            Docs
-          </button>
-        </div>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6">
+      <h1 className="text-2xl font-bold text-gray-900 mb-1">Coworker</h1>
+
+      {/* File tabs */}
+      <div className="flex items-end border-b border-gray-200 px-1 gap-1 mb-8">
+        <button
+          onClick={() => setView('calendar')}
+          className={`flex items-center gap-2 px-5 py-2.5 -mb-px text-sm font-semibold rounded-t-lg border transition-all duration-150 ${
+            view === 'calendar'
+              ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+              : 'bg-gray-100 text-gray-600 border-transparent hover:text-gray-800 hover:bg-gray-200'
+          }`}
+        >
+          <CalendarDays className="w-4 h-4" />
+          Calendar
+        </button>
+        <button
+          onClick={() => setView('docs')}
+          className={`flex items-center gap-2 px-5 py-2.5 -mb-px text-sm font-semibold rounded-t-lg border transition-all duration-150 ${
+            view === 'docs'
+              ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+              : 'bg-gray-100 text-gray-600 border-transparent hover:text-gray-800 hover:bg-gray-200'
+          }`}
+        >
+          <FolderOpen className="w-4 h-4" />
+          Docs
+        </button>
       </div>
+
       {view === 'calendar' ? <CalendarContent /> : <DocReposViewer />}
     </div>
   )

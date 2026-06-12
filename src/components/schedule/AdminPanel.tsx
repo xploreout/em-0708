@@ -16,6 +16,35 @@ type Member = {
   phone: string
   email: string
   photoUrl: string
+  notes: string
+  isStudent: boolean
+  schoolLevel: string
+  schoolYear: string
+  fellowshipGroups: string[]
+}
+
+const SCHOOL_LEVELS = [
+  ...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`),
+  ...Array.from({ length: 6 },  (_, i) => `College ${i + 1}`),
+  'Other',
+]
+
+function currentSchoolYear() {
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = now.getMonth() + 1
+  return m >= 8 ? `${y}-${y + 1}` : `${y - 1}-${y}`
+}
+
+function schoolYearOptions() {
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = now.getMonth() + 1
+  const base = m >= 8 ? y : y - 1
+  return Array.from({ length: 6 }, (_, i) => {
+    const start = base - 2 + i
+    return `${start}-${start + 1}`
+  })
 }
 
 type ReminderResult = {
@@ -50,18 +79,96 @@ function displayPhone(stored: string): string {
   return stored ? formatPhone(stored) : ''
 }
 
+// ── Fellowship Group Tag Input ────────────────────────────────────────────────
+
+function GroupTagInput({ groups, onChange, allGroups }: {
+  groups: string[]
+  onChange: (g: string[]) => void
+  allGroups: string[]
+}) {
+  const [input, setInput] = useState('')
+  const [open,  setOpen]  = useState(false)
+
+  const suggestions = allGroups.filter(
+    g => g.toLowerCase().includes(input.toLowerCase()) && !groups.includes(g)
+  )
+
+  function add(g: string) {
+    const t = g.trim()
+    if (t && !groups.includes(t)) onChange([...groups, t])
+    setInput('')
+    setOpen(false)
+  }
+
+  function remove(g: string) {
+    onChange(groups.filter(x => x !== g))
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') { e.preventDefault(); if (input.trim()) add(input) }
+    if (e.key === 'Backspace' && !input && groups.length > 0) remove(groups[groups.length - 1])
+  }
+
+  return (
+    <div className="relative">
+      {groups.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-2">
+          {groups.map(g => (
+            <span key={g} className="flex items-center gap-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1">
+              {g}
+              <button type="button" onClick={() => remove(g)} className="hover:text-indigo-900 transition ml-0.5 p-0.5 -mr-1">
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      <input
+        type="text"
+        value={input}
+        onChange={e => { setInput(e.target.value); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        onKeyDown={handleKeyDown}
+        placeholder="Type group name, press Enter to add…"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-blue-400 transition"
+      />
+      {open && suggestions.length > 0 && (
+        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+          {suggestions.map(g => (
+            <button
+              key={g}
+              type="button"
+              onMouseDown={() => add(g)}
+              className="w-full text-left px-3 py-3 text-sm text-gray-700 hover:bg-indigo-50 active:bg-indigo-100 transition"
+            >
+              {g}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Member Form Modal ─────────────────────────────────────────────────────────
 
-function MemberModal({ member, onSave, onClose }: {
+function MemberModal({ member, onSave, onClose, allGroups }: {
   member?: Member
   onSave: (data: Omit<Member, 'id'>) => Promise<void>
   onClose: () => void
+  allGroups: string[]
 }) {
   const { authFetch } = useAuth()
-  const [name,     setName]     = useState(member?.name     ?? '')
-  const [phone,    setPhone]    = useState(member?.phone ? formatPhone(member.phone) : '')
-  const [email,    setEmail]    = useState(member?.email    ?? '')
-  const [photoUrl, setPhotoUrl] = useState(member?.photoUrl ?? '')
+  const [name,             setName]             = useState(member?.name     ?? '')
+  const [phone,            setPhone]            = useState(member?.phone ? formatPhone(member.phone) : '')
+  const [email,            setEmail]            = useState(member?.email    ?? '')
+  const [photoUrl,         setPhotoUrl]         = useState(member?.photoUrl ?? '')
+  const [notes,            setNotes]            = useState(member?.notes    ?? '')
+  const [isStudent,        setIsStudent]        = useState(member?.isStudent        ?? false)
+  const [schoolLevel,      setSchoolLevel]      = useState(member?.schoolLevel      ?? '')
+  const [schoolYear,       setSchoolYear]       = useState(member?.schoolYear       || currentSchoolYear())
+  const [fellowshipGroups, setFellowshipGroups] = useState<string[]>(member?.fellowshipGroups ?? [])
   const [uploading, setUploading] = useState(false)
   const [saving,    setSaving]    = useState(false)
   const [error,     setError]     = useState<string | null>(null)
@@ -91,7 +198,11 @@ function MemberModal({ member, onSave, onClose }: {
     setSaving(true)
     setError(null)
     try {
-      await onSave({ name, phone: phone.replace(/-/g, ''), email, photoUrl })
+      await onSave({
+        name, phone: phone.replace(/-/g, ''), email, photoUrl, notes,
+        isStudent, schoolLevel: isStudent ? schoolLevel : '', schoolYear: isStudent ? schoolYear : '',
+        fellowshipGroups,
+      })
       onClose()
     } catch (err: any) {
       setError(err.message ?? 'Save failed')
@@ -101,8 +212,8 @@ function MemberModal({ member, onSave, onClose }: {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4" onClick={onClose}>
-      <div className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 relative" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-black/50 px-4 py-6 overflow-y-auto" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-md p-6 relative my-auto" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
           <X className="w-5 h-5" />
         </button>
@@ -149,6 +260,65 @@ function MemberModal({ member, onSave, onClose }: {
               placeholder="email@example.com"
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
           </div>
+
+          {/* Fellowship Groups */}
+          <div>
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Fellowship Group(s)</label>
+            <GroupTagInput groups={fellowshipGroups} onChange={setFellowshipGroups} allGroups={allGroups} />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Notes</label>
+            <textarea value={notes} onChange={e => setNotes(e.target.value)}
+              placeholder="Any notes about this member…"
+              rows={3}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition resize-none" />
+          </div>
+
+          {/* Student checkbox */}
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              id="admin-is-student"
+              type="checkbox"
+              checked={isStudent}
+              onChange={e => setIsStudent(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-300 accent-blue-600 cursor-pointer"
+            />
+            <label htmlFor="admin-is-student" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
+              Student
+            </label>
+          </div>
+
+          {/* School level + year — only shown when Student is checked */}
+          {isStudent && (
+            <div className="flex flex-col gap-3 pl-3 border-l-2 border-blue-100">
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">School Level</label>
+                <select
+                  value={schoolLevel}
+                  onChange={e => setSchoolLevel(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white transition"
+                >
+                  <option value="">— Select level —</option>
+                  {SCHOOL_LEVELS.map(lvl => (
+                    <option key={lvl} value={lvl}>{lvl}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">School Year</label>
+                <select
+                  value={schoolYear}
+                  onChange={e => setSchoolYear(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white transition"
+                >
+                  {schoolYearOptions().map(yr => (
+                    <option key={yr} value={yr}>{yr}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
         {error && <p className="text-red-500 text-xs mt-3 font-medium">{error}</p>}
@@ -322,45 +492,92 @@ function ContactsPanel() {
     await performDelete(id)
   }
 
+  const [filterStudent, setFilterStudent] = useState(false)
+
+  function handleExportCsv() {
+    const rows = filtered.length > 0 ? filtered : members
+    const esc = (v: string) => { const s = String(v ?? ''); return /[,"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s }
+    const header = ['Name', 'Phone', 'Email', 'Fellowship Groups', 'Student', 'School Level', 'School Year', 'Notes']
+    const lines = [
+      header.join(','),
+      ...rows.map(m => [
+        esc(m.name), esc(displayPhone(m.phone)), esc(m.email),
+        esc((m.fellowshipGroups ?? []).join('; ')),
+        m.isStudent ? 'Yes' : 'No',
+        esc(m.schoolLevel), esc(m.schoolYear), esc(m.notes),
+      ].join(',')),
+    ].join('\r\n')
+    const blob = new Blob([lines], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `contacts-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const filtered = members.filter(m => {
     const q = search.toLowerCase()
     const qDigits = q.replace(/\D/g, '')
-    return m.name.toLowerCase().includes(q)
+    const matchesSearch = m.name.toLowerCase().includes(q)
       || m.email.toLowerCase().includes(q)
       || (qDigits ? m.phone.includes(qDigits) : m.phone.includes(q))
+      || (m.notes ?? '').toLowerCase().includes(q)
+    const matchesStudent = !filterStudent || m.isStudent || !!m.schoolLevel
+    return matchesSearch && matchesStudent
   })
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 pb-8">
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        {/* Toolbar */}
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-          <Users className="w-4 h-4 text-gray-400 shrink-0" />
-          <span className="text-sm font-semibold text-gray-700 mr-2">Name Search</span>
-          <div className="relative flex-1 max-w-xs">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-8">
+      {/* Header */}
+      <div className="flex flex-col gap-2 mb-4 pt-2">
+        <div className="flex items-center gap-2">
+          <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">Contacts</h2>
+          {!loading && (
+            <span className="text-xs text-gray-400">
+              {filtered.length} of {members.length}
+            </span>
+          )}
+        </div>
+        <div className="flex gap-2 items-center justify-end flex-wrap">
+          <button
+            onClick={() => setFilterStudent(v => !v)}
+            className={`flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-2 rounded-lg border text-xs sm:text-sm font-semibold transition shrink-0 ${filterStudent ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+          >
+            <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4" /> Students
+          </button>
+          <div className="relative">
+            <Search className="absolute left-2 sm:left-3 top-2 sm:top-2.5 w-3 h-3 sm:w-4 sm:h-4 text-gray-400 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search…"
+              placeholder="Filter by name, phone, email…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none focus:border-blue-300 bg-white"
+              className="w-36 sm:w-56 border border-gray-200 rounded-lg pl-7 sm:pl-9 pr-6 sm:pr-8 py-1 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             {search && (
-              <button onClick={() => setSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                <X className="w-3 h-3" />
+              <button onClick={() => setSearch('')}
+                className="absolute right-2 sm:right-2.5 top-2 sm:top-2.5 text-gray-400 hover:text-gray-600 transition">
+                <X className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
             )}
           </div>
-          <span className="text-xs text-gray-400 shrink-0">{filtered.length} / {members.length}</span>
+          <button
+            onClick={handleExportCsv}
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs sm:text-sm font-semibold transition shrink-0"
+          >
+            <Download className="w-3 h-3 sm:w-4 sm:h-4" /> CSV{(search || filterStudent) && filtered.length > 0 ? ` (${filtered.length})` : ''}
+          </button>
           <button
             onClick={() => setModal('add')}
-            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition shrink-0"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold transition shrink-0"
           >
-            <Plus className="w-3.5 h-3.5" /> Add
+            <Plus className="w-3 h-3 sm:w-4 sm:h-4" /> Add Contact
           </button>
         </div>
+      </div>
 
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         {/* Table */}
         {loading ? (
           <div className="flex items-center justify-center py-16 text-gray-400 gap-2">
@@ -375,11 +592,14 @@ function ContactsPanel() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-left">
-                  <th className="px-4 py-2 font-semibold text-gray-600 text-xs uppercase tracking-wider">Name</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600 text-xs uppercase tracking-wider">Phone</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600 text-xs uppercase tracking-wider">Email</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600 text-xs uppercase tracking-wider">Photo</th>
+                <tr className="bg-gray-300 border-b border-gray-400 text-left">
+                  <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Name</th>
+                  <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Phone</th>
+                  <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Email</th>
+                  <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Student</th>
+                  <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Fellowship Group</th>
+                  <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Notes</th>
+                  <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Photo</th>
                   <th className="px-2 py-2"></th>
                 </tr>
               </thead>
@@ -390,6 +610,25 @@ function ContactsPanel() {
                     <td className="px-4 py-2.5 font-medium text-gray-900 whitespace-nowrap">{m.name}</td>
                     <td className="px-4 py-2.5 text-gray-500">{m.phone ? displayPhone(m.phone) : <span className="text-gray-300">—</span>}</td>
                     <td className="px-4 py-2.5 text-gray-500">{m.email || <span className="text-gray-300">—</span>}</td>
+                    <td className="px-4 py-2.5">
+                      {m.isStudent || m.schoolLevel
+                        ? <span className="text-xs text-gray-700">{m.schoolLevel || '✓'}</span>
+                        : <span className="text-gray-300">—</span>}
+                    </td>
+                    <td className="px-4 py-2.5 max-w-[160px]">
+                      {(m.fellowshipGroups ?? []).length > 0
+                        ? <div className="flex flex-wrap gap-1">
+                            {m.fellowshipGroups.map(g => (
+                              <span key={g} className="rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold px-2 py-0.5">{g}</span>
+                            ))}
+                          </div>
+                        : <span className="text-gray-300">—</span>}
+                    </td>
+                    <td className="px-4 py-2.5 text-gray-400 text-xs max-w-[180px]">
+                      {m.notes
+                        ? <span className="line-clamp-2 italic">{m.notes}</span>
+                        : <span className="text-gray-300">—</span>}
+                    </td>
                     <td className="px-4 py-2.5">
                       {m.photoUrl
                         ? <img src={m.photoUrl} alt={m.name}
@@ -415,7 +654,6 @@ function ContactsPanel() {
             </table>
           </div>
         )}
-
       </div>
 
       {modal !== null && (
@@ -423,6 +661,7 @@ function ContactsPanel() {
           member={modal === 'add' ? undefined : modal}
           onSave={handleSave}
           onClose={() => setModal(null)}
+          allGroups={[...new Set(members.flatMap(m => m.fellowshipGroups ?? []))].sort()}
         />
       )}
 
@@ -789,6 +1028,7 @@ function ClassesPanel() {
   const [classes, setClasses]   = useState<ClassInfo[]>([])
   const [loading, setLoading]   = useState(true)
   const [flash, setFlash]       = useState('')
+  const [search, setSearch]     = useState('')
 
   // Archived section toggle
   const [showArchived, setShowArchived] = useState(false)
@@ -947,8 +1187,21 @@ const showFlash = (msg: string) => { setFlash(msg); setTimeout(() => setFlash(''
     }
   }
 
-const activeClasses   = classes.filter(c => !c.archived)
-  const archivedClasses = classes.filter(c => c.archived)
+  const q = search.trim().toLowerCase()
+  const activeClasses   = classes.filter(c => !c.archived && (
+    !q ||
+    c.name.toLowerCase().includes(q) ||
+    c.lead_name.toLowerCase().includes(q) ||
+    c.location.toLowerCase().includes(q) ||
+    c.description.toLowerCase().includes(q)
+  ))
+  const archivedClasses = classes.filter(c => c.archived && (
+    !q ||
+    c.name.toLowerCase().includes(q) ||
+    c.lead_name.toLowerCase().includes(q) ||
+    c.location.toLowerCase().includes(q) ||
+    c.description.toLowerCase().includes(q)
+  ))
 
   // Inline row renderer — avoids defining a component inside a component
   // table row renderer — returns a React.Fragment so we can add an expandable sub-row
@@ -1074,13 +1327,13 @@ const activeClasses   = classes.filter(c => !c.archived)
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-indigo-600 border-b border-indigo-700">
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Class</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Leader</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Schedule</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Dates</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Location</th>
-              <th className="px-4 py-2.5 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider">Actions</th>
+            <tr className="bg-gray-300 border-b border-gray-400">
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Class</th>
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Leader</th>
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Schedule</th>
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Dates</th>
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Location</th>
+              <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -1095,16 +1348,39 @@ const activeClasses   = classes.filter(c => !c.archived)
     <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-8">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-4 pt-2">
-        <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">
-          Classes ({activeClasses.length})
-        </h2>
-        <button
-          onClick={() => { setCreateForm(emptyForm()); setCreateError(''); setShowCreate(true) }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition"
-        >
-          <Plus className="w-4 h-4" /> New Class
-        </button>
+      <div className="flex flex-col gap-2 mb-4 pt-2">
+        <div className="flex items-center gap-2">
+          <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wider">Classes</h2>
+          {!loading && (
+            <span className="text-xs text-gray-400">
+              {activeClasses.length} active{archivedClasses.length > 0 ? ` · ${archivedClasses.length} archived` : ''}
+            </span>
+          )}
+        </div>
+        <div className="flex gap-2 items-center justify-end">
+          <div className="relative">
+            <Search className="absolute left-2 sm:left-3 top-2 sm:top-2.5 w-3 h-3 sm:w-4 sm:h-4 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Filter by name, leader, location…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-36 sm:w-56 border border-gray-200 rounded-lg pl-7 sm:pl-9 pr-6 sm:pr-8 py-1 sm:py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            {search && (
+              <button onClick={() => setSearch('')}
+                className="absolute right-2 sm:right-2.5 top-2 sm:top-2.5 text-gray-400 hover:text-gray-600 transition">
+                <X className="w-3 h-3 sm:w-4 sm:h-4" />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => { setCreateForm(emptyForm()); setCreateError(''); setShowCreate(true) }}
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold transition shrink-0"
+          >
+            <Plus className="w-3 h-3 sm:w-4 sm:h-4" /> New Class
+          </button>
+        </div>
       </div>
 
       {flash && (
@@ -1117,7 +1393,9 @@ const activeClasses   = classes.filter(c => !c.archived)
       {loading ? (
         <p className="text-sm text-gray-400 py-8 text-center">Loading…</p>
       ) : activeClasses.length === 0 ? (
-        <p className="text-sm text-gray-400 py-8 text-center">No active classes. Create one above.</p>
+        <p className="text-sm text-gray-400 py-8 text-center">
+          {q ? 'No classes match your search.' : 'No active classes. Create one above.'}
+        </p>
       ) : (
         classTable(activeClasses)
       )}
@@ -1247,45 +1525,55 @@ function AdminContent() {
   return (
     <div>
       {/* Top bar */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">Admin</h1>
-        <div className="grid grid-cols-2 sm:grid-cols-4 rounded-lg border border-gray-200 overflow-hidden text-sm font-semibold w-full">
-          <button
-            onClick={() => setTab('calendar')}
-            className={`flex items-center justify-center gap-1.5 px-4 py-2.5 transition-colors ${
-              tab === 'calendar' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <CalendarDays className="w-4 h-4" />
-            Calendar
-          </button>
-          <button
-            onClick={() => setTab('classes')}
-            className={`flex items-center justify-center gap-1.5 px-4 py-2.5 border-l border-gray-200 transition-colors ${
-              tab === 'classes' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <GraduationCap className="w-4 h-4" />
-            Classes
-          </button>
-          <button
-            onClick={() => setTab('docs')}
-            className={`flex items-center justify-center gap-1.5 px-4 py-2.5 border-t border-gray-200 sm:border-t-0 sm:border-l transition-colors ${
-              tab === 'docs' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <FolderOpen className="w-4 h-4" />
-            Docs
-          </button>
-          <button
-            onClick={() => setTab('contacts')}
-            className={`flex items-center justify-center gap-1.5 px-4 py-2.5 border-t border-l border-gray-200 sm:border-t-0 transition-colors ${
-              tab === 'contacts' ? 'bg-purple-600 text-white' : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <BookUser className="w-4 h-4" />
-            Contacts
-          </button>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-0 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Admin</h1>
+        <div className="overflow-x-auto -mx-4 sm:-mx-6 px-4 sm:px-6">
+          <div className="flex items-end border-b border-gray-200 gap-1 min-w-max pr-16 sm:pr-0">
+            <button
+              onClick={() => setTab('calendar')}
+              className={`flex items-center gap-1 px-2 sm:px-5 py-1.5 sm:py-2.5 -mb-px text-[11px] sm:text-sm font-semibold rounded-t-lg border whitespace-nowrap shrink-0 transition-all duration-150 ${
+                tab === 'calendar'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                  : 'bg-gray-100 text-gray-600 border-transparent hover:text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              <CalendarDays className="w-3 h-3 sm:w-4 sm:h-4" />
+              Calendar
+            </button>
+            <button
+              onClick={() => setTab('classes')}
+              className={`flex items-center gap-1 px-2 sm:px-5 py-1.5 sm:py-2.5 -mb-px text-[11px] sm:text-sm font-semibold rounded-t-lg border whitespace-nowrap shrink-0 transition-all duration-150 ${
+                tab === 'classes'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                  : 'bg-gray-100 text-gray-600 border-transparent hover:text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              <GraduationCap className="w-3 h-3 sm:w-4 sm:h-4" />
+              Classes
+            </button>
+            <button
+              onClick={() => setTab('docs')}
+              className={`flex items-center gap-1 px-2 sm:px-5 py-1.5 sm:py-2.5 -mb-px text-[11px] sm:text-sm font-semibold rounded-t-lg border whitespace-nowrap shrink-0 transition-all duration-150 ${
+                tab === 'docs'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                  : 'bg-gray-100 text-gray-600 border-transparent hover:text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              <FolderOpen className="w-3 h-3 sm:w-4 sm:h-4" />
+              Docs
+            </button>
+            <button
+              onClick={() => setTab('contacts')}
+              className={`flex items-center gap-1 px-2 sm:px-5 py-1.5 sm:py-2.5 -mb-px text-[11px] sm:text-sm font-semibold rounded-t-lg border whitespace-nowrap shrink-0 transition-all duration-150 ${
+                tab === 'contacts'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                  : 'bg-gray-100 text-gray-600 border-transparent hover:text-gray-800 hover:bg-gray-200'
+              }`}
+            >
+              <BookUser className="w-3 h-3 sm:w-4 sm:h-4" />
+              Contacts
+            </button>
+          </div>
         </div>
       </div>
 

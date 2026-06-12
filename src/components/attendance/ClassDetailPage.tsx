@@ -20,9 +20,7 @@ import {
   Edit2,
   Users,
   Key,
-  LogOut,
   Plus,
-  ChevronDown,
   Archive,
   ArchiveRestore,
   Trash2,
@@ -635,9 +633,13 @@ function RosterPanel({
   const [nameSearching, setNameSearching] = useState(false)
   const [nameDropdownOpen, setNameDropdownOpen] = useState(false)
 
-  const [contactName, setContactName] = useState('')
-  const [contactPhone, setContactPhone] = useState('')
-  const [contactEmail, setContactEmail] = useState('')
+  const [contactName,        setContactName]        = useState('')
+  const [contactPhone,       setContactPhone]       = useState('')
+  const [contactEmail,       setContactEmail]       = useState('')
+  const [contactNotes,       setContactNotes]       = useState('')
+  const [contactIsStudent,   setContactIsStudent]   = useState(false)
+  const [contactSchoolLevel, setContactSchoolLevel] = useState('')
+  const [contactSchoolYear,  setContactSchoolYear]  = useState('')
   const [savingContact, setSavingContact] = useState(false)
   const [contactFlash, setContactFlash] = useState<{
     msg: string
@@ -654,18 +656,19 @@ function RosterPanel({
         name: contactName.trim(),
         phone: contactPhone.trim(),
         email: contactEmail.trim(),
+        notes: contactNotes.trim(),
+        isStudent: contactIsStudent,
+        schoolLevel: contactIsStudent ? contactSchoolLevel : '',
+        schoolYear:  contactIsStudent ? contactSchoolYear  : '',
       }),
     })
     const d = await r.json()
     setSavingContact(false)
     if (r.ok) {
-      setContactName('')
-      setContactPhone('')
-      setContactEmail('')
-      setContactFlash({
-        msg: `${d.name || contactName} added to congregation.`,
-        ok: true,
-      })
+      setContactName(''); setContactPhone(''); setContactEmail('')
+      setContactNotes(''); setContactIsStudent(false)
+      setContactSchoolLevel(''); setContactSchoolYear('')
+      setContactFlash({ msg: `${d.name || contactName} added to congregation.`, ok: true })
     } else {
       setContactFlash({ msg: d.error || 'Failed to add contact', ok: false })
     }
@@ -898,10 +901,10 @@ function RosterPanel({
         </div>
       )}
 
-      {/* Add to Contact Record */}
+      {/* Quick Add to Contact Record */}
       <div className='mt-6 border-t border-gray-100 pt-5'>
         <h3 className='font-semibold text-gray-700 text-sm uppercase tracking-wider flex items-center gap-2 mb-3'>
-          <UserPlus className='w-4 h-4 text-indigo-500' /> Add to Permanent Contact Record
+          <UserPlus className='w-4 h-4 text-indigo-500' /> Quick Add to Contacts
         </h3>
         {contactFlash && (
           <div
@@ -931,6 +934,50 @@ function RosterPanel({
             className='flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 bg-white'
           />
         </div>
+        <textarea
+          value={contactNotes}
+          onChange={(e) => setContactNotes(e.target.value)}
+          placeholder='Notes (optional)'
+          rows={2}
+          className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 bg-white resize-none mb-2'
+        />
+        <div className='flex items-center gap-2 mb-2'>
+          <input
+            id='roster-is-student'
+            type='checkbox'
+            checked={contactIsStudent}
+            onChange={(e) => setContactIsStudent(e.target.checked)}
+            className='w-4 h-4 rounded border-gray-300 accent-indigo-600 cursor-pointer'
+          />
+          <label htmlFor='roster-is-student' className='text-sm font-medium text-gray-700 cursor-pointer select-none'>
+            Student
+          </label>
+        </div>
+        {contactIsStudent && (
+          <div className='flex gap-2 mb-2 pl-3 border-l-2 border-indigo-100'>
+            <select
+              value={contactSchoolLevel}
+              onChange={(e) => setContactSchoolLevel(e.target.value)}
+              className='flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 bg-white'
+            >
+              <option value=''>— Grade/Level —</option>
+              {[...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`), ...Array.from({ length: 6 }, (_, i) => `College ${i + 1}`), 'Other'].map(lvl => (
+                <option key={lvl} value={lvl}>{lvl}</option>
+              ))}
+            </select>
+            <select
+              value={contactSchoolYear}
+              onChange={(e) => setContactSchoolYear(e.target.value)}
+              className='flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 bg-white'
+            >
+              <option value=''>— School Year —</option>
+              {(() => {
+                const now = new Date(); const y = now.getFullYear(); const base = now.getMonth() + 1 >= 8 ? y : y - 1
+                return Array.from({ length: 6 }, (_, i) => { const s = base - 2 + i; return `${s}-${s + 1}` })
+              })().map(yr => <option key={yr} value={yr}>{yr}</option>)}
+            </select>
+          </div>
+        )}
         <button
           onClick={addContact}
           disabled={savingContact || !contactName.trim()}
@@ -941,7 +988,7 @@ function RosterPanel({
           ) : (
             <UserPlus className='w-3.5 h-3.5' />
           )}
-          {savingContact ? 'Adding…' : 'Add to Contact'}
+          {savingContact ? 'Adding…' : 'Quick Add'}
         </button>
       </div>
     </div>
@@ -1311,16 +1358,6 @@ function EditPanel({
   })
   const [savingClass, setSavingClass] = useState(false)
 
-  const todaySession = sessions.find((s) => s.session_date === TODAY)
-  const [topic, setTopic] = useState(todaySession?.topic || '')
-  const [sessionNotes, setSessionNotes] = useState(todaySession?.notes || '')
-  const [sessionLead, setSessionLead] = useState(
-    todaySession?.session_lead_name || '',
-  )
-  const [initTopic] = useState(todaySession?.topic || '')
-  const [initSessionNotes] = useState(todaySession?.notes || '')
-  const [initSessionLead] = useState(todaySession?.session_lead_name || '')
-
   // Per-session lead names for all sessions
   const [sessionLeads, setSessionLeads] = useState<Record<number, string>>(
     Object.fromEntries(sessions.map((s) => [s.id, s.session_lead_name || ''])),
@@ -1384,35 +1421,23 @@ function EditPanel({
       return
     }
     setSavingClass(true)
-    const [r1] = await Promise.all([
-      authFetch(`/api/classes/${classId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: form.name,
-          lead_name: form.lead_name,
-          lead_email: form.lead_email,
-          description: form.description,
-          location: form.location,
-          meeting_day: form.meeting_day,
-          meeting_time: form.meeting_time,
-          end_time: form.end_time,
-          recurrence: form.recurrence,
-          start_date: form.start_date || null,
-          end_date: form.recurrence !== 'none' ? form.end_date || null : null,
-        }),
+    const r1 = await authFetch(`/api/classes/${classId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: form.name,
+        lead_name: form.lead_name,
+        lead_email: form.lead_email,
+        description: form.description,
+        location: form.location,
+        meeting_day: form.meeting_day,
+        meeting_time: form.meeting_time,
+        end_time: form.end_time,
+        recurrence: form.recurrence,
+        start_date: form.start_date || null,
+        end_date: form.recurrence !== 'none' ? form.end_date || null : null,
       }),
-      authFetch(`/api/classes/${classId}/sessions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          topic,
-          notes: sessionNotes,
-          session_lead_name: sessionLead,
-          date: TODAY,
-        }),
-      }),
-    ])
+    })
     setSavingClass(false)
     if (r1.ok) {
       onClassSaved(await r1.json())
@@ -1424,9 +1449,6 @@ function EditPanel({
 
   function handleCancel() {
     setForm({ ...initForm })
-    setTopic(initTopic)
-    setSessionNotes(initSessionNotes)
-    setSessionLead(initSessionLead)
   }
 
   async function saveSessionLead(session: Session) {
@@ -1596,37 +1618,6 @@ function EditPanel({
           </div>
         </div>
       </div>
-
-      {/* Today's session */}
-      <section>
-        <h3 className={sectionH}>Today's Session — {fmtDate(TODAY)}</h3>
-        <div className='flex flex-col gap-3'>
-          <div className='flex gap-3'>
-            <input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder='Topic'
-              className={`${inp} flex-1`}
-            />
-            <input
-              value={sessionLead}
-              onChange={(e) => setSessionLead(e.target.value)}
-              placeholder='Session leader'
-              className={`${inp} flex-1`}
-            />
-          </div>
-          <div>
-            <label className={lbl}>Session Notes</label>
-            <textarea
-              value={sessionNotes}
-              onChange={(e) => setSessionNotes(e.target.value)}
-              rows={3}
-              placeholder='Notes for this session…'
-              className={`${inp} resize-none`}
-            />
-          </div>
-        </div>
-      </section>
 
       {/* Session Leaders — spreadsheet for recurring classes, simple list otherwise */}
       {form.recurrence !== 'none' && form.start_date && form.end_date ? (
@@ -2773,54 +2764,40 @@ export default function ClassDetailPage() {
   // ── Lead mode ─────────────────────────────────────────────────────────────
   return (
     <div className='min-h-screen bg-gray-50'>
-      <div className='bg-white border-b border-gray-200 px-4 py-3'>
-        <div className='max-w-lg mx-auto flex items-center justify-between'>
-          <button
-            onClick={() => navigate('/attendance')}
-            className='flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition'
-          >
-            <ArrowLeft className='w-4 h-4' /> Classes
-          </button>
-          <div className='text-center flex-1 px-4'>
-            <h1 className='text-base font-bold text-gray-800 truncate'>
-              {cls.name}
-            </h1>
-            {cls.lead_name && (
-              <p className='text-xs text-gray-500'>Leader: {cls.lead_name}</p>
-            )}
-          </div>
-          <button
-            onClick={() => {
-              setLeadUnlocked(false)
-              setLeadTab('roster')
-            }}
-            className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 border-gray-200 text-gray-500 hover:bg-gray-50 text-xs font-semibold transition'
-          >
-            <LogOut className='w-3.5 h-3.5' /> Exit
-          </button>
-        </div>
-        <div className='max-w-lg mx-auto mt-2'>
-          <div className='inline-flex items-center gap-1 bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full'>
-            <Key className='w-3 h-3' /> Leader Mode
-          </div>
-        </div>
-      </div>
-
       <div className='bg-white border-b border-gray-200 px-4'>
-        <div className='max-w-lg mx-auto flex overflow-x-auto'>
-          {leadTabs.map(({ id: tid, label, Icon }) => (
+        <div className='max-w-lg mx-auto'>
+          <div className='flex items-center gap-3 py-3'>
             <button
-              key={tid}
-              onClick={() => setLeadTab(tid)}
-              className={`flex items-center gap-1.5 px-4 py-3 text-sm font-semibold border-b-2 whitespace-nowrap transition ${
-                leadTab === tid
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
+              onClick={() => navigate('/attendance')}
+              className='flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition flex-shrink-0'
             >
-              <Icon className='w-4 h-4' /> {label}
+              <ArrowLeft className='w-4 h-4' /> Classes
             </button>
-          ))}
+            <div className='flex-1 min-w-0'>
+              <h1 className='text-base font-bold text-gray-800 truncate'>{cls.name}</h1>
+              {cls.lead_name && (
+                <p className='text-xs text-gray-500 truncate'>Leader: {cls.lead_name}</p>
+              )}
+            </div>
+            <div className='inline-flex items-center gap-1 bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0'>
+              <Key className='w-3 h-3' /> Leader Mode
+            </div>
+          </div>
+          <div className='flex gap-1 overflow-x-auto overflow-y-hidden'>
+            {leadTabs.map(({ id: tid, label, Icon }) => (
+              <button
+                key={tid}
+                onClick={() => setLeadTab(tid)}
+                className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold whitespace-nowrap transition rounded-t-lg -mb-px border ${
+                  leadTab === tid
+                    ? 'bg-purple-600 border-purple-600 text-white shadow-md'
+                    : 'bg-gray-100 border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-200'
+                }`}
+              >
+                <Icon className='w-4 h-4' /> {label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

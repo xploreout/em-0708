@@ -123,10 +123,14 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
   onClose: () => void
 }) {
   const { authFetch } = useAuth()
-  const [name,      setName]      = useState(initialName)
-  const [phone,     setPhone]     = useState('')
-  const [email,     setEmail]     = useState('')
-  const [photoUrl,  setPhotoUrl]  = useState('')
+  const [name,        setName]        = useState(initialName)
+  const [phone,       setPhone]       = useState('')
+  const [email,       setEmail]       = useState('')
+  const [photoUrl,    setPhotoUrl]    = useState('')
+  const [notes,       setNotes]       = useState('')
+  const [isStudent,   setIsStudent]   = useState(false)
+  const [schoolLevel, setSchoolLevel] = useState('')
+  const [schoolYear,  setSchoolYear]  = useState('')
   const [uploading, setUploading] = useState(false)
   const [saving,    setSaving]    = useState(false)
   const [error,     setError]     = useState('')
@@ -159,7 +163,7 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
       const res = await authFetch('/api/congregation/quick-add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), phone: phone.replace(/-/g, ''), email: email.trim() }),
+        body: JSON.stringify({ name: name.trim(), phone: phone.replace(/-/g, ''), email: email.trim(), notes: notes.trim(), isStudent, schoolLevel: isStudent ? schoolLevel : '', schoolYear: isStudent ? schoolYear : '' }),
       })
       const m = await res.json()
       if (!res.ok) throw new Error(m.error)
@@ -171,7 +175,7 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
   }
 
   return (
-    <MiniModal title="Add to Contacts" onClose={onClose}>
+    <MiniModal title="Quick Add" onClose={onClose}>
       <div className="flex flex-col gap-3">
         {/* Photo upload */}
         <div className="flex flex-col items-center gap-1.5">
@@ -204,6 +208,34 @@ export function NewContactModal({ initialName = '', onSave, onClose }: {
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com"
             className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400" />
         </div>
+        <div>
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Notes</label>
+          <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any notes…" rows={2}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 resize-none" />
+        </div>
+        <div className="flex items-center gap-2">
+          <input id="new-contact-is-student" type="checkbox" checked={isStudent} onChange={e => setIsStudent(e.target.checked)}
+            className="w-4 h-4 rounded border-gray-300 accent-blue-600 cursor-pointer" />
+          <label htmlFor="new-contact-is-student" className="text-sm font-medium text-gray-700 cursor-pointer select-none">Student</label>
+        </div>
+        {isStudent && (
+          <div className="flex gap-2 pl-3 border-l-2 border-blue-100">
+            <select value={schoolLevel} onChange={e => setSchoolLevel(e.target.value)}
+              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white">
+              <option value="">— Grade/Level —</option>
+              {[...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`), ...Array.from({ length: 6 }, (_, i) => `College ${i + 1}`), 'Other'].map(lvl => (
+                <option key={lvl} value={lvl}>{lvl}</option>
+              ))}
+            </select>
+            <select value={schoolYear} onChange={e => setSchoolYear(e.target.value)}
+              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 bg-white">
+              <option value="">— School Year —</option>
+              {(() => { const now = new Date(); const y = now.getFullYear(); const base = now.getMonth() + 1 >= 8 ? y : y - 1; return Array.from({ length: 6 }, (_, i) => { const s = base - 2 + i; return `${s}-${s + 1}` }) })().map(yr => (
+                <option key={yr} value={yr}>{yr}</option>
+              ))}
+            </select>
+          </div>
+        )}
         {error && <p className="text-red-500 text-xs">{error}</p>}
         <div className="flex gap-2 mt-1">
           <button onClick={handleSave} disabled={saving || uploading}
