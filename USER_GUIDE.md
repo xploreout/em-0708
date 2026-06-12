@@ -1,4 +1,4 @@
-# ACBCC English Ministry — User Guide
+# ACBCCEM — User Guide
 
 This guide explains the three login roles available in the ministry portal, what each role can do, and how passwords are managed.
 
@@ -26,7 +26,8 @@ Each role has its own password. On the login screen, select your role from the d
 
 ## Class Role
 
-<img src="public/images/checkin.jpg" alt="Class Screen" width="60%" />
+<img src="public/images/class1.jpg" alt="Class Screen" width="45%" />
+<img src="public/images/class2.jpg" alt="Class Screen" width="450%" />
 
 Intended for **class leaders and teachers** who manage a Bible study or education group.
 
