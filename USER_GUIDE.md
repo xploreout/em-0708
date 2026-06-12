@@ -79,6 +79,7 @@ Everything the Coworker role can do, plus:
 
 #### Schedule Management
 
+<img src="public/images/admin2.jpg" alt="Admin Screen" width="60%" />
 - **Add and edit events** — create new duty assignments, edit existing entries, or delete events from the calendar
 - **event types** — remove event type
 - **Manage teams** — remove team
@@ -103,6 +104,8 @@ Everything the Coworker role can do, plus:
 - **Delete documents** — remove documents from the repository
 
 #### Congregation/Contacts Management
+
+<img src="public/images/admin1.jpg" alt="Admin Screen" width="60%" />
 
 - **Add and edit contacts** — maintain the congregation member directory including photos
 - **Delete contacts** — remove members from the directory
