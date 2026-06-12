@@ -55,13 +55,16 @@ Intended for **ministry coworkers** who can view the full calendar. Also able to
 
 ### What the Coworker Role Can Do
 
-- **View the duty schedule** — see the monthly, weekly, and daily schedule calendar
+- **View existing calendar** — see the monthly, weekly, and daily schedule calendar
+- **Add new duty schedule** — able to add new contact to permanent database
 - **Search the schedule** — look up specific dates or events across any time period
 - **View church document repository** — these documents are uploaded by the Admin (announcements, resources, references, etc.)
 
 ### What the Coworker Role Cannot Do
 
-- Coworkers cannot edit, add, or delete schedule event entries — available to Admin-only
+- Coworkers cannot edit existing schedule event but were able to add new event entries
+- Coworkers can Add new contact on the file while creating new event.
+
 - Coworkers cannot upload documents to the repository, view-only access.
 
 ---
@@ -103,6 +106,7 @@ Everything the Coworker role can do, plus:
 
 - **Add and edit contacts** — maintain the congregation member directory including photos
 - **Delete contacts** — remove members from the directory
+- **download contacts list** — can filter and download contacts list to csv
 
 #### Password Management
 
