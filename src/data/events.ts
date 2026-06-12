@@ -78,7 +78,7 @@ export const upcomingEvents: Event[] = [
       "Join us for a fun-filled Summer Sport Day and Fifa watch party! We'll have exciting games, delicious bbq, and great fun. It's a perfect opportunity to enjoy the summer together. Don't miss out on the fun!",
     image:
       'https://images.pexels.com/photos/17206408/pexels-photo-17206408.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-    video: '/images/pool2.mp4',
+    video: 'https://res.cloudinary.com/dz2zqnf2q/video/upload/video/pool2.mp4',
   },
   {
     id: 9,
@@ -103,7 +103,7 @@ export const upcomingEvents: Event[] = [
     description:
       "This summer, we're excited to invite children to join our Summer Kids Fellowship, a fun and meaningful time designed to help children grow in faith, build friendships, and enjoy a safe, joyful community. ",
     image: '',
-    video: '/images/fridaykids.mp4',
+    video: 'https://res.cloudinary.com/dz2zqnf2q/video/upload/video/fridaykids.mp4',
   },
   {
     id: 10,

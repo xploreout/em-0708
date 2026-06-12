@@ -165,7 +165,7 @@ function SetupScreen({ onStart }: { onStart: (names: [string, string]) => void }
   const bgRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
-    const audio = new Audio('/audio/bombinsound-upbeat.mp3')
+    const audio = new Audio('https://res.cloudinary.com/dz2zqnf2q/video/upload/audio/bombinsound-upbeat.mp3')
     audio.loop = true
     audio.volume = 0.5
     bgRef.current = audio
@@ -312,7 +312,7 @@ function FinalScreen({ scores, teamNames, onRestart }: {
     const t2 = setTimeout(burst, 1200)
 
     // Crowd audio — play twice then stop
-    const crowd = new Audio('/audio/crowd.mp3')
+    const crowd = new Audio('https://res.cloudinary.com/dz2zqnf2q/video/upload/audio/crowd.mp3')
     crowd.volume = 0.7
     let plays = 0
     crowd.play().catch(() => {})
@@ -567,7 +567,7 @@ export default function EmFeud() {
     const next = [...round.revealed]
     next[i] = true
     updateRound({ revealed: next })
-    const ding = new Audio('/audio/ding.mp3')
+    const ding = new Audio('https://res.cloudinary.com/dz2zqnf2q/video/upload/audio/ding.mp3')
     ding.volume = 0.8
     ding.play().catch(() => {})
   }
@@ -577,7 +577,7 @@ export default function EmFeud() {
     const next = round.strikes + 1
     updateRound({ strikes: next, stealMode: next >= 3 })
     // Buzzer sound
-    const buzzer = new Audio('/audio/buzzersound.mp3')
+    const buzzer = new Audio('https://res.cloudinary.com/dz2zqnf2q/video/upload/audio/buzzersound.mp3')
     buzzer.volume = 0.85
     buzzer.play().catch(() => {})
     // Red X overlay for 2 seconds
@@ -634,7 +634,7 @@ export default function EmFeud() {
   return (
     <>
       <style>{GLOBAL_CSS}</style>
-      <audio ref={audioRef} src="/audio/alexzavesa-calm.mp3" preload="auto" loop />
+      <audio ref={audioRef} src="https://res.cloudinary.com/dz2zqnf2q/video/upload/audio/alexzavesa-calm.mp3" preload="auto" loop />
 
       {phase === 'setup' && <SetupScreen onStart={startGame} />}
 

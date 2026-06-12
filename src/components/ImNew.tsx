@@ -21,7 +21,7 @@ const ImNew = () => {
 
         <div className='relative rounded-lg overflow-hidden shadow-sm'>
           <video
-            src='/images/church1.mp4'
+            src='https://res.cloudinary.com/dz2zqnf2q/video/upload/video/church1.mp4'
             autoPlay
             loop
             muted
