@@ -27,7 +27,7 @@ Each role has its own password. On the login screen, select your role from the d
 ## Class Role
 
 <img src="public/images/class1.jpg" alt="Class Screen" width="45%" />
-<img src="public/images/class2.jpg" alt="Class Screen" width="450%" />
+<img src="public/images/class2.jpg" alt="Class Screen" width="45%" />
 
 Intended for **class leaders and teachers** who manage a Bible study or education group.
 
