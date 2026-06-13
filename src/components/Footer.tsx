@@ -2,21 +2,24 @@ import React, { useState } from 'react'
 import { ChevronDown, Mail, MapPin } from 'lucide-react'
 import { FaInstagram, FaYoutube } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
-
-const resourcesItems = [
-  { name: 'Adult Small Group', href: '/resources/adult-small-group' },
-  { name: 'Youth Ministry', href: '/resources/youth' },
-  { name: 'Children Ministry', href: '/resources/children' },
-  { name: 'Devotional Resources', href: '/resources/other' },
-]
+import { useLang } from '../context/LanguageContext'
+import { t, tx } from '../i18n/translations'
 
 const Footer = () => {
+  const { lang } = useLang()
   const [showMap, setShowMap] = useState(false)
   const [eventsOpen, setEventsOpen] = useState(false)
   const [resourcesOpen, setResourcesOpen] = useState(false)
 
   const address = '2965 Duluth Hwy, Duluth GA 30096'
   const googleMapsUrl = `https://maps.google.com/maps?q=${encodeURIComponent(address)}&output=embed`
+
+  const resourcesItems = [
+    { name: tx(t.nav.adultSmallGroup, lang),   href: '/resources/adult-small-group' },
+    { name: tx(t.nav.youthMinistry, lang),     href: '/resources/youth' },
+    { name: tx(t.nav.childrenMinistry, lang),  href: '/resources/children' },
+    { name: tx(t.nav.devotionalResources, lang), href: '/resources/other' },
+  ]
 
   return (
     <footer className='bg-gradient-to-br from-blue-900  to-green-900 text-white py-12'>
@@ -25,33 +28,25 @@ const Footer = () => {
           {/* Church Info */}
           <div className='col-span-1 md:col-span-2'>
             <div className='flex items-center space-x-3 mb-4'>
-              {/* <div className='bg-gradient-to-r from-orange-500 to-pink-500 p-2 rounded-lg'>
-                <Church className='h-6 w-6 text-white' />
-              </div> */}
               <h3 className='text-xl font-bold text-white'>
                 ACBCC English Ministry
               </h3>
             </div>
             <p className='text-gray-300 mb-4 leading-relaxed mr-10'>
-              We're a community of Jesus followers growing together in
-              faith, friendship, and everyday life. Our mission is to cultivate
-              a Christ-centered ministry where people across cultures and
-              generations belong, believe and become lifelong disciples of Jesus
-              Christ. Come join us as we joyfully serve God and our neighbors
-              with open hearts! 
+              {tx(t.footer.description, lang)}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className='text-lg font-semibold mb-4'>Quick Links</h4>
+            <h4 className='text-lg font-semibold mb-4'>{tx(t.footer.quickLinks, lang)}</h4>
             <ul className='space-y-2'>
               <li>
                 <Link
                   to='/im-new'
                   className='text-gray-300 hover:text-pink-400 transition-colors duration-200'
                 >
-                  I'm New
+                  {tx(t.nav.imNew, lang)}
                 </Link>
               </li>
               <li>
@@ -59,19 +54,19 @@ const Footer = () => {
                   onClick={() => setEventsOpen(!eventsOpen)}
                   className='flex items-center gap-1 text-gray-300 hover:text-pink-400 transition-colors duration-200'
                 >
-                  Events
+                  {tx(t.nav.events, lang)}
                   <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${eventsOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {eventsOpen && (
                   <ul className='mt-1 ml-2 space-y-1'>
                     <li>
                       <Link to='/events' className='text-gray-400 hover:text-pink-400 transition-colors duration-200 text-sm'>
-                        Upcoming Events
+                        {tx(t.footer.upcomingEvents, lang)}
                       </Link>
                     </li>
                     <li>
                       <Link to='/past-events' className='text-gray-400 hover:text-pink-400 transition-colors duration-200 text-sm'>
-                        Past Events
+                        {tx(t.footer.pastEvents, lang)}
                       </Link>
                     </li>
                   </ul>
@@ -82,13 +77,13 @@ const Footer = () => {
                   onClick={() => setResourcesOpen(!resourcesOpen)}
                   className='flex items-center gap-1 text-gray-300 hover:text-orange-400 transition-colors duration-200'
                 >
-                  Ministries
+                  {tx(t.nav.ministries, lang)}
                   <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${resourcesOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {resourcesOpen && (
                   <ul className='mt-1 ml-2 space-y-1'>
                     {resourcesItems.map((item) => (
-                      <li key={item.name}>
+                      <li key={item.href}>
                         <Link
                           to={item.href}
                           className='text-gray-400 hover:text-orange-400 transition-colors duration-200 text-sm'
@@ -105,7 +100,7 @@ const Footer = () => {
                   to='/about'
                   className='text-gray-300 hover:text-pink-400 transition-colors duration-200'
                 >
-                  About
+                  {tx(t.nav.about, lang)}
                 </Link>
               </li>
               <li>
@@ -123,7 +118,7 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h4 className='text-lg font-semibold mb-4'>Contact</h4>
+            <h4 className='text-lg font-semibold mb-4'>{tx(t.footer.contact, lang)}</h4>
             <div className='space-y-2'>
               <div className='flex items-center space-x-2'>
                 <Mail className='h-4 w-4 text-gray-400' />
@@ -132,13 +127,9 @@ const Footer = () => {
                   onClick={() => setTimeout(() => document.getElementById('newcomer-form')?.scrollIntoView({ behavior: 'smooth' }), 100)}
                   className='text-gray-300 hover:text-pink-400 transition-colors duration-200 text-sm'
                 >
-                  Contact Us
+                  {tx(t.footer.contactUs, lang)}
                 </Link>
               </div>
-              {/* <div className='flex items-center space-x-2'>
-                <Phone className='h-4 w-4 text-gray-400' />
-                <span className='text-gray-300 text-sm'>(555) 123-4567</span>
-              </div> */}
               <button
                 onClick={() => setShowMap(!showMap)}
                 className='flex items-start space-x-2 text-left group'
@@ -172,7 +163,7 @@ const Footer = () => {
                 >
                   <FaYoutube className='h-5 w-5' />
                 </a>
-                <span className='text-gray-400 text-sm'>Follow Us</span>
+                <span className='text-gray-400 text-sm'>{tx(t.footer.followUs, lang)}</span>
               </div>
             </div>
           </div>
@@ -185,7 +176,7 @@ const Footer = () => {
               <div className='flex items-center justify-between mb-4'>
                 <h4 className='text-lg font-semibold text-gray-900 flex items-center'>
                   <MapPin className='h-5 w-5 mr-2 text-orange-500' />
-                  Our Location
+                  {tx(t.footer.ourLocation, lang)}
                 </h4>
                 <button
                   onClick={() => setShowMap(false)}
@@ -209,24 +200,20 @@ const Footer = () => {
               </div>
               <div className='mt-4 flex flex-col sm:flex-row gap-3'>
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    address
-                  )}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`}
                   target='_blank'
                   rel='noopener noreferrer'
                   className='flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg text-center font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm'
                 >
-                  Open in Google Maps
+                  {tx(t.footer.openGoogleMaps, lang)}
                 </a>
                 <a
-                  href={`https://maps.apple.com/?q=${encodeURIComponent(
-                    address
-                  )}`}
+                  href={`https://maps.apple.com/?q=${encodeURIComponent(address)}`}
                   target='_blank'
                   rel='noopener noreferrer'
                   className='flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white px-4 py-2 rounded-lg text-center font-semibold hover:from-gray-700 hover:to-gray-800 transition-all duration-200 text-sm'
                 >
-                  Open in Apple Maps
+                  {tx(t.footer.openAppleMaps, lang)}
                 </a>
               </div>
             </div>
@@ -235,7 +222,7 @@ const Footer = () => {
 
         <div className='border-t border-gray-800 mt-8 pt-8 text-center'>
           <p className='text-gray-400 text-sm'>
-            © 2024 ACBCC English Ministry. All rights reserved. 
+            {tx(t.footer.copyright, lang)}
           </p>
         </div>
       </div>

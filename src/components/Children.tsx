@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react'
 import { Calendar, Clock, MapPin } from 'lucide-react'
 import { upcomingEvents } from '../data/events'
 import { useNavigate } from 'react-router-dom'
+import { useLang } from '../context/LanguageContext'
+import { t, tx } from '../i18n/translations'
 
 declare global {
   interface Window { YT: any; onYouTubeIframeAPIReady: () => void }
@@ -45,6 +47,8 @@ const LoopingYouTube = ({ videoId }: { videoId: string }) => {
 
 const Children = () => {
   const navigate = useNavigate()
+  const { lang } = useLang()
+
   const goToContact = () => {
     navigate('/im-new')
     setTimeout(() => document.getElementById('newcomer-form')?.scrollIntoView({ behavior: 'smooth' }), 100)
@@ -57,10 +61,10 @@ const Children = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='text-left mb-14'>
           <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>
-            Children Ministry
+            {tx(t.children.title, lang)}
           </h2>
           <p className='text-xl text-gray-500 mt-2 opacity-80'>
-            Children up to 5th Grade are welcome here.
+            {tx(t.children.subtitle, lang)}
           </p>
         </div>
 
@@ -72,29 +76,16 @@ const Children = () => {
 
           {/* Text */}
           <div className='w-full md:w-1/2 text-gray-600 leading-relaxed space-y-4'>
+            <p>{tx(t.children.text1, lang)}</p>
+            <p>{tx(t.children.text2, lang)}</p>
+            <p>{tx(t.children.text3, lang)}</p>
             <p>
-              Children are nurtured to know, love, and serve Jesus through
-              memorizing Bible verses, completing Bible-based activities, playing
-              games, and building friendships.
-            </p>
-            <p>
-              We focus on learning God's Word, making friends, and having fun in
-              a safe and engaging environment. Our desire is for every child to
-              grow in their faith and come to know, love, and follow the Lord
-              Jesus Christ.
-            </p>
-            <p>
-              Our Children's Sunday School meets every Sunday and is designed to
-              provide interactive and enjoyable learning experiences.
-            </p>
-            <p>
-              For more information about our AWANA ministry or children's
-              programs, please feel free to{' '}
+              {tx(t.children.contactPre, lang)}{' '}
               <button
                 onClick={goToContact}
                 className='text-sky-400 hover:text-sky-500 italic transition-colors duration-200'
               >
-                contact us
+                {tx(t.children.contactLink, lang)}
               </button>
               .
             </p>

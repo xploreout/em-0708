@@ -1,4 +1,6 @@
 import NewcomerForm from './NewcomerForm'
+import { useLang } from '../context/LanguageContext'
+import { t, tx } from '../i18n/translations'
 
 const scrollToForm = () => {
   document
@@ -7,15 +9,17 @@ const scrollToForm = () => {
 }
 
 const ImNew = () => {
+  const { lang } = useLang()
+
   return (
     <div className='bg-stone-50 min-h-screen py-10'>
       <div className='max-w-4xl mx-auto px-4 sm:px-6 space-y-8'>
         <div>
           <p className='text-xs font-medium uppercase tracking-[0.25em] text-stone-400 mb-2'>
-            Welcome
+            {tx(t.imNew.label, lang)}
           </p>
           <h1 className='text-2xl sm:text-3xl font-semibold text-stone-700 leading-snug'>
-            New Here?
+            {tx(t.imNew.title, lang)}
           </h1>
         </div>
 
@@ -30,52 +34,42 @@ const ImNew = () => {
           />
           <div className='absolute inset-0 bg-black/40 flex flex-col justify-end p-6 sm:p-8'>
             <p className='text-2xl font-semibold text-white leading-relaxed'>
-              We're really glad you're here.
+              {tx(t.imNew.heroTitle, lang)}
             </p>
             <p className='text-white/80 leading-relaxed mt-2'>
-              Visiting a new church can feel unfamiliar, but our goal is
-              simple—to create a welcoming and comfortable space where you can
-              explore faith and connect with others.
+              {tx(t.imNew.heroText, lang)}
             </p>
           </div>
         </div>
 
         <div className='bg-white rounded-lg shadow-sm border border-stone-100 p-6 sm:p-8 space-y-4'>
           <h2 className='text-xl font-semibold text-stone-700'>
-            What to Expect
+            {tx(t.imNew.whatToExpect, lang)}
           </h2>
           <p className='text-stone-500 leading-relaxed'>
-            We are a young and growing church with a diverse, multi-generational
-            community. Our English congregation is still in its early stages, and we are excited about the journey ahead as we build a vibrant English-speaking community together.
+            {tx(t.imNew.expect1, lang)}
           </p>
           <p className='text-stone-500 leading-relaxed'>
-            Our Sunday services at 11:00am are in Mandarin, with English
-            translation available right on your phone. We come together for
-            praise and worship, a message, and meaningful time to connect with
-            one another.
+            {tx(t.imNew.expect2, lang)}
           </p>
           <hr className='border-stone-300 w-2/3 sm:w-1/2 mx-auto' />
           <p className='text-stone-500 leading-relaxed'>
-            While we do not yet have a dedicated English worship service, we are
-            actively praying and preparing for one to begin soon. We have a
-            heart to build an English or multilingual community where people can
-            grow in faith and build meaningful relationships.
+            {tx(t.imNew.expect3, lang)}
           </p>
           <p className='text-stone-500 leading-relaxed'>
-            If this vision resonates with you, we warmly invite you to{' '}
+            {tx(t.imNew.expect4Pre, lang)}{' '}
             <button
               onClick={scrollToForm}
               className='text-sky-400 hover:text-sky-500 italic transition-colors duration-200'
             >
-              join us
+              {tx(t.imNew.joinUs, lang)}
             </button>{' '}
-            as we take these first steps together. We would love to get to know
-            you and{' '}
+            {tx(t.imNew.expect4Mid, lang)}{' '}
             <button
               onClick={scrollToForm}
               className='text-sky-400 hover:text-sky-500 italic transition-colors duration-200'
             >
-              connect
+              {tx(t.imNew.connect, lang)}
             </button>
             .
           </p>
@@ -83,23 +77,18 @@ const ImNew = () => {
 
         <div className='bg-white rounded-lg shadow-sm border border-stone-100 p-6 sm:p-8 space-y-4'>
           <h2 className='text-xl font-semibold text-stone-700'>
-            Join Us On Friday
+            {tx(t.imNew.joinFriday, lang)}
           </h2>
           <p className='text-stone-500 leading-relaxed'>
-            We also have an English small group that meets on Fridays—a great
-            way to connect and grow in community. To learn more, please visit
-            the "Ministries" from the menu bar and explore the Adult Small
-            Group, meeting times and other ministry opportunities.
+            {tx(t.imNew.friday1, lang)}
           </p>
           <p className='text-stone-500 leading-relaxed'>
-            Whether you've been following Jesus for years, are exploring faith,
-            or are simply wondering what your next step might be, we invite you
-            to take that next step and{' '}
+            {tx(t.imNew.friday2Pre, lang)}{' '}
             <button
               onClick={scrollToForm}
               className='text-sky-400 hover:text-sky-500 italic transition-colors duration-200'
             >
-              come visit us
+              {tx(t.imNew.comeVisit, lang)}
             </button>
             .
           </p>

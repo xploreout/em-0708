@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Search, FileText, FileImage, File, Download, Clock, MapPin, Users, Archive, ChevronDown, ChevronRight, BookOpen, Youtube, Play, ExternalLink } from 'lucide-react'
 import PdfViewerModal from '../PdfViewerModal'
+import { useLang } from '../../context/LanguageContext'
+import { t, tx } from '../../i18n/translations'
 
 type ClassDoc = {
   id: number; name: string; url: string; file_type: string
@@ -18,7 +20,6 @@ function fmtDate(d: string) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-// Force Cloudinary to serve with Content-Disposition: attachment (download)
 function dlUrl(url: string) {
   return url.replace('/upload/', '/upload/fl_attachment/')
 }
@@ -51,7 +52,7 @@ function DocIcon({ type }: { type: string }) {
   return <File className="w-4 h-4 text-gray-400 flex-shrink-0" />
 }
 
-function ClassCard({ cls }: { cls: ClassWithDocs }) {
+function ClassCard({ cls, lang }: { cls: ClassWithDocs; lang: 'en' | 'zh' }) {
   const [open, setOpen] = useState(false)
   const [viewingPdf, setViewingPdf] = useState<{ url: string; name: string; downloadUrl: string } | null>(null)
   const [expandedYt, setExpandedYt] = useState<Set<number>>(new Set())
@@ -86,7 +87,7 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
             </span>
             {cls.archived && (
               <span className="text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                Archived
+                {tx(t.classResources.archived, lang)}
               </span>
             )}
             {cls.documents.length > 0 && (
@@ -126,7 +127,7 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
 
         <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
           {cls.documents.length === 0 && (
-            <span className="text-xs text-gray-300 hidden sm:block">No documents</span>
+            <span className="text-xs text-gray-300 hidden sm:block">{tx(t.classResources.noDocs2, lang)}</span>
           )}
           {open
             ? <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -138,7 +139,7 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
       {open && (
         <div className="border-t border-gray-100 px-5 py-4">
           {cls.documents.length === 0 ? (
-            <p className="text-sm text-gray-400 py-2">No documents uploaded yet.</p>
+            <p className="text-sm text-gray-400 py-2">{tx(t.classResources.noDocs, lang)}</p>
           ) : (() => {
             const renderDoc = (doc: ClassDoc) => {
               const isYt  = doc.file_type === 'video/youtube'
@@ -167,7 +168,7 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
                             className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition ${ytExpanded ? 'bg-red-100 text-red-600' : 'bg-red-500 hover:bg-red-600 text-white'}`}
                           >
                             <Play className="w-3 h-3" fill={ytExpanded ? 'currentColor' : 'none'} />
-                            {ytExpanded ? 'Hide' : 'View'}
+                            {ytExpanded ? tx(t.classResources.hideVideo, lang) : tx(t.classResources.view, lang)}
                           </button>
                           <a href={doc.url} target="_blank" rel="noopener noreferrer"
                             className="flex items-center gap-1 px-2 py-1 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 text-xs transition"
@@ -182,7 +183,7 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
                             onClick={() => setViewingPdf({ url: `/api/proxy-pdf?url=${encodeURIComponent(doc.url)}`, name: doc.name, downloadUrl: dlUrl(doc.url) })}
                             className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition"
                           >
-                            View
+                            {tx(t.classResources.view, lang)}
                           </button>
                           <a href={dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
                             className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-semibold transition">
@@ -193,13 +194,13 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
                       {isImg && (
                         <a href={doc.url} target="_blank" rel="noopener noreferrer"
                           className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold transition">
-                          View
+                          {tx(t.classResources.view, lang)}
                         </a>
                       )}
                       {!isYt && !isPdf && !isImg && (
                         <a href={dlUrl(doc.url)} target="_blank" rel="noopener noreferrer"
                           className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-semibold transition">
-                          <Download className="w-3 h-3" /> Download
+                          <Download className="w-3 h-3" /> {tx(t.classResources.download, lang)}
                         </a>
                       )}
                     </div>
@@ -223,13 +224,11 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
 
             const classDocs = cls.documents.filter(d => !d.session_id)
 
-            // Session number based on chronological order (Session 1 = oldest)
             const sessionDates = [...new Set(
               cls.documents.filter(d => d.session_date).map(d => d.session_date!)
             )].sort((a, b) => a.localeCompare(b))
             const sessionNumberMap = new Map(sessionDates.map((date, i) => [date, i + 1]))
 
-            // Group session docs by session, sorted latest first
             const sessionGroups = Object.values(
               cls.documents.filter(d => d.session_id).reduce((acc, d) => {
                 const sid = d.session_id!
@@ -243,7 +242,9 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
               <div className="flex flex-col gap-4">
                 {classDocs.length > 0 && (
                   <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Class Documents</p>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                      {tx(t.classResources.classDocs, lang)}
+                    </p>
                     <div className="flex flex-col gap-1">{classDocs.map(renderDoc)}</div>
                   </div>
                 )}
@@ -252,7 +253,7 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
                   return (
                     <div key={sg.sid}>
                       <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
-                        {sessionNum != null ? `Session ${sessionNum} · ` : ''}{sg.date ? fmtDate(sg.date) : ''}{sg.topic ? ` — ${sg.topic}` : ''}
+                        {sessionNum != null ? `${tx(t.classResources.session, lang)} ${sessionNum} · ` : ''}{sg.date ? fmtDate(sg.date) : ''}{sg.topic ? ` — ${sg.topic}` : ''}
                       </p>
                       <div className="flex flex-col gap-1">{sg.docs.map(renderDoc)}</div>
                     </div>
@@ -269,6 +270,7 @@ function ClassCard({ cls }: { cls: ClassWithDocs }) {
 }
 
 export default function ClassResourcesPage() {
+  const { lang } = useLang()
   const [allClasses, setAllClasses] = useState<ClassWithDocs[]>([])
   const [loading, setLoading]       = useState(true)
   const [error, setError]           = useState('')
@@ -279,7 +281,7 @@ export default function ClassResourcesPage() {
     fetch('/api/public/class-resources')
       .then(r => r.json())
       .then(d => { setAllClasses(Array.isArray(d) ? d : []); setLoading(false) })
-      .catch(() => { setError('Could not load class resources.'); setLoading(false) })
+      .catch(() => { setError(tx(t.classResources.loadError, lang)); setLoading(false) })
   }, [])
 
   const q = query.trim().toLowerCase()
@@ -296,29 +298,29 @@ export default function ClassResourcesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
-      <div className="bg-white border-b border-gray-100 px-4 py-10">
+      <div className="bg-white border-b border-gray-100 px-4 py-6 sm:py-10">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mx-auto mb-4">
+          <div className="hidden sm:flex w-12 h-12 rounded-lg bg-blue-100 items-center justify-center mx-auto mb-4">
             <BookOpen className="w-6 h-6 text-blue-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Class Resources</h1>
-          <p className="text-gray-500 text-base mb-6">
-            Browse documents and materials shared by each class.
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">{tx(t.classResources.title, lang)}</h1>
+          <p className="text-gray-500 text-sm sm:text-base mb-4 sm:mb-6">
+            {tx(t.classResources.subtitle, lang)}
           </p>
 
           {/* Search */}
           <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
             <input
               value={query}
               onChange={e => setQuery(e.target.value)}
-              placeholder="Search by class name or description…"
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-400 transition bg-white shadow-sm"
+              placeholder={tx(t.classResources.searchPlaceholder, lang)}
+              className="w-full pl-9 sm:pl-12 pr-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-blue-400 transition bg-white shadow-sm"
             />
             {query && (
               <button
                 onClick={() => setQuery('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg leading-none"
+                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg leading-none"
               >×</button>
             )}
           </div>
@@ -327,19 +329,19 @@ export default function ClassResourcesPage() {
 
       <div className="max-w-3xl mx-auto px-4 py-8">
         {loading ? (
-          <p className="text-gray-400 text-center py-16">Loading…</p>
+          <p className="text-gray-400 text-center py-16">{tx(t.classResources.loading, lang)}</p>
         ) : error ? (
           <p className="text-red-500 text-center py-16">{error}</p>
         ) : (
           <>
             {/* Active classes */}
             {active.length === 0 && !q ? (
-              <p className="text-gray-400 text-center py-16">No classes available.</p>
+              <p className="text-gray-400 text-center py-16">{tx(t.classResources.noClasses, lang)}</p>
             ) : active.length === 0 && q ? (
-              <p className="text-gray-400 text-center py-8">No classes match "{query}".</p>
+              <p className="text-gray-400 text-center py-8">{tx(t.classResources.noMatch, lang)} "{query}".</p>
             ) : (
               <div className="flex flex-col gap-3">
-                {active.map(cls => <ClassCard key={cls.id} cls={cls} />)}
+                {active.map(cls => <ClassCard key={cls.id} cls={cls} lang={lang} />)}
               </div>
             )}
 
@@ -353,14 +355,14 @@ export default function ClassResourcesPage() {
                   <div className="flex items-center gap-2">
                     <Archive className="w-4 h-4 text-gray-500" />
                     <span className="text-sm font-semibold text-gray-600">
-                      Archived Classes ({archived.length})
+                      {tx(t.classResources.archivedClasses, lang)} ({archived.length})
                     </span>
                   </div>
-                  <span className="text-xs text-gray-400">{showArchived ? '▲ Hide' : '▼ Show'}</span>
+                  <span className="text-xs text-gray-400">{showArchived ? tx(t.classResources.hide, lang) : tx(t.classResources.show, lang)}</span>
                 </button>
                 {showArchived && (
                   <div className="flex flex-col gap-3">
-                    {archived.map(cls => <ClassCard key={cls.id} cls={cls} />)}
+                    {archived.map(cls => <ClassCard key={cls.id} cls={cls} lang={lang} />)}
                   </div>
                 )}
               </div>

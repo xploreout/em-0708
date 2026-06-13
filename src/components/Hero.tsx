@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, MapPin, Globe } from 'lucide-react'
 import { upcomingEvents } from '../data/events'
+import { useLang } from '../context/LanguageContext'
+import { t, tx } from '../i18n/translations'
 
 const Hero = () => {
+  const { lang } = useLang()
   const heroIds = [1, 6, 11]
   const preview = heroIds
     .map((id) => upcomingEvents.find((e) => e.id === id)!)
@@ -32,16 +35,15 @@ const Hero = () => {
               WebkitTextStroke: '0.8px currentColor',
             }}
           >
-            Atlanta Chinese Bible Community Church
+            {tx(t.hero.churchName, lang)}
           </span>
 
           <h1 className='text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-6 pb-2 overflow-visible'>
-            <span className='brush-title'>ACBCC English Ministry</span>
+            <span className='brush-title'>{tx(t.hero.title, lang)}</span>
           </h1>
 
           <p className='text-[18px] sm:text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-5'>
-            A Christ-centered community where we build relationships, grow in
-            faith, and serve together.
+            {tx(t.hero.description, lang)}
           </p>
         </div>
       </div>
@@ -51,13 +53,13 @@ const Hero = () => {
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className='flex items-center justify-between mb-6'>
             <h2 className='text-lg font-semibold text-gray-900'>
-              What's Coming Up
+              {tx(t.hero.whatsComingUp, lang)}
             </h2>
             <Link
               to='/events'
               className='text-sm text-teal-600 hover:text-teal-800 transition-colors font-medium'
             >
-              View all →
+              {tx(t.hero.viewAll, lang)}
             </Link>
           </div>
 
@@ -121,7 +123,7 @@ const Hero = () => {
                       onClick={(e) => e.stopPropagation()}
                       className='mt-3 inline-block text-xs text-blue-500 font-medium hover:text-blue-700 transition-colors'
                     >
-                      Registration & Event Info →
+                      {tx(t.events.registrationInfo, lang)}
                     </a>
                   )}
                 </div>

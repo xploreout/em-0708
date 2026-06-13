@@ -1,15 +1,18 @@
 import { Calendar, MapPin, Clock, Globe } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { upcomingEvents } from '../data/events'
+import { useLang } from '../context/LanguageContext'
+import { t, tx } from '../i18n/translations'
 
 const Events = () => {
+  const { lang } = useLang()
 
   return (
     <section id='events' className='py-20 bg-gray-50'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <div className='text-left mb-12'>
-          <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>What's Coming Up</h2>
+          <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>{tx(t.events.whatsComingUp, lang)}</h2>
         </div>
 
         {/* Cards */}
@@ -88,7 +91,7 @@ const Events = () => {
                     rel='noopener noreferrer'
                     className='mt-4 inline-block text-sm text-blue-500 font-medium hover:text-blue-700 transition-colors'
                   >
-                    Registration & Event Info →
+                    {tx(t.events.registrationInfo, lang)}
                   </a>
                 )}
               </div>
@@ -96,14 +99,6 @@ const Events = () => {
           ))}
         </div>
       </div>
-
-      {/* <EventRegistrationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        selectedEvent={selectedEvent}
-        allEvents={upcomingEvents}
-        onRegister={() => {}}
-      /> */}
     </section>
   )
 }

@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { MapPin } from 'lucide-react'
+import { useLang } from '../context/LanguageContext'
+import { t, tx } from '../i18n/translations'
 
 const About = () => {
   const [started, setStarted] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const { lang } = useLang()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -15,23 +18,12 @@ const About = () => {
     if (ref.current) observer.observe(ref.current)
     return () => observer.disconnect()
   }, [])
+
   const milestones = [
-    {
-      year: '2021',
-      text: 'Established by a group of brothers and sisters who shared a vision to build a Christ-centered community in our local area.',
-    },
-    {
-      year: '2022',
-      text: 'Blessed by the arrival of Pastor John Peng, whose leadership and shepherding have been a great encouragement to our church family.',
-    },
-    {
-      year: '2025',
-      text: 'Our English ministry was launched with a heart to serve the next generation, strengthening faith and building meaningful relationships among youth and adults.',
-    },
-    {
-      year: 'Now',
-      text: 'We are prayerfully seeking a part-time or full-time servant to join the ministry, and we look forward to the upcoming launch of our English Worship Service. Join us during this special season.',
-    },
+    { year: '2021', textKey: 'milestone2021' as const },
+    { year: '2022', textKey: 'milestone2022' as const },
+    { year: '2025', textKey: 'milestone2025' as const },
+    { year: 'Now',  textKey: 'milestoneNow'  as const },
   ]
 
   return (
@@ -40,10 +32,10 @@ const About = () => {
         {/* Hero */}
         <div>
           <p className='text-xs font-medium uppercase tracking-[0.25em] text-stone-400 mb-2'>
-            Who We Are
+            {tx(t.about.label, lang)}
           </p>
           <h1 className='text-2xl sm:text-3xl font-semibold text-stone-700 leading-snug'>
-            About Us
+            {tx(t.about.title, lang)}
           </h1>
         </div>
 
@@ -62,11 +54,7 @@ const About = () => {
               className='text-white/70 text-sm sm:text-lg leading-snug uppercase tracking-wide sm:tracking-widest font-bold'
               style={{ fontFamily: '"Roboto", sans-serif' }}
             >
-              We are a non-denominational Christian church established in 2021
-              by a group of brothers and sisters who shared a vision to build a
-              Christ-centered community in our local area. What began as a small
-              gathering has grown into a place where people come together to
-              worship, connect, and grow in faith.
+              {tx(t.about.photoText, lang)}
             </p>
           </div>
         </div>
@@ -74,7 +62,7 @@ const About = () => {
         {/* Timeline */}
         <div className='bg-white rounded-lg border border-stone-200 shadow-sm p-6 sm:p-8'>
           <p className='text-xs font-medium uppercase tracking-[0.2em] text-stone-400 mb-6'>
-            Our Story
+            {tx(t.about.ourStory, lang)}
           </p>
           <div className='relative border-l border-stone-200 pl-7 space-y-7'>
             {milestones.map((m) => (
@@ -83,7 +71,7 @@ const About = () => {
                   {m.year}
                 </span>
                 <p className='text-sm text-stone-600 leading-relaxed pt-1'>
-                  {m.text}
+                  {tx(t.about[m.textKey], lang)}
                 </p>
               </div>
             ))}
@@ -94,18 +82,16 @@ const About = () => {
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
           <div className='bg-white rounded-lg border border-stone-200 shadow-sm p-6 sm:p-8'>
             <p className='text-xs font-medium uppercase tracking-[0.2em] text-stone-400 mb-3'>
-              Today
+              {tx(t.about.today, lang)}
             </p>
             <p className='text-sm text-stone-600 leading-relaxed'>
-              We are a multi-generational and multicultural church, seeking to
-              create a space where everyone, no matter their background, can
-              explore faith, grow spiritually, and experience genuine community.
+              {tx(t.about.todayText, lang)}
             </p>
           </div>
 
           <div className='bg-white rounded-lg border border-stone-200 shadow-sm p-6 sm:p-8'>
             <p className='text-xs font-medium uppercase tracking-[0.2em] text-stone-400 mb-3'>
-              Location
+              {tx(t.about.location, lang)}
             </p>
             <div className='flex items-start gap-3 mb-3'>
               <MapPin className='h-4 w-4 text-stone-400 shrink-0 mt-0.5' />
@@ -119,14 +105,12 @@ const About = () => {
                   2965 Duluth Hwy, Duluth, GA 30096
                 </a>
                 <p className='text-xs text-stone-400 mt-0.5'>
-                  Georgia United Korean SDA Church
+                  {tx(t.about.locationNote, lang)}
                 </p>
               </div>
             </div>
             <p className='text-sm text-stone-600 leading-relaxed'>
-              We currently rent space at Georgia United Korean SDA Church. As
-              our ministry continues to grow, we have begun a building
-              initiative and are actively seeking a more suitable venue.
+              {tx(t.about.locationText, lang)}
             </p>
           </div>
         </div>
@@ -140,14 +124,13 @@ const About = () => {
             className='text-stone-400 text-sm sm:text-base uppercase tracking-widest mb-4'
             style={{ fontFamily: '"Roboto", sans-serif' }}
           >
-            Whether you are new to church, returning to faith, or looking for a
-            place to belong
+            {tx(t.about.welcomeLabel, lang)}
           </p>
           <p
             className={`text-sm sm:text-base font-semibold uppercase tracking-widest text-white ${started ? 'fade-in-text' : 'opacity-0'}`}
             style={{ fontFamily: '"Roboto", sans-serif' }}
           >
-            You are always welcome here.
+            {tx(t.about.welcomeText, lang)}
           </p>
         </div>
       </div>

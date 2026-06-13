@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { Send, CheckCircle } from 'lucide-react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { sendNewcomerFormEmails, type NewcomerFormData } from '../services/emailService';
+import { useLang } from '../context/LanguageContext';
+import { t, tx } from '../i18n/translations';
 
 const NewcomerForm = () => {
+  const { lang } = useLang();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -33,7 +36,7 @@ const NewcomerForm = () => {
     e.preventDefault();
 
     if (!recaptchaValue) {
-      alert('Please complete the reCAPTCHA verification');
+      alert(tx(t.newcomerForm.recaptchaAlert, lang));
       return;
     }
 
@@ -115,15 +118,15 @@ const NewcomerForm = () => {
             <div className="absolute inset-0 bg-black/40" onClick={() => setShowPopup(false)} />
             <div className="relative bg-white rounded-lg shadow-2xl p-8 max-w-md w-full text-center">
               <CheckCircle className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold text-stone-700 mb-3">Thank you for submitting the form.</h2>
+              <h2 className="text-xl font-semibold text-stone-700 mb-3">{tx(t.newcomerForm.thankYouTitle, lang)}</h2>
               <p className="text-stone-500 leading-relaxed">
-                We're glad to hear from you and look forward to connecting with you.
+                {tx(t.newcomerForm.thankYouText, lang)}
               </p>
               <button
                 onClick={() => setShowPopup(false)}
                 className="mt-6 px-6 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors duration-200"
               >
-                Close
+                {tx(t.newcomerForm.close, lang)}
               </button>
             </div>
           </div>
@@ -132,8 +135,8 @@ const NewcomerForm = () => {
           <div className="text-center">
             <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-12">
               <CheckCircle className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Thanks for reaching out!</h2>
-              <p className="text-gray-500">We'll be in touch soon to welcome you to our community.</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">{tx(t.newcomerForm.thanksTitle, lang)}</h2>
+              <p className="text-gray-500">{tx(t.newcomerForm.thanksText, lang)}</p>
             </div>
           </div>
         </section>
@@ -148,10 +151,10 @@ const NewcomerForm = () => {
           {/* Header */}
           <div className="mb-10">
             <h2 className="text-2xl sm:text-3xl font-semibold text-stone-700 leading-snug mb-3">
-              We are glad you're here
+              {tx(t.newcomerForm.title, lang)}
             </h2>
             <p className="text-gray-500 text-sm leading-relaxed">
-              We're looking forward to connect with you in your faith journey!
+              {tx(t.newcomerForm.subtitle, lang)}
             </p>
           </div>
 
@@ -164,7 +167,7 @@ const NewcomerForm = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Name <span className="text-red-400">*</span>
+                  {tx(t.newcomerForm.name, lang)} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="text"
@@ -173,13 +176,13 @@ const NewcomerForm = () => {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Your full name"
+                  placeholder={tx(t.newcomerForm.namePlaceholder, lang)}
                   className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                 />
               </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Email <span className="text-gray-400 font-normal">(optional)</span>
+                  {tx(t.newcomerForm.email, lang)} <span className="text-gray-400 font-normal">{tx(t.newcomerForm.optional, lang)}</span>
                 </label>
                 <input
                   type="email"
@@ -197,7 +200,7 @@ const NewcomerForm = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Phone <span className="text-red-400">*</span>
+                  {tx(t.newcomerForm.phone, lang)} <span className="text-red-400">*</span>
                 </label>
                 <input
                   type="tel"
@@ -212,7 +215,7 @@ const NewcomerForm = () => {
               </div>
               <div>
                 <label htmlFor="availableToServe" className="block text-sm font-medium text-gray-700 mb-1.5">
-                  How would you like to serve? <span className="text-gray-400 font-normal">(optional)</span>
+                  {tx(t.newcomerForm.howToServe, lang)} <span className="text-gray-400 font-normal">{tx(t.newcomerForm.optional, lang)}</span>
                 </label>
                 <input
                   type="text"
@@ -220,7 +223,7 @@ const NewcomerForm = () => {
                   name="availableToServe"
                   value={formData.availableToServe}
                   onChange={handleChange}
-                  placeholder="e.g. music, hospitality, youth"
+                  placeholder={tx(t.newcomerForm.howToServePlaceholder, lang)}
                   className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                 />
               </div>
@@ -228,14 +231,14 @@ const NewcomerForm = () => {
 
             {/* Purpose */}
             <div>
-              <p className="text-sm font-medium text-gray-700 mb-3">What brings you here?</p>
+              <p className="text-sm font-medium text-gray-700 mb-3">{tx(t.newcomerForm.whatBrings, lang)}</p>
               <div className="space-y-2.5">
                 {[
-                  { key: 'newcomer', label: "I'm new and want to learn more about the community" },
-                  { key: 'willingToServe', label: "I'd like to help out and serve" },
-                  { key: 'activityInterest', label: "I'm interested in a specific event or activity" },
-                  { key: 'other', label: 'Something else' },
-                ].map(({ key, label }) => (
+                  { key: 'newcomer',        labelKey: 'purposeNewcomer'  as const },
+                  { key: 'willingToServe',  labelKey: 'purposeServe'     as const },
+                  { key: 'activityInterest',labelKey: 'purposeActivity'  as const },
+                  { key: 'other',           labelKey: 'purposeOther'     as const },
+                ].map(({ key, labelKey }) => (
                   <label key={key} className="flex items-start gap-3 cursor-pointer group">
                     <input
                       type="checkbox"
@@ -245,7 +248,7 @@ const NewcomerForm = () => {
                       className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-400"
                     />
                     <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">
-                      {label}
+                      {tx(t.newcomerForm[labelKey], lang)}
                     </span>
                   </label>
                 ))}
@@ -255,24 +258,24 @@ const NewcomerForm = () => {
               {formData.purposes.activityInterest && (
                 <div className="mt-3 ml-7 grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-blue-50 rounded-lg border border-blue-100">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Event or activity name</label>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">{tx(t.newcomerForm.eventName, lang)}</label>
                     <input
                       type="text"
                       name="activityDetails.activityName"
                       value={formData.activityDetails.activityName}
                       onChange={handleChange}
-                      placeholder="e.g. Friday Fellowship"
+                      placeholder={tx(t.newcomerForm.eventNamePlaceholder, lang)}
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Date (if known)</label>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">{tx(t.newcomerForm.eventDate, lang)}</label>
                     <input
                       type="text"
                       name="activityDetails.activityDate"
                       value={formData.activityDetails.activityDate}
                       onChange={handleChange}
-                      placeholder="e.g. April 11, 2026"
+                      placeholder={tx(t.newcomerForm.eventDatePlaceholder, lang)}
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                     />
                   </div>
@@ -286,7 +289,7 @@ const NewcomerForm = () => {
                     name="otherPurpose"
                     value={formData.otherPurpose}
                     onChange={handleChange}
-                    placeholder="Tell us a little more about why you're reaching out..."
+                    placeholder={tx(t.newcomerForm.otherPlaceholder, lang)}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
                   />
@@ -297,7 +300,7 @@ const NewcomerForm = () => {
             {/* Notes */}
             <div>
               <label htmlFor="note" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Anything else you'd like us to know? <span className="text-gray-400 font-normal">(optional)</span>
+                {tx(t.newcomerForm.anythingElse, lang)} <span className="text-gray-400 font-normal">{tx(t.newcomerForm.optional, lang)}</span>
               </label>
               <textarea
                 id="note"
@@ -305,7 +308,7 @@ const NewcomerForm = () => {
                 rows={3}
                 value={formData.note}
                 onChange={handleChange}
-                placeholder="Feel free to share anything — questions, background, how you heard about us..."
+                placeholder={tx(t.newcomerForm.anythingElsePlaceholder, lang)}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
               />
             </div>
@@ -333,7 +336,7 @@ const NewcomerForm = () => {
               className="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg text-sm transition-colors duration-200"
             >
               <Send className="h-4 w-4" />
-              {isSubmitting ? 'Sending...' : 'Send Message'}
+              {isSubmitting ? tx(t.newcomerForm.sending, lang) : tx(t.newcomerForm.send, lang)}
             </button>
 
           </form>

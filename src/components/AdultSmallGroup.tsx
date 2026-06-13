@@ -1,23 +1,23 @@
 import { Calendar, Clock, MapPin } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useLang } from '../context/LanguageContext'
+import { t, tx } from '../i18n/translations'
 
 const AdultSmallGroup = () => {
+  const { lang } = useLang()
+
   const studies = [
     {
-      title: 'Basics of Faith',
+      titleKey: 'studiesTitle' as const,
+      descKey: 'studiesDesc' as const,
       href: '/resources/basicoffaith',
-      image:
-        'https://images.pexels.com/photos/66100/pexels-photo-66100.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description:
-        'A video series exploring the foundations of Christian faith — who Jesus is, what faith means, and how to grow spiritually.',
+      image: 'https://images.pexels.com/photos/66100/pexels-photo-66100.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
     },
     {
-      title: 'Purpose Driven Life',
+      titleKey: 'pdlTitle' as const,
+      descKey: 'pdlDesc' as const,
       href: '/resources/purposedrivenlife',
-      image:
-        'https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      description:
-        'A 40-day devotional series helping you discover what you were created for and how to live with purpose.',
+      image: 'https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
     },
   ]
 
@@ -26,10 +26,10 @@ const AdultSmallGroup = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='text-left '>
           <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>
-            Adult Small Group
+            {tx(t.adultSmallGroup.title, lang)}
           </h2>
           <p className='text-xl text-gray-500 opacity-80 pb-8'>
-            A safe place to grow and strength faith
+            {tx(t.adultSmallGroup.subtitle, lang)}
           </p>
         </div>
 
@@ -46,25 +46,19 @@ const AdultSmallGroup = () => {
                 className='text-white text-lg leading-tight uppercase tracking-widest font-bold'
                 style={{ fontFamily: '"Roboto", sans-serif' }}
               >
-                A goal to foster deeper relationships while encouraging
-                spiritual growth and accountability through discussion and
-                shared experiences.
+                {tx(t.adultSmallGroup.overlayText, lang)}
               </p>
             </div>
           </div>
 
           <div className='w-full md:w-1/2 space-y-4'>
-            {/* Adult Small Group - Salt n Light card */}
+            {/* Salt n Light card */}
             <div className='bg-gray-50 rounded-lg border border-gray-100 p-5 space-y-2 text-sm text-gray-500'>
               <p className='font-semibold text-gray-800 text-base'>
-                Salt n Light (SnL)
+                {tx(t.adultSmallGroup.snlTitle, lang)}
               </p>
               <p className='text-gray-500 leading-relaxed'>
-                Come experience community and grow in faith with others. No
-                matter where you are in life, you’re welcome to join. We are
-                currently going through a video series on "Basics of Faith" by
-                Life Church Open Network. Each session includes a short video
-                and group discussion. Join as we grow spiritually together!
+                {tx(t.adultSmallGroup.snlText, lang)}
               </p>
               <div className='flex items-center gap-2'>
                 <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />
@@ -87,28 +81,26 @@ const AdultSmallGroup = () => {
               </div>
             </div>
           </div>
-          {/* end space-y-4 */}
         </div>
-        {/* end flex row */}
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {studies.map((study) => (
             <Link
-              key={study.title}
+              key={study.href}
               to={study.href}
               className='bg-gray-50 rounded-lg overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200 flex flex-col group'
             >
               <img
                 src={study.image}
-                alt={study.title}
+                alt={tx(t.adultSmallGroup[study.titleKey], lang)}
                 className='w-full h-44 object-cover'
               />
               <div className='p-5 flex flex-col flex-1'>
                 <h4 className='text-lg font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors'>
-                  {study.title}
+                  {tx(t.adultSmallGroup[study.titleKey], lang)}
                 </h4>
                 <p className='text-base text-gray-600 leading-relaxed flex-1'>
-                  {study.description}
+                  {tx(t.adultSmallGroup[study.descKey], lang)}
                 </p>
               </div>
             </Link>

@@ -1,8 +1,11 @@
 import { Calendar, Clock, MapPin } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { upcomingEvents } from '../data/events'
+import { useLang } from '../context/LanguageContext'
+import { t, tx } from '../i18n/translations'
 
 const Youth = () => {
+  const { lang } = useLang()
   const youthIds = [3, 5, 7, 8]
   const youthEvents = youthIds
     .map((id) => upcomingEvents.find((e) => e.id === id)!)
@@ -13,10 +16,10 @@ const Youth = () => {
       <div className='max-w-7xl mx-auto px-12 sm:px-16 lg:px-24'>
         <div className='text-left mb-14'>
           <h2 className='text-xl font-bold text-gray-900 uppercase tracking-widest'>
-            Youth Ministry
+            {tx(t.youth.title, lang)}
           </h2>
           <p className='text-xl text-gray-500 opacity-80'>
-            A place where middle and high schooler belong.
+            {tx(t.youth.subtitle, lang)}
           </p>
         </div>
 
@@ -33,7 +36,7 @@ const Youth = () => {
                 className='text-white text-xl md:text-3xl leading-tight uppercase tracking-widest font-bold'
                 style={{ fontFamily: '"Roboto", sans-serif' }}
               >
-                Empowered youth to build personal relationship with Jesus Christ
+                {tx(t.youth.overlayText, lang)}
               </p>
             </div>
           </div>
@@ -41,13 +44,7 @@ const Youth = () => {
           {/* Text */}
           <div className='w-full md:w-1/2 text-gray-600 leading-relaxed space-y-4'>
             <p>
-              Welcome to the Youth ministry that is specifically for middle
-              &amp; high schoolers! It includes a lively Friday nights
-              fellowship, engaging Sunday bible studies, serving in the
-              community on giving back, and fun social events throughout the
-              year. Our youth ministries are led by adults committed to
-              equipping students to navigate middle and high school and develop
-              a faith of their own.
+              {tx(t.youth.description, lang)}
             </p>
           </div>
         </div>
@@ -93,17 +90,6 @@ const Youth = () => {
                       )}
                     </div>
                   </div>
-                  {/* {event.registrationUrl && (
-                    <a
-                      href={event.registrationUrl}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      onClick={(e) => e.stopPropagation()}
-                      className='mt-3 inline-block text-sm text-blue-500 font-medium hover:text-blue-700 transition-colors'
-                    >
-                      Registration & Event Info →
-                    </a>
-                  )} */}
                 </div>
               </>
             )

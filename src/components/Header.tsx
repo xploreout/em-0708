@@ -2,7 +2,27 @@ import { useState, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Menu, X, ArrowLeft, ChevronDown, ChevronRight, LogIn, LogOut } from 'lucide-react'
 import { useAuth, ROLE_LABELS, ROLE_ROUTES } from '../context/AuthContext'
+import { useLang } from '../context/LanguageContext'
+import { t, tx } from '../i18n/translations'
 import LoginModal from './LoginModal'
+
+const LangToggle = () => {
+  const { lang, toggleLang } = useLang()
+  return (
+    <button
+      onClick={toggleLang}
+      title={lang === 'en' ? 'Switch to Chinese' : '切换到英文'}
+      className='flex items-center rounded-full border border-gray-200 overflow-hidden text-xs font-semibold select-none'
+    >
+      <span className={`px-2.5 py-1 transition-colors duration-200 ${lang === 'en' ? 'bg-blue-500 text-white' : 'text-gray-500 hover:text-gray-700 bg-white'}`}>
+        EN
+      </span>
+      <span className={`px-2.5 py-1 transition-colors duration-200 ${lang === 'zh' ? 'bg-blue-500 text-white' : 'text-gray-500 hover:text-gray-700 bg-white'}`}>
+        中文
+      </span>
+    </button>
+  )
+}
 
 const Header = () => {
   const [isOpen,             setIsOpen]             = useState(false)
@@ -21,21 +41,22 @@ const Header = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const { role, logout } = useAuth()
+  const { lang } = useLang()
 
   const eventsItems = [
-    { name: 'Upcoming Events', href: '/events' },
-    { name: 'Past Events',     href: '/past-events' },
+    { name: tx(t.nav.upcomingEvents, lang), href: '/events' },
+    { name: tx(t.nav.pastEvents, lang),     href: '/past-events' },
   ]
 
   const ministriesItems = [
-    { name: 'Adult Small Group', href: '/resources/adult-small-group' },
-    { name: 'Youth Ministry',    href: '/resources/youth' },
-    { name: 'Children Ministry', href: '/resources/children' },
+    { name: tx(t.nav.adultSmallGroup, lang),   href: '/resources/adult-small-group' },
+    { name: tx(t.nav.youthMinistry, lang),     href: '/resources/youth' },
+    { name: tx(t.nav.childrenMinistry, lang),  href: '/resources/children' },
   ]
 
   const resoItems = [
-    { name: 'Devotional Resources', href: '/resources/other' },
-    { name: 'Class Resources',      href: '/class-resources' },
+    { name: tx(t.nav.devotionalResources, lang), href: '/resources/other' },
+    { name: tx(t.nav.classResources, lang),      href: '/class-resources' },
   ]
 
   const isResourcesActive = [...ministriesItems, ...resoItems].some(i => location.pathname.startsWith(i.href))
@@ -66,7 +87,7 @@ const Header = () => {
                   ? 'bg-blue-100 text-blue-700'
                   : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
               }`}>
-              I'm New
+              {tx(t.nav.imNew, lang)}
             </Link>
 
             {/* Events dropdown */}
@@ -74,13 +95,13 @@ const Header = () => {
               <button className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 flex items-center gap-1 hover:bg-primary-50 ${
                 isEventsActive ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:text-primary-600'
               }`}>
-                Events
+                {tx(t.nav.events, lang)}
                 <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${eventsOpen ? 'rotate-180' : ''}`} />
               </button>
               {eventsOpen && (
                 <div className='absolute top-full left-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
                   {eventsItems.map(item => (
-                    <Link key={item.name} to={item.href}
+                    <Link key={item.href} to={item.href}
                       className={`block px-4 py-2 text-sm transition-colors duration-150 hover:bg-gray-50 ${
                         location.pathname === item.href ? 'text-primary-600 font-medium' : 'text-gray-700 hover:text-primary-600'
                       }`}
@@ -97,13 +118,13 @@ const Header = () => {
               <button className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 flex items-center gap-1 hover:bg-primary-50 ${
                 isResourcesActive ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:text-primary-600'
               }`}>
-                Ministries
+                {tx(t.nav.ministries, lang)}
                 <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${resourcesOpen ? 'rotate-180' : ''}`} />
               </button>
               {resourcesOpen && (
                 <div className='absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
                   {ministriesItems.map(item => (
-                    <Link key={item.name} to={item.href}
+                    <Link key={item.href} to={item.href}
                       className={`block px-4 py-2 text-sm transition-colors duration-150 hover:bg-gray-50 ${
                         location.pathname.startsWith(item.href) ? 'text-primary-600 font-medium' : 'text-gray-700 hover:text-primary-600'
                       }`}
@@ -117,13 +138,13 @@ const Header = () => {
                     <div className={`flex items-center justify-between px-4 py-2 text-sm cursor-pointer transition-colors duration-150 hover:bg-gray-50 ${
                       resoItems.some(i => location.pathname.startsWith(i.href)) ? 'text-primary-600 font-medium' : 'text-gray-700 hover:text-primary-600'
                     }`}>
-                      Resources
+                      {tx(t.nav.resources, lang)}
                       <ChevronRight className='h-3 w-3' />
                     </div>
                     {resoSubOpen && (
                       <div className='absolute left-full top-0 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50'>
                         {resoItems.map(item => (
-                          <Link key={item.name} to={item.href}
+                          <Link key={item.href} to={item.href}
                             className={`block px-4 py-2 text-sm transition-colors duration-150 hover:bg-gray-50 ${
                               location.pathname.startsWith(item.href) ? 'text-primary-600 font-medium' : 'text-gray-700 hover:text-primary-600'
                             }`}
@@ -142,7 +163,7 @@ const Header = () => {
               className={`px-3 py-2 rounded-md text-l font-medium transition-colors duration-200 hover:bg-primary-50 ${
                 location.pathname === '/about' ? 'text-primary-600 bg-primary-50' : 'text-gray-700 hover:text-primary-600'
               }`}>
-              About
+              {tx(t.nav.about, lang)}
             </Link>
 
             <a href='https://www.acbcc.org' target='_blank' rel='noopener noreferrer'
@@ -151,6 +172,9 @@ const Header = () => {
               <span className='text-xs font-normal ml-0.5 leading-none text-gray-400' style={{ writingMode: 'vertical-rl' }}>中文</span>
             </a>
 
+            {/* Language toggle */}
+            <LangToggle />
+
             {/* Login / user badge */}
             {role ? (
               <div className='flex items-center gap-2'>
@@ -158,7 +182,7 @@ const Header = () => {
                   className='text-xs font-bold px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition'>
                   {ROLE_LABELS[role]}
                 </button>
-                <button onClick={() => { logout(); navigate('/') }} title='Logout'
+                <button onClick={() => { logout(); navigate('/') }} title={tx(t.nav.logout, lang)}
                   className='text-gray-400 hover:text-gray-600 transition'>
                   <LogOut className='w-4 h-4' />
                 </button>
@@ -167,13 +191,14 @@ const Header = () => {
               <button onClick={() => setLoginOpen(true)}
                 className='flex items-center gap-1.5 px-2 py-1.5 text-gray-400 hover:text-gray-600 transition-colors duration-200'>
                 <LogIn className='w-4 h-4' />
-                <span className='text-xs font-medium'>Login</span>
+                <span className='text-xs font-medium'>{tx(t.nav.login, lang)}</span>
               </button>
             )}
           </nav>
 
-          {/* Mobile hamburger */}
-          <div className='flex md:hidden'>
+          {/* Mobile: language toggle + hamburger */}
+          <div className='flex md:hidden items-center gap-2'>
+            <LangToggle />
             <button onClick={() => setIsOpen(v => !v)}
               className='text-gray-700 hover:text-primary-600 p-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500'
               aria-label='Toggle menu'>
@@ -199,20 +224,20 @@ const Header = () => {
             <Link to='/im-new'
               className='px-3 py-1 rounded-full text-base font-semibold bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors duration-200 inline-block'
               onClick={() => setIsOpen(false)}>
-              I'm New
+              {tx(t.nav.imNew, lang)}
             </Link>
 
             {/* Mobile Events accordion */}
             <button
               className={`px-3 text-left rounded-md text-base font-medium flex items-center gap-1 ${isEventsActive ? 'text-primary-600' : 'text-blue-700'}`}
               onClick={() => setMobileEventsOpen(v => !v)}>
-              Events
+              {tx(t.nav.events, lang)}
               <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mobileEventsOpen ? 'rotate-180' : ''}`} />
             </button>
             {mobileEventsOpen && (
               <div className='pl-6 flex flex-col space-y-1'>
                 {eventsItems.map(item => (
-                  <Link key={item.name} to={item.href}
+                  <Link key={item.href} to={item.href}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
                       location.pathname === item.href ? 'text-primary-600' : 'text-blue-700 hover:text-blue-500'
                     }`}
@@ -227,13 +252,13 @@ const Header = () => {
             <button
               className={`px-3 text-left rounded-md text-base font-medium flex items-center gap-1 ${isResourcesActive ? 'text-primary-600' : 'text-blue-700'}`}
               onClick={() => setMobileResourcesOpen(v => !v)}>
-              Ministries
+              {tx(t.nav.ministries, lang)}
               <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${mobileResourcesOpen ? 'rotate-180' : ''}`} />
             </button>
             {mobileResourcesOpen && (
               <div className='pl-6 flex flex-col space-y-1'>
                 {ministriesItems.map(item => (
-                  <Link key={item.name} to={item.href}
+                  <Link key={item.href} to={item.href}
                     className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
                       location.pathname.startsWith(item.href) ? 'text-primary-600' : 'text-blue-700 hover:text-blue-500'
                     }`}
@@ -248,13 +273,13 @@ const Header = () => {
                     resoItems.some(i => location.pathname.startsWith(i.href)) ? 'text-primary-600' : 'text-blue-700'
                   }`}
                   onClick={() => setMobileResoSubOpen(v => !v)}>
-                  Resources
+                  {tx(t.nav.resources, lang)}
                   <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${mobileResoSubOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {mobileResoSubOpen && (
                   <div className='pl-4 flex flex-col space-y-1'>
                     {resoItems.map(item => (
-                      <Link key={item.name} to={item.href}
+                      <Link key={item.href} to={item.href}
                         className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
                           location.pathname.startsWith(item.href) ? 'text-primary-600' : 'text-blue-700 hover:text-blue-500'
                         }`}
@@ -272,7 +297,7 @@ const Header = () => {
                 location.pathname === '/about' ? 'text-primary-600' : 'text-blue-700 hover:text-blue-500'
               }`}
               onClick={() => setIsOpen(false)}>
-              About
+              {tx(t.nav.about, lang)}
             </Link>
 
             {/* Mobile login / logout */}
@@ -288,7 +313,7 @@ const Header = () => {
                     onClick={() => { logout(); setIsOpen(false); navigate('/') }}
                     className='w-full flex items-center gap-2 px-3 py-2 text-sm font-semibold text-red-500 rounded-lg hover:bg-red-50 transition'>
                     <LogOut className='w-4 h-4' />
-                    Logout
+                    {tx(t.nav.logout, lang)}
                   </button>
                 </div>
               ) : (
@@ -296,7 +321,7 @@ const Header = () => {
                   onClick={() => { setLoginOpen(true); setIsOpen(false) }}
                   className='w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors duration-200'>
                   <LogIn className='w-4 h-4' />
-                  Login
+                  {tx(t.nav.login, lang)}
                 </button>
               )}
             </div>

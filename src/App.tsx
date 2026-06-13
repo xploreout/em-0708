@@ -11,6 +11,7 @@ function ScrollToTop() {
 import EmFeud from './components/EmFeud';
 import EmFeudForm from './components/EmFeudForm';
 import { AuthProvider } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
 import ScheduleCalendar from './components/schedule/ScheduleCalendar';
 import AdminPanel from './components/schedule/AdminPanel'
 import AttendancePage from './components/attendance/AttendancePage'
@@ -48,6 +49,7 @@ function Layout() {
 function App() {
   return (
     <Router>
+      <LanguageProvider>
       <AuthProvider>
       <ScrollToTop />
       <div className="min-h-screen">
@@ -78,6 +80,7 @@ function App() {
         </Routes>
       </div>
       </AuthProvider>
+      </LanguageProvider>
     </Router>
   );
 }
