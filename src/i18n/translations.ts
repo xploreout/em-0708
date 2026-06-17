@@ -7,7 +7,7 @@ export const t = {
   nav: {
     imNew: { en: "I'm New", zh: '我是新来的' },
     events: { en: 'Events', zh: '活动' },
-    upcomingEvents: { en: 'Upcoming Events', zh: '未來活动' },
+    upcomingEvents: { en: 'Upcoming Events', zh: '近期活动' },
     pastEvents: { en: 'Past Events', zh: '过去活动' },
     ministries: { en: 'Ministries', zh: '事工/资源' },
     adultSmallGroup: { en: 'Adult Small Group', zh: '成人小组' },
