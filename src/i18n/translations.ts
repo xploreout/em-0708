@@ -141,7 +141,7 @@ export const t = {
     whatBrings: { en: 'What brings you here?', zh: '您来这里的目的是？' },
     purposeNewcomer: {
       en: "I'm new and want to learn more about the community",
-      zh: '我是新来的，想了解更多关于社群的信息',
+      zh: '我是新来的，想了解更多关于的信息',
     },
     purposeServe: {
       en: "I'd like to help out and serve",
@@ -164,7 +164,7 @@ export const t = {
     },
     otherPlaceholder: {
       en: "Tell us a little more about why you're reaching out...",
-      zh: '告诉我们更多关于您联系我们的原因……',
+      zh: '请分享您联系我们的原因……',
     },
     anythingElse: {
       en: "Anything else you'd like us to know?",
@@ -172,7 +172,7 @@ export const t = {
     },
     anythingElsePlaceholder: {
       en: 'Feel free to share anything — questions, background, how you heard about us...',
-      zh: '欢迎分享任何内容——问题、背景、如何了解我们……',
+      zh: '欢迎分享任何内容——问题、背景、如何找到我们……',
     },
     send: { en: 'Send Message', zh: '发送消息' },
     sending: { en: 'Sending...', zh: '发送中...' },
@@ -233,8 +233,8 @@ export const t = {
     },
     snlTitle: { en: 'Salt n Light (SnL)', zh: '盐与光 (SnL)' },
     snlText: {
-      en: 'Come experience community and grow in faith with others. No matter where you are in life, you\'re welcome to join. We are currently going through a video series on "Basics of Faith" by Life Church Open Network. Each session includes a short video and group discussion. Join as we grow spiritually together!',
-      zh: '来体验社群，与他人一同在信仰中成长。无论您处于人生哪个阶段，都欢迎加入。我们目前正在进行生命教会开放网络的「信仰基础」视频系列。每次聚会包括一段短视频和小组讨论。一同加入我们的属灵成长旅程！',
+      en: 'We just finished the "Basics of Faith" series. We will start a book discussion on Philippians, a letter by apostle Paul on joy, unity ad living as citizens of heaven. We also will join with the younger generation during the summer.',
+      zh: '我们刚刚结束了“信仰基础”系列课程。接下来，我们将围绕《腓立比书》展开研读与讨论——这是使徒保罗写的一封书信，探讨了喜乐、合一以及作为天国子民的生活方式。此外，我们夏天也会与年轻一代会合。',
     },
     studiesTitle: { en: 'Basics of Faith', zh: '信仰基础' },
     studiesDesc: {

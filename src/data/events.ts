@@ -42,14 +42,14 @@ export const upcomingEvents: Event[] = [
   },
   {
     id: 4,
-    title: 'Salt n Light (SnL) Fellowship',
-    date: 'Fridays, April 10th & 17th',
+    title: 'Salt n Light (SnL) ',
+    date: '2nd & 3rd Fridays, June – August',
     time: '7:30pm – 9:15pm',
     location: 'SDA Church, Duluth, GA',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      'We started a video series on "Basics of Faith" by Life Church Open Network. Each session includes a short video and group discussion. Join as we grow spiritually together!',
+      'We just finished the "Basics of Faith" series. We will start a book discussion on Philippians, a letter by apostle Paul on joy, unity ad living as citizens of heaven. We also will join with the younger generation during the summer.',
     image:
       'https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
     link: '/resources/basicoffaith',
@@ -103,7 +103,8 @@ export const upcomingEvents: Event[] = [
     description:
       "This summer, we're excited to invite children to join our Summer Kids Fellowship, a fun and meaningful time designed to help children grow in faith, build friendships, and enjoy a safe, joyful community. ",
     image: '',
-    video: 'https://res.cloudinary.com/dz2zqnf2q/video/upload/video/fridaykids.mp4',
+    video:
+      'https://res.cloudinary.com/dz2zqnf2q/video/upload/video/fridaykids.mp4',
   },
   {
     id: 10,
