@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, ArrowLeft, ChevronDown, ChevronRight, LogIn, LogOut } from 'lucide-react'
+import { Menu, X, ArrowLeft, ChevronDown, ChevronRight, LogIn, LogOut, Globe } from 'lucide-react'
 import { useAuth, ROLE_LABELS, ROLE_ROUTES } from '../context/AuthContext'
 import { useLang } from '../context/LanguageContext'
 import { t, tx } from '../i18n/translations'
@@ -12,14 +12,10 @@ const LangToggle = () => {
     <button
       onClick={toggleLang}
       title={lang === 'en' ? 'Switch to Chinese' : '切换到英文'}
-      className='flex items-center rounded-full border border-gray-200 overflow-hidden text-xs font-semibold select-none'
+      className='flex items-center gap-1 px-2 py-1 rounded-full border border-gray-200 text-xs font-semibold select-none text-gray-600 hover:text-blue-500 hover:border-blue-300 transition-colors duration-200'
     >
-      <span className={`px-2.5 py-1 transition-colors duration-200 ${lang === 'en' ? 'bg-blue-500 text-white' : 'text-gray-500 hover:text-gray-700 bg-white'}`}>
-        EN
-      </span>
-      <span className={`px-2.5 py-1 transition-colors duration-200 ${lang === 'zh' ? 'bg-blue-500 text-white' : 'text-gray-500 hover:text-gray-700 bg-white'}`}>
-        中文
-      </span>
+      <Globe size={14} />
+      <span>{lang === 'en' ? '中文' : 'EN'}</span>
     </button>
   )
 }
