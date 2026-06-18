@@ -16,6 +16,16 @@ type ClassWithDocs = {
   documents: ClassDoc[]
 }
 
+function sortClassesByLang<T extends { name: string }>(arr: T[]): T[] {
+  const isChinese = (s: string) => /[一-鿿]/.test(s)
+  return [...arr].sort((a, b) => {
+    const aCN = isChinese(a.name), bCN = isChinese(b.name)
+    if (aCN && !bCN) return -1
+    if (!aCN && bCN) return 1
+    return a.name.localeCompare(b.name)
+  })
+}
+
 function fmtDate(d: string) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
@@ -280,7 +290,7 @@ export default function ClassResourcesPage() {
   useEffect(() => {
     fetch('/api/public/class-resources')
       .then(r => r.json())
-      .then(d => { setAllClasses(Array.isArray(d) ? d : []); setLoading(false) })
+      .then(d => { setAllClasses(Array.isArray(d) ? sortClassesByLang(d) : []); setLoading(false) })
       .catch(() => { setError(tx(t.classResources.loadError, lang)); setLoading(false) })
   }, [])
 

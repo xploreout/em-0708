@@ -24,6 +24,9 @@ export default function PdfViewerModal({ url, name, onClose, downloadUrl, hideDo
   const containerRef = useRef<HTMLDivElement>(null)
   const [pageWidth, setPageWidth] = useState(600)
 
+  const onCloseRef = useRef(onClose)
+  useEffect(() => { onCloseRef.current = onClose })
+
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) {
@@ -42,6 +45,26 @@ export default function PdfViewerModal({ url, name, onClose, downloadUrl, hideDo
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
+
+  // Browser back button closes the modal instead of navigating away
+  useEffect(() => {
+    window.history.pushState(null, '')
+    let closedViaPopstate = false
+
+    const handlePop = () => {
+      closedViaPopstate = true
+      onCloseRef.current()
+    }
+
+    window.addEventListener('popstate', handlePop)
+
+    return () => {
+      window.removeEventListener('popstate', handlePop)
+      if (!closedViaPopstate) {
+        window.history.back()
+      }
+    }
+  }, [])
 
   const dlLink = downloadUrl ?? url.replace('/upload/', '/upload/fl_attachment/')
 

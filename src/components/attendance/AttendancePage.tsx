@@ -26,6 +26,16 @@ type ClassInfo = {
 
 const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
 
+function sortClassesByLang<T extends { name: string }>(arr: T[]): T[] {
+  const isChinese = (s: string) => /[一-鿿]/.test(s)
+  return [...arr].sort((a, b) => {
+    const aCN = isChinese(a.name), bCN = isChinese(b.name)
+    if (aCN && !bCN) return -1
+    if (!aCN && bCN) return 1
+    return a.name.localeCompare(b.name)
+  })
+}
+
 function fmtDate(d: string) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
@@ -159,7 +169,7 @@ export default function AttendancePage() {
   async function loadClasses() {
     const r = await authFetch('/api/classes')
     const d = await r.json()
-    if (Array.isArray(d)) setAllClasses(d)
+    if (Array.isArray(d)) setAllClasses(sortClassesByLang(d))
   }
 
   useEffect(() => {
@@ -243,7 +253,7 @@ export default function AttendancePage() {
     setAllClasses(prev => {
       const idx = prev.findIndex(x => x.id === c.id)
       if (idx >= 0) return prev.map(x => x.id === c.id ? c : x)
-      return [...prev, c].sort((a, b) => a.name.localeCompare(b.name))
+      return sortClassesByLang([...prev, c])
     })
     showFlash(editingClass ? `"${c.name}" updated.` : `"${c.name}" created.`)
     setShowClassForm(false); setEditingClass(null)
