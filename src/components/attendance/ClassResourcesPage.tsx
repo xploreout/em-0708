@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, FileText, FileImage, File, Download, Clock, MapPin, Users, Archive, ChevronDown, ChevronRight, BookOpen, Youtube, Play, ExternalLink } from 'lucide-react'
+import { Search, FileText, FileImage, File, Download, Clock, MapPin, Users, Archive, ChevronDown, ChevronRight, Youtube, Play, ExternalLink } from 'lucide-react'
 import PdfViewerModal from '../PdfViewerModal'
 import { useLang } from '../../context/LanguageContext'
 import { t, tx } from '../../i18n/translations'
@@ -310,10 +310,7 @@ export default function ClassResourcesPage() {
       {/* Hero */}
       <div className="bg-white border-b border-gray-100 px-4 py-6 sm:py-10">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="hidden sm:flex w-12 h-12 rounded-lg bg-blue-100 items-center justify-center mx-auto mb-4">
-            <BookOpen className="w-6 h-6 text-blue-600" />
-          </div>
-          <h1 className="text-xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">{tx(t.classResources.title, lang)}</h1>
+<h1 className="text-xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">{tx(t.classResources.title, lang)}</h1>
           <p className="text-gray-500 text-sm sm:text-base mb-4 sm:mb-6">
             {tx(t.classResources.subtitle, lang)}
           </p>
