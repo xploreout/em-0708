@@ -12,7 +12,7 @@ const LangToggle = () => {
     <button
       onClick={toggleLang}
       title={lang === 'en' ? 'Switch to Chinese' : '切换到英文'}
-      className='flex items-center gap-1 px-2 py-1 rounded-full border border-gray-200 text-xs font-semibold select-none text-gray-600 hover:text-blue-500 hover:border-blue-300 transition-colors duration-200'
+      className='flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold select-none text-gray-600 hover:text-blue-500 transition-colors duration-200'
     >
       <Globe size={14} className='text-blue-500' />
       <span>{lang === 'en' ? '中文' : 'EN'}</span>

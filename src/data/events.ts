@@ -43,13 +43,13 @@ export const upcomingEvents: Event[] = [
   {
     id: 4,
     title: 'Salt n Light (SnL) ',
-    date: '2nd & 3rd Fridays, June – August',
+    date: '',
     time: '7:30pm – 9:15pm',
     location: 'SDA Church, Duluth, GA',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      'We just finished the "Basics of Faith" series. We will start a book discussion on Philippians, a letter by apostle Paul on joy, unity ad living as citizens of heaven. We also will join with the younger generation during the summer.',
+      'We just finished the "Basics of Faith" series. We will start a book discussion on Philippians, a letter by apostle Paul on joy, unity and living as citizens of heaven. We also will join with the younger generation during the summer.',
     image:
       'https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
     link: '/resources/basicoffaith',
@@ -70,12 +70,12 @@ export const upcomingEvents: Event[] = [
     id: 6,
     title: 'FIFA Summer Sport Day',
     date: 'July 18 Saturday',
-    time: '4:00pm – 7:30pm',
-    location: 'Johns Creek',
+    time: '4:00pm – 8:00pm',
+    location: 'Duluth',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      "Join us for a fun-filled Summer Sport Day and Fifa watch party! We'll have exciting games, delicious bbq, and great fun. It's a perfect opportunity to enjoy the summer together. Don't miss out on the fun!",
+      "Join us for a fun-filled Summer Sport Day and Fifa watch party! We'll hangout with good bbq, some FIFA action with games, and great fun. It's a perfect opportunity to enjoy the summer together. Don't miss out on the fun!",
     image:
       'https://images.pexels.com/photos/17206408/pexels-photo-17206408.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
     video: 'https://res.cloudinary.com/dz2zqnf2q/video/upload/video/pool2.mp4',

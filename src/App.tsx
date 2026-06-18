@@ -22,6 +22,7 @@ import PastEvents from './components/PastEvents';
 import MainPage from './components/MainPage';
 import Events from './components/Events';
 import BasicsOfFaith from './components/BasicsOfFaith';
+import Philippians from './components/Philippians';
 import PurposeDrivenLife from './components/PurposeDrivenLife';
 import AdultSmallGroup from './components/AdultSmallGroup';
 import Youth from './components/Youth';
@@ -62,6 +63,7 @@ function App() {
             <Route path="/resources/youth" element={<Youth />} />
             <Route path="/resources/children" element={<Children />} />
             <Route path="/resources/other" element={<OtherResources />} />
+            <Route path="/resources/Philippians" element={<Philippians />} />
             <Route path="/resources/basicoffaith" element={<BasicsOfFaith />} />
             <Route path="/resources/purposedrivenlife" element={<PurposeDrivenLife />} />
             <Route path="/past-events" element={<PastEvents />} />

@@ -8,16 +8,25 @@ const AdultSmallGroup = () => {
 
   const studies = [
     {
+      titleKey: 'philippiansTitle' as const,
+      descKey: 'philippiansDesc' as const,
+      href: '/resources/Philippians',
+      image:
+        'https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+    },
+    {
       titleKey: 'studiesTitle' as const,
       descKey: 'studiesDesc' as const,
       href: '/resources/basicoffaith',
-      image: 'https://images.pexels.com/photos/66100/pexels-photo-66100.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      image:
+        'https://images.pexels.com/photos/66100/pexels-photo-66100.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
     },
     {
       titleKey: 'pdlTitle' as const,
       descKey: 'pdlDesc' as const,
       href: '/resources/purposedrivenlife',
-      image: 'https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      image:
+        'https://images.pexels.com/photos/91153/pexels-photo-91153.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
     },
   ]
 
@@ -62,7 +71,7 @@ const AdultSmallGroup = () => {
               </p>
               <div className='flex items-center gap-2'>
                 <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />
-                <span>1st &amp; 3rd Fridays of each month</span>
+                <span>2nd &amp; 3rd Fridays, July</span>
               </div>
               <div className='flex items-center gap-2'>
                 <Clock className='h-3.5 w-3.5 text-emerald-400 shrink-0' />

@@ -236,6 +236,11 @@ export const t = {
       en: 'We just finished the "Basics of Faith" series. We will start a book discussion on Philippians, a letter by apostle Paul on joy, unity ad living as citizens of heaven. We also will join with the younger generation during the summer.',
       zh: '我们刚刚结束了“信仰基础”系列课程。接下来，我们将围绕《腓立比书》展开研读与讨论——这是使徒保罗写的一封书信，探讨了喜乐、合一以及作为天国子民的生活方式。此外，我们夏天也会与年轻一代会合。',
     },
+    philippiansTitle: { en: 'Book of Philippians', zh: '腓立比书' },
+    philippiansDesc: {
+      en: "A study on Paul's letter to the Philippians — exploring themes of joy, unity, and living as citizens of heaven.",
+      zh: '研读保罗写给腓立比人的信——探索喜乐、合一以及作为天国子民生活的主题。',
+    },
     studiesTitle: { en: 'Basics of Faith', zh: '信仰基础' },
     studiesDesc: {
       en: 'A video series exploring the foundations of Christian faith — who Jesus is, what faith means, and how to grow spiritually.',
