@@ -2213,14 +2213,14 @@ function DocumentsPanel({
   }
 
   async function handleYtAdd() {
-    if (!ytUrl.trim()) return
+    if (!ytUrl.trim() || !docName.trim()) return
     setUploading(true)
     try {
       const r = await authFetch(`/api/classes/${classId}/documents/link`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: docName.trim() || ytUrl.trim(),
+          name: docName.trim(),
           url: ytUrl.trim(),
           session_id: selectedSessionId,
         }),
@@ -2275,9 +2275,43 @@ function DocumentsPanel({
         )}
 
         {/* Upload section */}
-        <div className='bg-gray-50 border border-gray-200 rounded-lg p-3'>
+        <div className='bg-gray-50 border border-gray-200 rounded-lg p-3 flex flex-col gap-2'>
+          {/* Session selector */}
+          <div>
+            <label className='text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block'>
+              Assign to
+            </label>
+            <select
+              value={selectedSessionId ?? ''}
+              onChange={(e) =>
+                setSelectedSessionId(
+                  e.target.value ? parseInt(e.target.value) : null,
+                )
+              }
+              className={inp}
+            >
+              <option value=''>Class Document (not session-specific)</option>
+              {[...sessions]
+                .sort((a, b) => b.session_date.localeCompare(a.session_date))
+                .map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {fmtDate(s.session_date)}
+                    {s.topic ? ` — ${s.topic}` : ''}
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          {/* Title */}
+          <input
+            value={docName}
+            onChange={(e) => setDocName(e.target.value)}
+            placeholder={tab === 'yt' ? 'Video title *' : 'Title (optional)'}
+            className={inp}
+          />
+
           {/* Tab toggle */}
-          <div className='flex gap-1 mb-3 bg-white border border-gray-200 rounded-lg p-0.5 w-fit'>
+          <div className='flex gap-1 bg-white border border-gray-200 rounded-lg p-0.5 w-fit'>
             <button
               onClick={() => {
                 setTab('file')
@@ -2299,38 +2333,6 @@ function DocumentsPanel({
             >
               <Youtube className='w-3 h-3' /> YouTube
             </button>
-          </div>
-
-          <div className='flex gap-2 mb-2'>
-            {sessions.length > 0 && (
-              <select
-                value={selectedSessionId ?? ''}
-                onChange={(e) =>
-                  setSelectedSessionId(
-                    e.target.value ? parseInt(e.target.value) : null,
-                  )
-                }
-                className={`${inp} w-auto`}
-              >
-                <option value=''>Class Document</option>
-                {[...sessions]
-                  .sort((a, b) => b.session_date.localeCompare(a.session_date))
-                  .map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {fmtDate(s.session_date)}
-                      {s.topic ? ` — ${s.topic}` : ''}
-                    </option>
-                  ))}
-              </select>
-            )}
-            <input
-              value={docName}
-              onChange={(e) => setDocName(e.target.value)}
-              placeholder={
-                tab === 'yt' ? 'Video title (optional)' : 'Title (optional)'
-              }
-              className={`${inp} flex-1`}
-            />
           </div>
 
           {tab === 'file' ? (
@@ -2358,11 +2360,11 @@ function DocumentsPanel({
                 value={ytUrl}
                 onChange={(e) => setYtUrl(e.target.value)}
                 placeholder='https://youtube.com/watch?v=…'
-                className={`${inp} mb-2`}
+                className={inp}
               />
               <button
                 onClick={handleYtAdd}
-                disabled={uploading || !ytUrl.trim()}
+                disabled={uploading || !ytUrl.trim() || !docName.trim()}
                 className='w-full flex items-center justify-center gap-2 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold text-xs transition disabled:opacity-50'
               >
                 {uploading ? (
