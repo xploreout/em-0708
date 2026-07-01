@@ -33,7 +33,9 @@
       "Bash(~/.nvm/versions/node/v22.2.0/bin/node node_modules/.bin/vite build)",
       "Bash(~/.nvm/versions/node/v22.2.0/bin/node node_modules/.bin/tsc --noEmit)",
       "Bash(ls ~/.nvm/versions/node/ 2>/dev/null || ls ~/.volta/bin/ 2>/dev/null || find /usr -name \"node\" 2>/dev/null | head -5)",
-      "Read(//usr/**)"
+      "Read(//usr/**)",
+      "Bash(sips -z 840 1260 /Users/tanlui/projects/acbcc/em-first/emfirst-0708/public/images/vay.jpg --out vay_big.png)",
+      "Bash(python3 -c \"import datetime; print\\(datetime.date\\(2026,7,1\\).strftime\\('%A'\\)\\); print\\(datetime.date\\(2026,7,3\\).strftime\\('%A'\\)\\)\")"
     ],
     "additionalDirectories": [
       "/Users/tanlui/projects/acbcc/em-first/emfirst-0708/src"

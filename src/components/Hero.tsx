@@ -6,7 +6,7 @@ import { t, tx } from '../i18n/translations'
 
 const Hero = () => {
   const { lang } = useLang()
-  const heroIds = [1, 6, 11]
+  const heroIds = [1, 12, 6]
   const preview = heroIds
     .map((id) => upcomingEvents.find((e) => e.id === id)!)
     .filter(Boolean)

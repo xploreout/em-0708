@@ -6,7 +6,7 @@ import { t, tx } from '../i18n/translations'
 
 const Youth = () => {
   const { lang } = useLang()
-  const youthIds = [3, 5, 7, 8]
+  const youthIds = [3, 5, 7, 8, 12]
   const youthEvents = youthIds
     .map((id) => upcomingEvents.find((e) => e.id === id)!)
     .filter(Boolean)
