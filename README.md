@@ -114,6 +114,38 @@ npm run build
 
 The site is configured for deployment on Netlify. The build command is `npm run build` and the publish directory is `dist`.
 
+## Backend Hosting
+
+The frontend talks to a separate Express API in [`server/`](server/index.js), deployed on [Railway](https://railway.app/) at `em-0708-production.up.railway.app`. Netlify proxies `/api/*` requests to it — see the `[[redirects]]` rule in [`netlify.toml`](netlify.toml).
+
+### Stack
+- **Express** (Node, ESM) — REST API, JWT-based auth with three roles: `calendar`, `admin`, `attendance`
+- **PostgreSQL** — primary datastore (via `pg`), connected through `DATABASE_URL`
+- **Cloudinary** — photo/document uploads
+- **Nodemailer** — outbound email (reminders, notifications)
+
+### Required environment variables (set in Railway → Variables)
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | Postgres connection string (SSL enforced unless host is `localhost`) |
+| `JWT_SECRET` | Signs auth tokens; server refuses to start without it |
+| `PASSWORD_ADMIN`, `PASSWORD_CALENDAR`, `PASSWORD_ATTENDANCE` | Login passwords for each role |
+| `CLOUDINARY_URL` or `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` | Image/document uploads |
+| `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM` | SMTP settings for reminder emails |
+| `CORS_ORIGIN` | Allowed origin(s) for the frontend |
+| `PORT` | Port the server listens on (Railway sets this automatically) |
+
+### Running the backend locally
+```bash
+cd server
+npm install
+npm run dev   # node --watch index.js, defaults to http://localhost:3001
+```
+Point the frontend at it locally by adjusting the `/api/*` proxy target, or run against the deployed Railway instance directly.
+
+### Redeploying
+Railway redeploys automatically on push to the connected branch. Netlify (frontend) and Railway (backend) deploy independently — changes to `server/` do not trigger a Netlify rebuild and vice versa.
+
 ## Contact
 
 For questions about this website, contact acbccem@gmail.com
