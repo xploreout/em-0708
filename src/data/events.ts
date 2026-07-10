@@ -107,18 +107,6 @@ export const upcomingEvents: Event[] = [
       'https://res.cloudinary.com/dz2zqnf2q/video/upload/video/fridaykids.mp4',
   },
   {
-    id: 12,
-    title: 'Youth Outreach & Service: 4th of July Celebration',
-    date: 'Friday, July 3',
-    time: '7:30pm – 9:15pm',
-    location: 'Lillian Webb Park, Norcross, GA',
-    mapUrl:
-      'https://www.google.com/maps/search/?api=1&query=Lillian+Webb+Park+Norcross+GA',
-    description:
-      'ACBCC Youth is teaming up with Voice of Asian Youth for an evening of outreach, service, and community impact. Together we’ll serve, share, build, and celebrate as we kick off the 4th of July weekend, putting faith into action and sharing Christ’s love with our community. Be the light. Make a difference.',
-    image: './images/vay.jpg',
-  },
-  {
     id: 10,
     title: 'Children Sunday School',
     date: 'Every Sunday',
