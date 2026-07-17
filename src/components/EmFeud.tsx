@@ -539,6 +539,19 @@ export default function EmFeud() {
   const [strikeFlash, setStrikeFlash] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
+  // Fires the bell roll once per team the first time their total score reaches 100+
+  const hundredMilestoneRef = useRef<[boolean, boolean]>([false, false])
+  useEffect(() => {
+    totalScores.forEach((score, i) => {
+      if (score >= 100 && !hundredMilestoneRef.current[i]) {
+        hundredMilestoneRef.current[i] = true
+        playBellRoll()
+      } else if (score < 100 && hundredMilestoneRef.current[i]) {
+        hundredMilestoneRef.current[i] = false
+      }
+    })
+  }, [totalScores])
+
   const round = rounds[qIdx]
   const q = activeQuestions[qIdx]
 
@@ -563,7 +576,7 @@ export default function EmFeud() {
   }
 
   function revealAnswer(i: number) {
-    if (round.revealed[i] || round.awarded) return
+    if (round.revealed[i]) return
     const next = [...round.revealed]
     next[i] = true
     updateRound({ revealed: next })
@@ -586,23 +599,51 @@ export default function EmFeud() {
   }
 
   // Award accumulated points to teamIdx; marks round done; carries score forward
-  function awardPoints(teamIdx: 0 | 1) {
+  // revealAll: whether to flip all remaining tiles open immediately (skipped for steal outcomes)
+  function awardPoints(teamIdx: 0 | 1, revealAll: boolean = true) {
     if (roundAccumulator === 0 || round.awarded) return
     setTotalScores(prev => {
       const next: [number, number] = [prev[0], prev[1]]
       next[teamIdx] += roundAccumulator
       return next
     })
-    updateRound({ revealed: q.answers.map(() => true), awarded: true, winnerTeam: teamIdx })
+    updateRound({
+      ...(revealAll ? { revealed: q.answers.map(() => true) } : {}),
+      awarded: true,
+      winnerTeam: teamIdx,
+    })
     confetti({ particleCount: 100, spread: 75, origin: { y: 0.55 }, colors: ['#fbbf24', '#38bdf8', '#f97316', '#34d399'] })
   }
 
+  // Fast 6-ding bell roll, played back to back with a very short gap
+  function playBellRoll() {
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => {
+        const bell = new Audio('https://res.cloudinary.com/dz2zqnf2q/video/upload/audio/ding.mp3')
+        bell.volume = 0.8
+        bell.playbackRate = 1.75
+        bell.play().catch(() => {})
+      }, i * 90)
+    }
+  }
+
   // Auto-award current team when all cards revealed
-  function awardCurrentTeam() { awardPoints(activeTeam) }
-  // Steal won: stealing team gets points
-  function stealWon() { awardPoints(stealingTeam) }
-  // Steal lost: original team keeps points
-  function stealLost() { awardPoints(activeTeam) }
+  function awardCurrentTeam() {
+    awardPoints(activeTeam)
+    playBellRoll()
+  }
+  // Steal won: stealing team gets points; leave remaining tiles hidden, play bell
+  function stealWon() {
+    awardPoints(stealingTeam, false)
+    playBellRoll()
+  }
+  // Steal lost: original team keeps points; leave remaining tiles hidden, play strike
+  function stealLost() {
+    awardPoints(activeTeam, false)
+    const buzzer = new Audio('https://res.cloudinary.com/dz2zqnf2q/video/upload/audio/buzzersound.mp3')
+    buzzer.volume = 0.85
+    buzzer.play().catch(() => {})
+  }
 
   function resetRound() { updateRound(makeRound(q)) }
 
@@ -927,17 +968,6 @@ export default function EmFeud() {
                   </div>
                 )}
 
-                {/* After round awarded: manual award overrides */}
-                {isRoundDone && !showStealControls && !allRevealed && (
-                  <div className="flex justify-center gap-3">
-                    <button onClick={() => awardPoints(0)} className="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider text-white transition-all hover:opacity-80" style={{ background: 'linear-gradient(135deg,#0ea5e9,#38bdf8)' }}>
-                      +pts → {teamNames[0]}
-                    </button>
-                    <button onClick={() => awardPoints(1)} className="px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider text-white transition-all hover:opacity-80" style={{ background: 'linear-gradient(135deg,#be185d,#ec4899)' }}>
-                      +pts → {teamNames[1]}
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Question selector */}
