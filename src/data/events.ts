@@ -43,13 +43,13 @@ export const upcomingEvents: Event[] = [
   {
     id: 4,
     title: 'Salt n Light (SnL) ',
-    date: '',
+    date: '1st & 3rd Fridays, August',
     time: '7:30pm – 9:15pm',
     location: 'SDA Church, Duluth, GA',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      'We just finished the "Basics of Faith" series. We will start a book discussion on Philippians, a letter by apostle Paul on joy, unity and living as citizens of heaven. We also will join with the younger generation during the summer.',
+      ' Our fellowship consists of sharing live with testimonies, prayers and study the bible. We are studying the book of Philippians, a letter from apostle Paul on joy, unity and living as citizens of heaven. ',
     image:
       'https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
     link: '/resources/basicoffaith',
