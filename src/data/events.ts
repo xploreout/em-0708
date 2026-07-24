@@ -68,17 +68,16 @@ export const upcomingEvents: Event[] = [
   },
   {
     id: 6,
-    title: 'FIFA Summer Sport Day',
-    date: 'July 18 Saturday',
-    time: '4:00pm – 8:00pm',
-    location: 'Duluth',
+    title: 'Sunday Luncheon Fellowship',
+    date: 'Every Sunday',
+    time: '12:30pm – 1:30pm',
+    location: 'SDA Church, Duluth, GA',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      "Join us for a fun-filled Summer Sport Day and Fifa watch party! We'll hangout with good bbq, some FIFA action with games, and great fun. It's a perfect opportunity to enjoy the summer together. Don't miss out on the fun!",
+      'Stick around after service and share a meal and fellowship with us. The meals are catered from local restaurants and serve with love by our volunteers!  Everyone is welcome to join, free for first time visitors.',
     image:
-      'https://images.pexels.com/photos/17206408/pexels-photo-17206408.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
-    video: 'https://res.cloudinary.com/dz2zqnf2q/video/upload/video/pool2.mp4',
+      'https://images.pexels.com/photos/14164040/pexels-photo-14164040.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
   },
   {
     id: 9,
