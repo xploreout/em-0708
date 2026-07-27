@@ -1,24 +1,10 @@
 import { useState, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X, ArrowLeft, ChevronDown, ChevronRight, LogIn, LogOut, Globe } from 'lucide-react'
+import { Menu, X, ArrowLeft, ChevronDown, ChevronRight, LogIn, LogOut } from 'lucide-react'
 import { useAuth, ROLE_LABELS, ROLE_ROUTES } from '../context/AuthContext'
 import { useLang } from '../context/LanguageContext'
 import { t, tx } from '../i18n/translations'
 import LoginModal from './LoginModal'
-
-const LangToggle = () => {
-  const { lang, toggleLang } = useLang()
-  return (
-    <button
-      onClick={toggleLang}
-      title={lang === 'en' ? 'Switch to Chinese' : '切换到英文'}
-      className='flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold select-none text-gray-600 hover:text-blue-500 transition-colors duration-200'
-    >
-      <Globe size={14} className='text-blue-500' />
-      <span>{lang === 'en' ? '中文' : 'EN'}</span>
-    </button>
-  )
-}
 
 const Header = () => {
   const [isOpen,             setIsOpen]             = useState(false)
@@ -168,9 +154,6 @@ const Header = () => {
               <span className='text-xs font-normal ml-0.5 leading-none text-gray-400' style={{ writingMode: 'vertical-rl' }}>中文</span>
             </a>
 
-            {/* Language toggle */}
-            <LangToggle />
-
             {/* Login / user badge */}
             {role ? (
               <div className='flex items-center gap-2'>
@@ -192,9 +175,8 @@ const Header = () => {
             )}
           </nav>
 
-          {/* Mobile: language toggle + hamburger */}
+          {/* Mobile: hamburger */}
           <div className='flex md:hidden items-center gap-2'>
-            <LangToggle />
             <button onClick={() => setIsOpen(v => !v)}
               className='text-gray-700 hover:text-primary-600 p-2 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500'
               aria-label='Toggle menu'>

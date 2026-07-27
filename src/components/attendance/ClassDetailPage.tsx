@@ -865,39 +865,59 @@ function RosterPanel({
           No members yet. Use New Signup to add someone.
         </p>
       ) : (
-        <div className='flex flex-col gap-1.5'>
-          {allMembers.map((m) => (
-            <div
-              key={m.name}
-              className='flex items-center justify-between bg-white border border-gray-100 rounded-lg px-4 py-3 shadow-sm'
-            >
-              <div>
-                <div className='font-medium text-gray-800 text-sm'>
-                  {m.name}
-                </div>
-                {m.phone && (
-                  <div className='text-xs text-gray-400'>{m.phone}</div>
-                )}
-                <div className='text-xs text-gray-400'>
-                  {m.count > 0
-                    ? `${m.count} session${m.count !== 1 ? 's' : ''} · last ${fmtDate(m.lastSeen)}`
-                    : 'Signed up · no sessions yet'}
-                </div>
-              </div>
-              <button
-                onClick={() => doRemoveMember(m.name)}
-                disabled={removingName === m.name}
-                className='text-red-400 hover:text-red-600 transition flex-shrink-0 ml-2'
-                title='Remove from roster'
-              >
-                {removingName === m.name ? (
-                  <Loader2 className='w-3.5 h-3.5 animate-spin' />
-                ) : (
-                  <Trash2 className='w-3.5 h-3.5' />
-                )}
-              </button>
-            </div>
-          ))}
+        <div className='rounded-lg border border-gray-200 overflow-hidden'>
+          <div className='overflow-x-auto'>
+            <table className='w-full text-sm border-collapse'>
+              <thead>
+                <tr className='bg-gray-100 border-b border-gray-200'>
+                  <th className='px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+                    Name
+                  </th>
+                  <th className='px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+                    Phone
+                  </th>
+                  <th className='px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+                    Attendance
+                  </th>
+                  <th className='px-3 py-2 w-8'></th>
+                </tr>
+              </thead>
+              <tbody>
+                {allMembers.map((m, idx) => (
+                  <tr
+                    key={m.name}
+                    className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                  >
+                    <td className='px-4 py-2.5 font-medium text-gray-800'>
+                      {m.name}
+                    </td>
+                    <td className='px-4 py-2.5 text-gray-500'>
+                      {m.phone || '—'}
+                    </td>
+                    <td className='px-4 py-2.5 text-gray-500'>
+                      {m.count > 0
+                        ? `${m.count} session${m.count !== 1 ? 's' : ''} · last ${fmtDate(m.lastSeen)}`
+                        : 'No sessions yet'}
+                    </td>
+                    <td className='px-3 py-2.5'>
+                      <button
+                        onClick={() => doRemoveMember(m.name)}
+                        disabled={removingName === m.name}
+                        className='text-red-400 hover:text-red-600 transition'
+                        title='Remove from roster'
+                      >
+                        {removingName === m.name ? (
+                          <Loader2 className='w-3.5 h-3.5 animate-spin' />
+                        ) : (
+                          <Trash2 className='w-3.5 h-3.5' />
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -1198,7 +1218,6 @@ function SessionSchedulePanel({
             <tbody>
               {rows.filter(r => !skippedDates.has(r.date)).map(({ key, date, session }, idx) => {
                 const activeDate = editedDates[date] || date
-                const isPast = activeDate < today
                 const isToday = activeDate === today
                 const isSaving = savingDate === date
                 const isSaved = savedDate === date
@@ -1207,13 +1226,13 @@ function SessionSchedulePanel({
                 return (
                   <tr
                     key={key}
-                    className={`border-b border-gray-100 last:border-0 ${
+                    className={
                       isToday
                         ? 'bg-blue-50'
-                        : isPast
-                          ? 'bg-gray-50/60'
-                          : 'bg-white'
-                    }`}
+                        : idx % 2 === 0
+                          ? 'bg-white'
+                          : 'bg-gray-50'
+                    }
                   >
                     <td className='px-3 py-2 text-xs text-gray-400 font-medium'>
                       {isOffSched ? (
@@ -1240,10 +1259,8 @@ function SessionSchedulePanel({
                         onBlur={(e) =>
                           handleBlur(date, e.currentTarget.value || undefined)
                         }
-                        className={`border rounded-lg px-3 py-2 text-xs outline-none transition w-36 ${
-                          isToday
-                            ? 'border-blue-300 focus:border-blue-500 bg-white'
-                            : 'border-gray-200 focus:border-blue-400 bg-white'
+                        className={`border-none rounded-lg px-3 py-2 text-xs outline-none transition w-36 ${
+                          isToday ? 'bg-blue-50' : 'bg-transparent'
                         }`}
                       />
                     </td>
@@ -1262,10 +1279,8 @@ function SessionSchedulePanel({
                             if (e.key === 'Enter') e.currentTarget.blur()
                           }}
                           placeholder='Enter leader name…'
-                          className={`flex-1 min-w-0 border rounded-lg px-2.5 py-1.5 text-sm outline-none transition ${
-                            isToday
-                              ? 'border-blue-300 focus:border-blue-500 bg-white'
-                              : 'border-gray-200 focus:border-blue-400 bg-white'
+                          className={`flex-1 min-w-0 border-none rounded-lg px-2.5 py-1.5 text-sm outline-none transition ${
+                            isToday ? 'bg-blue-50' : 'bg-transparent'
                           }`}
                         />
                         {isSaving && (
@@ -1287,10 +1302,8 @@ function SessionSchedulePanel({
                           if (e.key === 'Enter') e.currentTarget.blur()
                         }}
                         placeholder='Enter session topic…'
-                        className={`w-full border rounded-lg px-2.5 py-1.5 text-sm outline-none transition ${
-                          isToday
-                            ? 'border-blue-300 focus:border-blue-500 bg-white'
-                            : 'border-gray-200 focus:border-blue-400 bg-white'
+                        className={`w-full border-none rounded-lg px-2.5 py-1.5 text-sm outline-none transition ${
+                          isToday ? 'bg-blue-50' : 'bg-transparent'
                         }`}
                       />
                     </td>

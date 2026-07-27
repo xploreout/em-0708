@@ -12,11 +12,15 @@ function MainPage() {
     audioRef.current = audio
 
     let played = false
+    let stopTimeout: ReturnType<typeof setTimeout> | null = null
 
     const startPlayback = () => {
       if (played) return
       played = true
       audio.play().catch(() => {})
+      stopTimeout = setTimeout(() => {
+        audio.pause()
+      }, 5000)
       window.removeEventListener('click', startPlayback)
       window.removeEventListener('scroll', startPlayback)
       window.removeEventListener('keydown', startPlayback)
@@ -30,6 +34,7 @@ function MainPage() {
 
     return () => {
       audio.pause()
+      if (stopTimeout) clearTimeout(stopTimeout)
       window.removeEventListener('click', startPlayback)
       window.removeEventListener('scroll', startPlayback)
       window.removeEventListener('keydown', startPlayback)

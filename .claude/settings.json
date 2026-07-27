@@ -35,7 +35,8 @@
       "Bash(ls ~/.nvm/versions/node/ 2>/dev/null || ls ~/.volta/bin/ 2>/dev/null || find /usr -name \"node\" 2>/dev/null | head -5)",
       "Read(//usr/**)",
       "Bash(sips -z 840 1260 /Users/tanlui/projects/acbcc/em-first/emfirst-0708/public/images/vay.jpg --out vay_big.png)",
-      "Bash(python3 -c \"import datetime; print\\(datetime.date\\(2026,7,1\\).strftime\\('%A'\\)\\); print\\(datetime.date\\(2026,7,3\\).strftime\\('%A'\\)\\)\")"
+      "Bash(python3 -c \"import datetime; print\\(datetime.date\\(2026,7,1\\).strftime\\('%A'\\)\\); print\\(datetime.date\\(2026,7,3\\).strftime\\('%A'\\)\\)\")",
+      "Bash(grep -n \"bg-gray-50\\\\|bg-gray-200\\\\|border-2 border-gray-200\\\\|border-blue-300\\\\|border-gray-200 focus\\\\|className={\\\\`border rounded-lg\\\\|className={\\\\`flex-1 min-w-0 border rounded-lg\\\\|className={\\\\`w-full border rounded-lg\" /Users/tanlui/projects/acbcc/em-first/emfirst-0708/src/components/attendance/ClassDetailPage.tsx)"
     ],
     "additionalDirectories": [
       "/Users/tanlui/projects/acbcc/em-first/emfirst-0708/src"
