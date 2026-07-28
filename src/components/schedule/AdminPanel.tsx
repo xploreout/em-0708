@@ -4,7 +4,7 @@ import {
   Upload, Send, Users, CalendarDays, BookUser, GraduationCap,
   Archive, ArchiveRestore, Save, Calendar,
   FileText, File, FileImage, Download, ChevronDown, ChevronRight, Youtube, Link,
-  FolderOpen, Key, Eye, EyeOff, Copy,
+  FolderOpen, Key, Eye, EyeOff, Copy, Phone, Mail,
 } from 'lucide-react'
 import { RequireAuth, useAuth } from '../../context/AuthContext'
 import { CalendarContent } from './ScheduleCalendar'
@@ -20,6 +20,9 @@ type Member = {
   isStudent: boolean
   schoolLevel: string
   schoolYear: string
+  parentName: string
+  parentPhone: string
+  parentEmail: string
   fellowshipGroups: string[]
 }
 
@@ -168,6 +171,9 @@ function MemberModal({ member, onSave, onClose, allGroups }: {
   const [isStudent,        setIsStudent]        = useState(member?.isStudent        ?? false)
   const [schoolLevel,      setSchoolLevel]      = useState(member?.schoolLevel      ?? '')
   const [schoolYear,       setSchoolYear]       = useState(member?.schoolYear       || currentSchoolYear())
+  const [parentName,       setParentName]       = useState(member?.parentName  ?? '')
+  const [parentPhone,      setParentPhone]      = useState(member?.parentPhone ?? '')
+  const [parentEmail,      setParentEmail]      = useState(member?.parentEmail ?? '')
   const [fellowshipGroups, setFellowshipGroups] = useState<string[]>(member?.fellowshipGroups ?? [])
   const [uploading, setUploading] = useState(false)
   const [saving,    setSaving]    = useState(false)
@@ -201,6 +207,7 @@ function MemberModal({ member, onSave, onClose, allGroups }: {
       await onSave({
         name, phone: phone.replace(/-/g, ''), email, photoUrl, notes,
         isStudent, schoolLevel: isStudent ? schoolLevel : '', schoolYear: isStudent ? schoolYear : '',
+        parentName: isStudent ? parentName : '', parentPhone: isStudent ? parentPhone : '', parentEmail: isStudent ? parentEmail : '',
         fellowshipGroups,
       })
       onClose()
@@ -317,6 +324,21 @@ function MemberModal({ member, onSave, onClose, allGroups }: {
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Parent Name</label>
+                <input type="text" value={parentName} onChange={e => setParentName(e.target.value)} placeholder="Parent/guardian full name"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Parent Phone</label>
+                <input type="tel" value={parentPhone} onChange={e => setParentPhone(e.target.value)} placeholder="+1 (555) 000-0000"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Parent Email</label>
+                <input type="email" value={parentEmail} onChange={e => setParentEmail(e.target.value)} placeholder="parent@example.com"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              </div>
             </div>
           )}
         </div>
@@ -419,6 +441,37 @@ function RemindersPanel() {
 
 // ── Contacts tab ─────────────────────────────────────────────────────────────
 
+// Compact icon that reveals its info in a tooltip on hover, or a pinned popover on click/tap
+// (native `title` covers desktop hover; the click popover covers touch devices with no hover).
+function IconInfoCell({ icon: Icon, hoverTitle, open, onToggle, onClose, children }: {
+  icon: React.ComponentType<{ className?: string }>
+  hoverTitle: string
+  open: boolean
+  onToggle: () => void
+  onClose: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <div className="relative inline-block">
+      <button
+        onClick={onToggle}
+        title={hoverTitle}
+        className="p-1.5 rounded text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition"
+      >
+        <Icon className="w-4 h-4" />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={onClose} />
+          <div className="absolute z-50 left-1/2 -translate-x-1/2 top-full mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-xl p-3 text-left text-xs text-gray-600 flex flex-col gap-1">
+            {children}
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 function ContactsPanel() {
   const { authFetch } = useAuth()
   const [members,    setMembers]    = useState<Member[]>([])
@@ -429,6 +482,12 @@ function ContactsPanel() {
   const [deleteConfirm,  setDeleteConfirm]  = useState<{ id: string; name: string; count: number } | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [infoPopover, setInfoPopover] = useState<{ id: string; field: 'phone' | 'email' | 'parent' } | null>(null)
+  function toggleInfo(id: string, field: 'phone' | 'email' | 'parent') {
+    setInfoPopover(prev => (prev?.id === id && prev.field === field) ? null : { id, field })
+  }
+  const isInfoOpen = (id: string, field: 'phone' | 'email' | 'parent') =>
+    infoPopover?.id === id && infoPopover.field === field
 
   function openPreview(url: string) {
     if (previewTimer.current) clearTimeout(previewTimer.current)
@@ -497,14 +556,16 @@ function ContactsPanel() {
   function handleExportCsv() {
     const rows = filtered.length > 0 ? filtered : members
     const esc = (v: string) => { const s = String(v ?? ''); return /[,"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s }
-    const header = ['Name', 'Phone', 'Email', 'Fellowship Groups', 'Student', 'School Level', 'School Year', 'Notes']
+    const header = ['Name', 'Phone', 'Email', 'Fellowship Groups', 'Student', 'School Level', 'School Year', 'Parent Name', 'Parent Phone', 'Parent Email', 'Notes']
     const lines = [
       header.join(','),
       ...rows.map(m => [
         esc(m.name), esc(displayPhone(m.phone)), esc(m.email),
         esc((m.fellowshipGroups ?? []).join('; ')),
         m.isStudent ? 'Yes' : 'No',
-        esc(m.schoolLevel), esc(m.schoolYear), esc(m.notes),
+        esc(m.schoolLevel), esc(m.schoolYear),
+        esc(m.parentName), esc(displayPhone(m.parentPhone)), esc(m.parentEmail),
+        esc(m.notes),
       ].join(',')),
     ].join('\r\n')
     const blob = new Blob([lines], { type: 'text/csv' })
@@ -594,9 +655,10 @@ function ContactsPanel() {
               <thead>
                 <tr className="bg-gray-300 border-b border-gray-400 text-left">
                   <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Name</th>
-                  <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Phone</th>
-                  <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Email</th>
+                  <th className="w-12 px-2 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider text-center">Phone</th>
+                  <th className="w-12 px-2 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider text-center">Email</th>
                   <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Student</th>
+                  <th className="w-12 px-2 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider text-center">Parent</th>
                   <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Fellowship Group</th>
                   <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Notes</th>
                   <th className="px-4 py-2 font-semibold text-gray-700 text-xs uppercase tracking-wider">Photo</th>
@@ -604,18 +666,45 @@ function ContactsPanel() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(m => (
+                {filtered.map((m, idx) => (
                   <tr key={m.id}
-                    className={`border-b border-gray-100 last:border-0 hover:bg-gray-50 transition ${deleting === m.id ? 'opacity-40 pointer-events-none' : ''}`}>
+                    className={`border-b border-gray-100 last:border-0 hover:bg-blue-50 transition ${idx % 2 === 1 ? 'bg-gray-50' : 'bg-white'} ${deleting === m.id ? 'opacity-40 pointer-events-none' : ''}`}>
                     <td className="px-4 py-2.5 font-medium text-gray-900 whitespace-nowrap">{m.name}</td>
-                    <td className="px-4 py-2.5 text-gray-500">{m.phone ? displayPhone(m.phone) : <span className="text-gray-300">—</span>}</td>
-                    <td className="px-4 py-2.5 text-gray-500">{m.email || <span className="text-gray-300">—</span>}</td>
+                    <td className="px-2 py-2.5 text-center">
+                      {m.phone
+                        ? <IconInfoCell icon={Phone} hoverTitle={displayPhone(m.phone)}
+                            open={isInfoOpen(m.id, 'phone')} onToggle={() => toggleInfo(m.id, 'phone')} onClose={() => setInfoPopover(null)}>
+                            <div className="font-semibold text-gray-800 text-xs uppercase tracking-wider mb-1">Phone</div>
+                            <div>{displayPhone(m.phone)}</div>
+                          </IconInfoCell>
+                        : <span className="text-gray-300">—</span>}
+                    </td>
+                    <td className="px-2 py-2.5 text-center">
+                      {m.email
+                        ? <IconInfoCell icon={Mail} hoverTitle={m.email}
+                            open={isInfoOpen(m.id, 'email')} onToggle={() => toggleInfo(m.id, 'email')} onClose={() => setInfoPopover(null)}>
+                            <div className="font-semibold text-gray-800 text-xs uppercase tracking-wider mb-1">Email</div>
+                            <div className="break-words">{m.email}</div>
+                          </IconInfoCell>
+                        : <span className="text-gray-300">—</span>}
+                    </td>
                     <td className="px-4 py-2.5">
                       {m.isStudent || m.schoolLevel
                         ? <span className="text-xs text-gray-700">{m.schoolLevel || '✓'}</span>
                         : <span className="text-gray-300">—</span>}
                     </td>
-                    <td className="px-4 py-2.5 max-w-[160px]">
+                    <td className="px-2 py-2.5 text-center">
+                      {(m.parentName || m.parentPhone || m.parentEmail)
+                        ? <IconInfoCell icon={BookUser} hoverTitle={[m.parentName, m.parentPhone && displayPhone(m.parentPhone), m.parentEmail].filter(Boolean).join(' · ')}
+                            open={isInfoOpen(m.id, 'parent')} onToggle={() => toggleInfo(m.id, 'parent')} onClose={() => setInfoPopover(null)}>
+                            <div className="font-semibold text-gray-800 text-xs uppercase tracking-wider mb-1">Parent / Guardian</div>
+                            {m.parentName  && <div><span className="text-gray-400">Name:</span> {m.parentName}</div>}
+                            {m.parentPhone && <div><span className="text-gray-400">Phone:</span> {displayPhone(m.parentPhone)}</div>}
+                            {m.parentEmail && <div><span className="text-gray-400">Email:</span> {m.parentEmail}</div>}
+                          </IconInfoCell>
+                        : <span className="text-gray-300">—</span>}
+                    </td>
+                    <td className="px-4 py-2.5 max-w-[280px]">
                       {(m.fellowshipGroups ?? []).length > 0
                         ? <div className="flex flex-wrap gap-1">
                             {m.fellowshipGroups.map(g => (
@@ -624,7 +713,7 @@ function ContactsPanel() {
                           </div>
                         : <span className="text-gray-300">—</span>}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-400 text-xs max-w-[180px]">
+                    <td className="px-4 py-2.5 text-gray-400 text-xs max-w-[320px]">
                       {m.notes
                         ? <span className="line-clamp-2 italic">{m.notes}</span>
                         : <span className="text-gray-300">—</span>}

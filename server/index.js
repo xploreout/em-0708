@@ -171,6 +171,9 @@ async function initDB() {
       `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS school_level VARCHAR(50) DEFAULT ''`,
       `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS school_year VARCHAR(20) DEFAULT ''`,
       `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS fellowship_groups TEXT[] DEFAULT '{}'`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS parent_name VARCHAR(200) DEFAULT ''`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS parent_phone VARCHAR(50) DEFAULT ''`,
+      `ALTER TABLE contacts ADD COLUMN IF NOT EXISTS parent_email VARCHAR(200) DEFAULT ''`,
     ]) { await client.query(ddl) }
 
     // Backfill class_roster from existing attendance records so all historical names are preserved
@@ -307,6 +310,7 @@ const toMember = r => ({
   id: r.id, name: r.name,
   phone: r.phone || '', email: r.email || '', photoUrl: r.photo_url || '', notes: r.notes || '',
   isStudent: r.is_student || false, schoolLevel: r.school_level || '', schoolYear: r.school_year || '',
+  parentName: r.parent_name || '', parentPhone: r.parent_phone || '', parentEmail: r.parent_email || '',
   fellowshipGroups: r.fellowship_groups || [],
 })
 
@@ -469,7 +473,7 @@ app.get('/api/congregation', requireAuth('admin'), wrap(async (_req, res) => {
 app.get('/api/congregation/export-csv', requireAuth('admin'), wrap(async (_req, res) => {
   const { rows } = await pool.query('SELECT * FROM contacts ORDER BY name')
   const esc = v => { const s = String(v ?? ''); return /[,"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s }
-  const header = ['Name','Phone','Email','Fellowship Groups','Student','School Level','School Year','Notes']
+  const header = ['Name','Phone','Email','Fellowship Groups','Student','School Level','School Year','Parent Name','Parent Phone','Parent Email','Notes']
   const lines = [
     header.join(','),
     ...rows.map(r => [
@@ -480,6 +484,9 @@ app.get('/api/congregation/export-csv', requireAuth('admin'), wrap(async (_req, 
       r.is_student ? 'Yes' : 'No',
       esc(r.school_level),
       esc(r.school_year),
+      esc(r.parent_name),
+      esc(r.parent_phone),
+      esc(r.parent_email),
       esc(r.notes),
     ].join(',')),
   ]
@@ -489,17 +496,18 @@ app.get('/api/congregation/export-csv', requireAuth('admin'), wrap(async (_req, 
 }))
 
 app.post('/api/congregation', requireAuth('admin'), wrap(async (req, res) => {
-  const { name, phone, email, photoUrl, notes, isStudent, schoolLevel, schoolYear, fellowshipGroups } = req.body ?? {}
+  const { name, phone, email, photoUrl, notes, isStudent, schoolLevel, schoolYear, parentName, parentPhone, parentEmail, fellowshipGroups } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
+  const student = !!isStudent
   const { rows: [m] } = await pool.query(
-    'INSERT INTO contacts(name,phone,email,photo_url,notes,is_student,school_level,school_year,fellowship_groups) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *',
-    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '', notes?.trim() ?? '', !!isStudent, schoolLevel?.trim() ?? '', schoolYear?.trim() ?? '', Array.isArray(fellowshipGroups) ? fellowshipGroups : []]
+    'INSERT INTO contacts(name,phone,email,photo_url,notes,is_student,school_level,school_year,parent_name,parent_phone,parent_email,fellowship_groups) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *',
+    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '', notes?.trim() ?? '', student, schoolLevel?.trim() ?? '', schoolYear?.trim() ?? '', student ? (parentName?.trim() ?? '') : '', student ? (parentPhone?.trim() ?? '') : '', student ? (parentEmail?.trim() ?? '') : '', Array.isArray(fellowshipGroups) ? fellowshipGroups : []]
   )
   res.json(toMember(m))
 }))
 
 app.post('/api/congregation/quick-add', requireAuth(), wrap(async (req, res) => {
-  const { name, phone, email, notes, isStudent, schoolLevel, schoolYear } = req.body ?? {}
+  const { name, phone, email, notes, isStudent, schoolLevel, schoolYear, parentName, parentPhone, parentEmail } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
   const { rows: existing } = await pool.query(
     'SELECT id FROM contacts WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))',
@@ -508,18 +516,19 @@ app.post('/api/congregation/quick-add', requireAuth(), wrap(async (req, res) => 
   if (existing.length > 0) return res.status(409).json({ error: 'Contact already exists in congregation' })
   const student = !!isStudent
   const { rows: [m] } = await pool.query(
-    'INSERT INTO contacts(name,phone,email,photo_url,notes,is_student,school_level,school_year) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *',
-    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', '', notes?.trim() ?? '', student, student ? (schoolLevel?.trim() ?? '') : '', student ? (schoolYear?.trim() ?? '') : '']
+    'INSERT INTO contacts(name,phone,email,photo_url,notes,is_student,school_level,school_year,parent_name,parent_phone,parent_email) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *',
+    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', '', notes?.trim() ?? '', student, student ? (schoolLevel?.trim() ?? '') : '', student ? (schoolYear?.trim() ?? '') : '', student ? (parentName?.trim() ?? '') : '', student ? (parentPhone?.trim() ?? '') : '', student ? (parentEmail?.trim() ?? '') : '']
   )
   res.json(toMember(m))
 }))
 
 app.put('/api/congregation/:id', requireAuth('admin'), wrap(async (req, res) => {
-  const { name, phone, email, photoUrl, notes, isStudent, schoolLevel, schoolYear, fellowshipGroups } = req.body ?? {}
+  const { name, phone, email, photoUrl, notes, isStudent, schoolLevel, schoolYear, parentName, parentPhone, parentEmail, fellowshipGroups } = req.body ?? {}
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' })
+  const student = !!isStudent
   const { rows, rowCount } = await pool.query(
-    'UPDATE contacts SET name=$1,phone=$2,email=$3,photo_url=$4,notes=$5,is_student=$6,school_level=$7,school_year=$8,fellowship_groups=$9 WHERE id=$10 RETURNING *',
-    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '', notes?.trim() ?? '', !!isStudent, schoolLevel?.trim() ?? '', schoolYear?.trim() ?? '', Array.isArray(fellowshipGroups) ? fellowshipGroups : [], req.params.id]
+    'UPDATE contacts SET name=$1,phone=$2,email=$3,photo_url=$4,notes=$5,is_student=$6,school_level=$7,school_year=$8,parent_name=$9,parent_phone=$10,parent_email=$11,fellowship_groups=$12 WHERE id=$13 RETURNING *',
+    [name.trim(), phone?.trim() ?? '', email?.trim() ?? '', photoUrl?.trim() ?? '', notes?.trim() ?? '', student, schoolLevel?.trim() ?? '', schoolYear?.trim() ?? '', student ? (parentName?.trim() ?? '') : '', student ? (parentPhone?.trim() ?? '') : '', student ? (parentEmail?.trim() ?? '') : '', Array.isArray(fellowshipGroups) ? fellowshipGroups : [], req.params.id]
   )
   if (rowCount === 0) return res.status(404).json({ error: 'Member not found' })
   res.json(toMember(rows[0]))
@@ -1109,6 +1118,22 @@ app.get('/api/classes/:id/search', requireAuth('attendance'), wrap(async (req, r
     const key = r.name.toLowerCase().trim()
     if (!seen.has(key)) { seen.add(key); results.push({ name: r.name, phone: r.phone || '', lastSeen: null, inSystem: true }) }
   }
+  // Backfill phone/parent info from `contacts` (the master record) for every candidate,
+  // even names that only matched via attendance history, so the signup form can show what's on file.
+  if (results.length > 0) {
+    const { rows: masterRows } = await pool.query(
+      'SELECT name, phone, parent_name, parent_phone, parent_email FROM contacts WHERE lower(trim(name)) = ANY($1::text[])',
+      [results.map(r => r.name.toLowerCase().trim())]
+    )
+    const masterByName = new Map(masterRows.map(r => [r.name.toLowerCase().trim(), r]))
+    for (const r of results) {
+      const m = masterByName.get(r.name.toLowerCase().trim())
+      r.phone       = m?.phone || r.phone || ''
+      r.parentName  = m?.parent_name  || ''
+      r.parentPhone = m?.parent_phone || ''
+      r.parentEmail = m?.parent_email || ''
+    }
+  }
   res.json(results.slice(0, 10))
 }))
 
@@ -1216,6 +1241,73 @@ app.delete('/api/classes/:id/roster/:name', requireAuth('attendance'), wrap(asyn
     [id, name]
   )
   res.json({ success: true })
+}))
+
+app.get('/api/classes/:id/roster/parents', requireAuth('attendance'), wrap(async (req, res) => {
+  // Match roster names (roster + historical attendance) against congregation contacts to surface phone/parent info
+  const { rows } = await pool.query(`
+    SELECT r.person_name, c.phone, c.parent_name, c.parent_phone, c.parent_email
+    FROM (
+      SELECT person_name FROM class_roster WHERE class_id=$1
+      UNION
+      SELECT ca.person_name
+      FROM class_attendance ca
+      JOIN class_sessions cs ON ca.session_id=cs.id
+      WHERE cs.class_id=$1
+    ) r
+    JOIN contacts c ON lower(trim(c.name)) = lower(trim(r.person_name))
+  `, [req.params.id])
+  res.json(rows.map(r => ({ person_name: r.person_name, phone: r.phone || '', parent_name: r.parent_name || '', parent_phone: r.parent_phone || '', parent_email: r.parent_email || '' })))
+}))
+
+app.put('/api/classes/:id/roster/:name/contact', requireAuth('attendance'), wrap(async (req, res) => {
+  // Upsert the congregation contact for this roster name with phone + parent info, permanently in `contacts`.
+  // Fields omitted from the body (e.g. a bare phone-only Quick Signup) are left untouched rather than cleared;
+  // a field explicitly sent as '' (from the full inline-edit form) still clears it.
+  const name = req.params.name?.trim()
+  if (!name) return res.status(400).json({ error: 'Name is required' })
+  const b = req.body ?? {}
+  const phone       = b.phone       !== undefined ? String(b.phone).trim()       : undefined
+  const parentName  = b.parentName  !== undefined ? String(b.parentName).trim()  : undefined
+  const parentPhone = b.parentPhone !== undefined ? String(b.parentPhone).trim() : undefined
+  const parentEmail = b.parentEmail !== undefined ? String(b.parentEmail).trim() : undefined
+  const { rows: existing } = await pool.query(
+    'SELECT * FROM contacts WHERE lower(trim(name)) = lower(trim($1))',
+    [name]
+  )
+  let m
+  if (existing.length > 0) {
+    const cur = existing[0]
+    ;({ rows: [m] } = await pool.query(
+      'UPDATE contacts SET phone=$1, is_student=true, parent_name=$2, parent_phone=$3, parent_email=$4 WHERE id=$5 RETURNING *',
+      [phone ?? cur.phone, parentName ?? cur.parent_name, parentPhone ?? cur.parent_phone, parentEmail ?? cur.parent_email, cur.id]
+    ))
+  } else {
+    ;({ rows: [m] } = await pool.query(
+      'INSERT INTO contacts(name,phone,is_student,parent_name,parent_phone,parent_email) VALUES($1,$2,true,$3,$4,$5) RETURNING *',
+      [name, phone ?? '', parentName ?? '', parentPhone ?? '', parentEmail ?? '']
+    ))
+  }
+  res.json(toMember(m))
+}))
+
+app.post('/api/classes/:id/roster/import', requireAuth('attendance'), wrap(async (req, res) => {
+  const { fromClassId } = req.body ?? {}
+  if (!fromClassId) return res.status(400).json({ error: 'fromClassId is required' })
+  const { rows, rowCount } = await pool.query(`
+    INSERT INTO class_roster (class_id, person_name)
+    SELECT $1, t.person_name FROM (
+      SELECT person_name FROM class_roster WHERE class_id=$2
+      UNION
+      SELECT ca.person_name
+      FROM class_attendance ca
+      JOIN class_sessions cs ON ca.session_id=cs.id
+      WHERE cs.class_id=$2
+    ) t
+    ON CONFLICT DO NOTHING
+    RETURNING person_name
+  `, [req.params.id, fromClassId])
+  res.json({ success: true, imported: rowCount, names: rows.map(r => r.person_name) })
 }))
 
 app.post('/api/classes/:id/notify-lead', requireAuth('attendance'), wrap(async (req, res) => {

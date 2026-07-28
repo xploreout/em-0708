@@ -9,6 +9,7 @@ import {
   Save,
   X,
   Mail,
+  Phone,
   UserX,
   MapPin,
   Clock,
@@ -34,7 +35,6 @@ import {
   Link,
   Play,
   ExternalLink,
-  UserPlus,
 } from 'lucide-react'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -74,6 +74,9 @@ type SearchResult = {
   phone: string
   lastSeen: string | null
   inSystem: boolean
+  parentName: string
+  parentPhone: string
+  parentEmail: string
 }
 type ClassDoc = {
   id: number
@@ -102,6 +105,14 @@ function fmtDate(d: string) {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
+  })
+}
+
+function fmtDateShort(d: string) {
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: '2-digit',
   })
 }
 
@@ -613,9 +624,20 @@ function RosterPanel({
   onRefresh: () => void
   authFetch: (u: string, i?: RequestInit) => Promise<Response>
 }) {
+  // Roster table cells: tiny by default, grow on hover/tap so mobile taps can still reveal full text
+  const growCellClass =
+    'text-[10px] text-gray-500 leading-tight origin-top-left transition-transform duration-150 ease-out hover:scale-[1.6] hover:z-10 hover:text-gray-800 active:scale-[1.6] active:z-10 active:text-gray-800 cursor-default'
+  // Phone / Parent columns get a full-size font on desktop, where there's room to fill; mobile keeps the tiny/hover-grow treatment
+  const growCellClassLg =
+    'text-[10px] sm:text-sm text-gray-500 leading-tight sm:leading-normal origin-top-left transition-transform duration-150 ease-out hover:scale-[1.6] sm:hover:scale-100 hover:z-10 hover:text-gray-800 active:scale-[1.6] sm:active:scale-100 active:z-10 active:text-gray-800 cursor-default'
+
   const [showAdd, setShowAdd] = useState(false)
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
+  const [newParentName, setNewParentName] = useState('')
+  const [newParentPhone, setNewParentPhone] = useState('')
+  const [newParentEmail, setNewParentEmail] = useState('')
+  const [newIsExisting, setNewIsExisting] = useState(false)
   const [checkInNow, setCheckInNow] = useState(false)
   const [saving, setSaving] = useState(false)
   const [flash, setFlash] = useState('')
@@ -633,46 +655,97 @@ function RosterPanel({
   const [nameSearching, setNameSearching] = useState(false)
   const [nameDropdownOpen, setNameDropdownOpen] = useState(false)
 
-  const [contactName,        setContactName]        = useState('')
-  const [contactPhone,       setContactPhone]       = useState('')
-  const [contactEmail,       setContactEmail]       = useState('')
-  const [contactNotes,       setContactNotes]       = useState('')
-  const [contactIsStudent,   setContactIsStudent]   = useState(false)
-  const [contactSchoolLevel, setContactSchoolLevel] = useState('')
-  const [contactSchoolYear,  setContactSchoolYear]  = useState('')
-  const [savingContact, setSavingContact] = useState(false)
-  const [contactFlash, setContactFlash] = useState<{
-    msg: string
-    ok: boolean
-  } | null>(null)
+  // Contact phone + parent/guardian info, looked up from congregation contacts by name
+  type ContactInfo = { phone: string; parent_name: string; parent_phone: string; parent_email: string }
+  const [parentMap, setParentMap] = useState<Map<string, ContactInfo>>(new Map())
+  const [parentsLoaded, setParentsLoaded] = useState(false)
+  const loadParents = useCallback(async () => {
+    const r = await authFetch(`/api/classes/${classId}/roster/parents`)
+    const d = await r.json()
+    if (Array.isArray(d)) {
+      setParentMap(new Map(d.map((p: { person_name: string; phone: string; parent_name: string; parent_phone: string; parent_email: string }) => [
+        p.person_name.toLowerCase().trim(),
+        { phone: p.phone, parent_name: p.parent_name, parent_phone: p.parent_phone, parent_email: p.parent_email },
+      ])))
+    }
+    setParentsLoaded(true)
+  }, [classId, authFetch])
+  useEffect(() => { loadParents() }, [loadParents])
 
-  async function addContact() {
-    if (!contactName.trim()) return
-    setSavingContact(true)
-    const r = await authFetch('/api/congregation/quick-add', {
+  // Inline edit of a roster row's phone/parent info — saved permanently to the congregation contact
+  const [editingName, setEditingName] = useState<string | null>(null)
+  const [editPhone, setEditPhone] = useState('')
+  const [editParentName, setEditParentName] = useState('')
+  const [editParentPhone, setEditParentPhone] = useState('')
+  const [editParentEmail, setEditParentEmail] = useState('')
+  const [savingEdit, setSavingEdit] = useState(false)
+
+  // Mobile roster: tapping the phone/parent icon pops up that person's info instead of showing tiny inline text
+  const [mobileInfoFor, setMobileInfoFor] = useState<{ name: string; type: 'phone' | 'parent' } | null>(null)
+
+  // Always seed the edit form from whatever is currently saved in the database for this person
+  function startEdit(name: string, fallbackPhone: string) {
+    const c = parentMap.get(name.toLowerCase().trim())
+    setEditingName(name)
+    setEditPhone(c?.phone || fallbackPhone || '')
+    setEditParentName(c?.parent_name || '')
+    setEditParentPhone(c?.parent_phone || '')
+    setEditParentEmail(c?.parent_email || '')
+    setMobileInfoFor(null)
+  }
+  function cancelEdit() {
+    setEditingName(null)
+  }
+  async function saveEdit(name: string) {
+    setSavingEdit(true)
+    const r = await authFetch(`/api/classes/${classId}/roster/${encodeURIComponent(name)}/contact`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: editPhone.trim(), parentName: editParentName.trim(), parentPhone: editParentPhone.trim(), parentEmail: editParentEmail.trim() }),
+    })
+    setSavingEdit(false)
+    if (r.ok) {
+      setEditingName(null)
+      loadParents()
+    }
+  }
+
+  // Import roster from another class
+  const [importOpen, setImportOpen] = useState(false)
+  const [otherClasses, setOtherClasses] = useState<ClassInfo[]>([])
+  const [importFromId, setImportFromId] = useState('')
+  const [importing, setImporting] = useState(false)
+  useEffect(() => {
+    if (!importOpen) return
+    authFetch('/api/classes').then(r => r.json()).then(d => {
+      if (Array.isArray(d)) {
+        setOtherClasses(
+          d.filter((c: ClassInfo) => String(c.id) !== String(classId))
+            .sort((a: ClassInfo, b: ClassInfo) => a.name.localeCompare(b.name))
+        )
+      }
+    })
+  }, [importOpen, classId, authFetch])
+  async function doImport() {
+    if (!importFromId) return
+    setImporting(true)
+    const r = await authFetch(`/api/classes/${classId}/roster/import`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: contactName.trim(),
-        phone: contactPhone.trim(),
-        email: contactEmail.trim(),
-        notes: contactNotes.trim(),
-        isStudent: contactIsStudent,
-        schoolLevel: contactIsStudent ? contactSchoolLevel : '',
-        schoolYear:  contactIsStudent ? contactSchoolYear  : '',
-      }),
+      body: JSON.stringify({ fromClassId: importFromId }),
     })
     const d = await r.json()
-    setSavingContact(false)
+    setImporting(false)
     if (r.ok) {
-      setContactName(''); setContactPhone(''); setContactEmail('')
-      setContactNotes(''); setContactIsStudent(false)
-      setContactSchoolLevel(''); setContactSchoolYear('')
-      setContactFlash({ msg: `${d.name || contactName} added to congregation.`, ok: true })
+      setFlash(`Imported ${d.imported} student${d.imported === 1 ? '' : 's'}.`)
+      setImportOpen(false)
+      setImportFromId('')
+      onRefresh()
+      loadParents()
     } else {
-      setContactFlash({ msg: d.error || 'Failed to add contact', ok: false })
+      setFlash(d.error || 'Import failed')
     }
-    setTimeout(() => setContactFlash(null), 3000)
+    setTimeout(() => setFlash(''), 3000)
   }
 
   useEffect(() => {
@@ -740,6 +813,19 @@ function RosterPanel({
         return
       }
     }
+    // Persist the signup's name/phone/parent info to the congregation contact record too.
+    // Existing parent info is pre-filled into the form when the name matches someone already
+    // on file, so re-submitting it here just keeps it in place rather than clobbering it.
+    await authFetch(`/api/classes/${classId}/roster/${encodeURIComponent(newName.trim())}/contact`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: newPhone.trim(),
+        parentName: newParentName.trim(),
+        parentPhone: newParentPhone.trim(),
+        parentEmail: newParentEmail.trim(),
+      }),
+    }).catch(() => {})
     onMemberAdded(newName.trim())
     setSaving(false)
     setFlash(
@@ -747,9 +833,14 @@ function RosterPanel({
     )
     setNewName('')
     setNewPhone('')
+    setNewParentName('')
+    setNewParentPhone('')
+    setNewParentEmail('')
+    setNewIsExisting(false)
     setShowAdd(false)
     setTimeout(() => setFlash(''), 3000)
     onRefresh()
+    loadParents()
   }
 
   return (
@@ -758,17 +849,60 @@ function RosterPanel({
         <h3 className='font-semibold text-gray-700 text-sm uppercase tracking-wider'>
           Already Signed Up ({allMembers.length})
         </h3>
-        <button
-          onClick={() => setShowAdd((s) => !s)}
-          className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition'
-        >
-          <Plus className='w-3.5 h-3.5' /> Quick Signup
-        </button>
+        <div className='flex items-center gap-2'>
+          <button
+            onClick={() => setImportOpen((s) => !s)}
+            className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-600 text-xs font-semibold transition'
+          >
+            <Users className='w-3.5 h-3.5' /> Import from Class
+          </button>
+          <button
+            onClick={() => setShowAdd((s) => !s)}
+            className='flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition'
+          >
+            <Plus className='w-3.5 h-3.5' /> Quick Signup
+          </button>
+        </div>
       </div>
 
       {flash && (
         <div className='flex items-center gap-2 text-green-700 bg-green-50 px-4 py-2.5 rounded-lg text-sm font-medium mb-3'>
           <CheckCircle2 className='w-4 h-4' /> {flash}
+        </div>
+      )}
+
+      {importOpen && (
+        <div className='bg-gray-50 border-2 border-gray-200 rounded-lg p-4 mb-4 flex flex-col gap-3'>
+          <h4 className='font-semibold text-gray-700 text-sm'>
+            Import All Students From Another Class
+          </h4>
+          <select
+            value={importFromId}
+            onChange={(e) => setImportFromId(e.target.value)}
+            className='w-full border-2 border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-400 bg-white'
+          >
+            <option value=''>— Select a class —</option>
+            {otherClasses.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}{c.archived ? ' (archived)' : ''}
+              </option>
+            ))}
+          </select>
+          <div className='flex gap-2'>
+            <button
+              onClick={doImport}
+              disabled={importing || !importFromId}
+              className='flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition disabled:opacity-50'
+            >
+              {importing ? 'Importing…' : 'Import'}
+            </button>
+            <button
+              onClick={() => { setImportOpen(false); setImportFromId('') }}
+              className='px-4 py-2 rounded-lg border border-gray-200 text-gray-600 text-sm hover:bg-white transition'
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
 
@@ -785,6 +919,10 @@ function RosterPanel({
                 onChange={(e) => {
                   setNewName(e.target.value)
                   setNameDropdownOpen(true)
+                  setNewIsExisting(false)
+                  setNewParentName('')
+                  setNewParentPhone('')
+                  setNewParentEmail('')
                 }}
                 onFocus={() => newName.trim() && setNameDropdownOpen(true)}
                 onBlur={() => setTimeout(() => setNameDropdownOpen(false), 150)}
@@ -805,6 +943,10 @@ function RosterPanel({
                     onMouseDown={() => {
                       setNewName(r.name)
                       setNewPhone(r.phone || '')
+                      setNewParentName(r.parentName || '')
+                      setNewParentPhone(r.parentPhone || '')
+                      setNewParentEmail(r.parentEmail || '')
+                      setNewIsExisting(true)
                       setNameResults([])
                       setNameDropdownOpen(false)
                     }}
@@ -825,6 +967,31 @@ function RosterPanel({
             value={newPhone}
             onChange={(e) => setNewPhone(e.target.value)}
             placeholder='Phone (optional)'
+            className='w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-400 bg-white'
+          />
+          {newIsExisting && (
+            <div className='text-xs text-blue-600 bg-blue-100 rounded-lg px-3 py-1.5 -mt-1'>
+              Existing contact found — info below is on file and can be edited.
+            </div>
+          )}
+          <div className='flex gap-2'>
+            <input
+              value={newParentName}
+              onChange={(e) => setNewParentName(e.target.value)}
+              placeholder='Parent name (optional)'
+              className='flex-1 min-w-0 border-2 border-blue-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-400 bg-white'
+            />
+            <input
+              value={newParentPhone}
+              onChange={(e) => setNewParentPhone(e.target.value)}
+              placeholder='Parent phone'
+              className='flex-1 min-w-0 border-2 border-blue-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-400 bg-white'
+            />
+          </div>
+          <input
+            value={newParentEmail}
+            onChange={(e) => setNewParentEmail(e.target.value)}
+            placeholder='Parent email (optional)'
             className='w-full border-2 border-blue-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-blue-400 bg-white'
           />
           <label className='flex items-center gap-2 text-sm text-blue-800 cursor-pointer'>
@@ -849,6 +1016,10 @@ function RosterPanel({
                 setShowAdd(false)
                 setNewName('')
                 setNewPhone('')
+                setNewParentName('')
+                setNewParentPhone('')
+                setNewParentEmail('')
+                setNewIsExisting(false)
                 setNameResults([])
                 setNameDropdownOpen(false)
               }}
@@ -867,150 +1038,201 @@ function RosterPanel({
       ) : (
         <div className='rounded-lg border border-gray-200 overflow-hidden'>
           <div className='overflow-x-auto'>
-            <table className='w-full text-sm border-collapse'>
+            <table className='w-full text-sm border-collapse table-fixed'>
               <thead>
                 <tr className='bg-gray-100 border-b border-gray-200'>
-                  <th className='px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+                  <th className='w-[32%] sm:w-[18%] px-2.5 py-1.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'>
                     Name
                   </th>
-                  <th className='px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+                  <th className='w-[12%] sm:w-[22%] px-2.5 py-1.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'>
                     Phone
                   </th>
-                  <th className='px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+                  <th className='w-[12%] sm:w-[30%] px-2.5 py-1.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'>
+                    Parent
+                  </th>
+                  <th className='w-[28%] sm:w-[20%] px-2.5 py-1.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider'>
                     Attendance
                   </th>
-                  <th className='px-3 py-2 w-8'></th>
+                  <th className='w-[16%] sm:w-[10%] px-2 py-1.5'></th>
                 </tr>
               </thead>
               <tbody>
-                {allMembers.map((m, idx) => (
+                {allMembers.map((m, idx) => {
+                  const parent = parentMap.get(m.name.toLowerCase().trim())
+                  const isEditing = editingName === m.name
+                  const phoneValue = m.phone || parent?.phone || ''
+                  const hasParentInfo = !!(parent?.parent_name || parent?.parent_phone || parent?.parent_email)
+                  return (
                   <tr
                     key={m.name}
                     className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
                   >
-                    <td className='px-4 py-2.5 font-medium text-gray-800'>
+                    <td className='px-2.5 py-1.5 font-medium text-gray-800 align-middle break-words'>
                       {m.name}
                     </td>
-                    <td className='px-4 py-2.5 text-gray-500'>
-                      {m.phone || '—'}
+                    <td className='px-2.5 py-1.5 align-middle break-words relative'>
+                      {isEditing ? (
+                        <input
+                          value={editPhone}
+                          onChange={(e) => setEditPhone(e.target.value)}
+                          placeholder='Phone'
+                          className='w-full border border-gray-200 rounded-lg px-2 py-1 text-sm outline-none focus:border-blue-400 bg-white'
+                        />
+                      ) : (
+                        <>
+                          {/* Mobile: icon that pops up the phone number on tap */}
+                          <button
+                            onClick={() => setMobileInfoFor((prev) =>
+                              prev?.name === m.name && prev.type === 'phone' ? null : { name: m.name, type: 'phone' }
+                            )}
+                            className={`sm:hidden p-1 -m-1 rounded transition ${phoneValue ? 'text-blue-500 hover:text-blue-700' : 'text-gray-300'}`}
+                            title='View phone'
+                          >
+                            <Phone className='w-4 h-4' />
+                          </button>
+                          {mobileInfoFor?.name === m.name && mobileInfoFor.type === 'phone' && (
+                            <div className='sm:hidden absolute z-30 top-full left-0 mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-lg p-2.5'>
+                              <div className='flex items-center justify-between mb-1'>
+                                <span className='text-[10px] font-semibold text-gray-400 uppercase tracking-wider'>Phone</span>
+                                <button onClick={() => setMobileInfoFor(null)} className='text-gray-300 hover:text-gray-500'>
+                                  <X className='w-3 h-3' />
+                                </button>
+                              </div>
+                              <div className='text-xs text-gray-700'>{phoneValue || 'No phone on file'}</div>
+                            </div>
+                          )}
+                          {/* Desktop: full text in the cell */}
+                          <span className={`hidden sm:inline-block ${growCellClassLg}`}>
+                            {phoneValue || '—'}
+                          </span>
+                        </>
+                      )}
                     </td>
-                    <td className='px-4 py-2.5 text-gray-500'>
-                      {m.count > 0
-                        ? `${m.count} session${m.count !== 1 ? 's' : ''} · last ${fmtDate(m.lastSeen)}`
-                        : 'No sessions yet'}
+                    <td className='px-2.5 py-1.5 align-middle break-words relative'>
+                      {isEditing ? (
+                        <div className='flex flex-col gap-1'>
+                          <div className='flex gap-1'>
+                            <input
+                              value={editParentName}
+                              onChange={(e) => setEditParentName(e.target.value)}
+                              placeholder='Parent name'
+                              className='w-1/2 border border-gray-200 rounded-lg px-2 py-1 text-sm outline-none focus:border-blue-400 bg-white'
+                            />
+                            <input
+                              value={editParentPhone}
+                              onChange={(e) => setEditParentPhone(e.target.value)}
+                              placeholder='Parent phone'
+                              className='w-1/2 border border-gray-200 rounded-lg px-2 py-1 text-sm outline-none focus:border-blue-400 bg-white'
+                            />
+                          </div>
+                          <input
+                            value={editParentEmail}
+                            onChange={(e) => setEditParentEmail(e.target.value)}
+                            placeholder='Parent email'
+                            className='w-full border border-gray-200 rounded-lg px-2 py-1 text-sm outline-none focus:border-blue-400 bg-white'
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          {/* Mobile: icon that pops up parent name/phone/email on tap */}
+                          <button
+                            onClick={() => setMobileInfoFor((prev) =>
+                              prev?.name === m.name && prev.type === 'parent' ? null : { name: m.name, type: 'parent' }
+                            )}
+                            className={`sm:hidden p-1 -m-1 rounded transition ${hasParentInfo ? 'text-indigo-500 hover:text-indigo-700' : 'text-gray-300'}`}
+                            title='View parent info'
+                          >
+                            <Users className='w-4 h-4' />
+                          </button>
+                          {mobileInfoFor?.name === m.name && mobileInfoFor.type === 'parent' && (
+                            <div className='sm:hidden absolute z-30 top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg p-2.5'>
+                              <div className='flex items-center justify-between mb-1'>
+                                <span className='text-[10px] font-semibold text-gray-400 uppercase tracking-wider'>Parent</span>
+                                <button onClick={() => setMobileInfoFor(null)} className='text-gray-300 hover:text-gray-500'>
+                                  <X className='w-3 h-3' />
+                                </button>
+                              </div>
+                              {hasParentInfo ? (
+                                <div className='flex flex-col gap-0.5 text-xs text-gray-700'>
+                                  {parent?.parent_name && <div className='font-medium'>{parent.parent_name}</div>}
+                                  {parent?.parent_phone && <div className='text-gray-500'>{parent.parent_phone}</div>}
+                                  {parent?.parent_email && <div className='text-gray-500 break-all'>{parent.parent_email}</div>}
+                                </div>
+                              ) : (
+                                <div className='text-xs text-gray-400'>No parent info on file</div>
+                              )}
+                            </div>
+                          )}
+                          {/* Desktop: full text in the cell */}
+                          <span className={`hidden sm:inline-block ${growCellClassLg}`}>
+                            {hasParentInfo
+                              ? [parent?.parent_name, parent?.parent_phone, parent?.parent_email].filter(Boolean).join(' · ')
+                              : '—'}
+                          </span>
+                        </>
+                      )}
                     </td>
-                    <td className='px-3 py-2.5'>
-                      <button
-                        onClick={() => doRemoveMember(m.name)}
-                        disabled={removingName === m.name}
-                        className='text-red-400 hover:text-red-600 transition'
-                        title='Remove from roster'
-                      >
-                        {removingName === m.name ? (
-                          <Loader2 className='w-3.5 h-3.5 animate-spin' />
-                        ) : (
-                          <Trash2 className='w-3.5 h-3.5' />
-                        )}
-                      </button>
+                    <td className='px-2.5 py-1.5 align-middle break-words relative'>
+                      <span className={`inline-block ${growCellClass}`}>
+                        {m.count > 0
+                          ? `${m.count} session${m.count !== 1 ? 's' : ''} · last ${fmtDateShort(m.lastSeen)}`
+                          : 'none'}
+                      </span>
+                    </td>
+                    <td className='px-2 py-1.5 align-middle'>
+                      {isEditing ? (
+                        <div className='flex flex-row gap-1.5 items-center'>
+                          <button
+                            onClick={() => saveEdit(m.name)}
+                            disabled={savingEdit}
+                            className='text-green-500 hover:text-green-700 transition'
+                            title='Save'
+                          >
+                            {savingEdit ? <Loader2 className='w-3.5 h-3.5 animate-spin' /> : <Save className='w-3.5 h-3.5' />}
+                          </button>
+                          <button
+                            onClick={cancelEdit}
+                            disabled={savingEdit}
+                            className='text-gray-400 hover:text-gray-600 transition'
+                            title='Cancel'
+                          >
+                            <X className='w-3.5 h-3.5' />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className='flex flex-row gap-1.5 items-center'>
+                          <button
+                            onClick={() => startEdit(m.name, m.phone)}
+                            disabled={!parentsLoaded}
+                            className='text-blue-400 hover:text-blue-600 transition disabled:opacity-40'
+                            title={parentsLoaded ? 'Edit phone / parent info' : 'Loading…'}
+                          >
+                            {parentsLoaded ? <Edit2 className='w-3.5 h-3.5' /> : <Loader2 className='w-3.5 h-3.5 animate-spin' />}
+                          </button>
+                          <button
+                            onClick={() => doRemoveMember(m.name)}
+                            disabled={removingName === m.name}
+                            className='text-red-400 hover:text-red-600 transition'
+                            title='Remove from roster'
+                          >
+                            {removingName === m.name ? (
+                              <Loader2 className='w-3.5 h-3.5 animate-spin' />
+                            ) : (
+                              <Trash2 className='w-3.5 h-3.5' />
+                            )}
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
-                ))}
+                  )
+                })}
               </tbody>
             </table>
           </div>
         </div>
       )}
 
-      {/* Quick Add to Contact Record */}
-      <div className='mt-6 border-t border-gray-100 pt-5'>
-        <h3 className='font-semibold text-gray-700 text-sm uppercase tracking-wider flex items-center gap-2 mb-3'>
-          <UserPlus className='w-4 h-4 text-indigo-500' /> Quick Add to Contacts
-        </h3>
-        {contactFlash && (
-          <div
-            className={`flex items-center gap-2 text-xs font-medium px-3 py-2 rounded-lg mb-3 ${contactFlash.ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}
-          >
-            {contactFlash.ok && <CheckCircle2 className='w-3.5 h-3.5' />}
-            {contactFlash.msg}
-          </div>
-        )}
-        <div className='flex gap-2 mb-2'>
-          <input
-            value={contactName}
-            onChange={(e) => setContactName(e.target.value)}
-            placeholder='Full name *'
-            className='flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 bg-white'
-          />
-          <input
-            value={contactPhone}
-            onChange={(e) => setContactPhone(e.target.value)}
-            placeholder='Phone'
-            className='flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 bg-white'
-          />
-          <input
-            value={contactEmail}
-            onChange={(e) => setContactEmail(e.target.value)}
-            placeholder='Email'
-            className='flex-1 min-w-0 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 bg-white'
-          />
-        </div>
-        <textarea
-          value={contactNotes}
-          onChange={(e) => setContactNotes(e.target.value)}
-          placeholder='Notes (optional)'
-          rows={2}
-          className='w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 bg-white resize-none mb-2'
-        />
-        <div className='flex items-center gap-2 mb-2'>
-          <input
-            id='roster-is-student'
-            type='checkbox'
-            checked={contactIsStudent}
-            onChange={(e) => setContactIsStudent(e.target.checked)}
-            className='w-4 h-4 rounded border-gray-300 accent-indigo-600 cursor-pointer'
-          />
-          <label htmlFor='roster-is-student' className='text-sm font-medium text-gray-700 cursor-pointer select-none'>
-            Student
-          </label>
-        </div>
-        {contactIsStudent && (
-          <div className='flex gap-2 mb-2 pl-3 border-l-2 border-indigo-100'>
-            <select
-              value={contactSchoolLevel}
-              onChange={(e) => setContactSchoolLevel(e.target.value)}
-              className='flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 bg-white'
-            >
-              <option value=''>— Grade/Level —</option>
-              {[...Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`), ...Array.from({ length: 6 }, (_, i) => `College ${i + 1}`), 'Other'].map(lvl => (
-                <option key={lvl} value={lvl}>{lvl}</option>
-              ))}
-            </select>
-            <select
-              value={contactSchoolYear}
-              onChange={(e) => setContactSchoolYear(e.target.value)}
-              className='flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-indigo-400 bg-white'
-            >
-              <option value=''>— School Year —</option>
-              {(() => {
-                const now = new Date(); const y = now.getFullYear(); const base = now.getMonth() + 1 >= 8 ? y : y - 1
-                return Array.from({ length: 6 }, (_, i) => { const s = base - 2 + i; return `${s}-${s + 1}` })
-              })().map(yr => <option key={yr} value={yr}>{yr}</option>)}
-            </select>
-          </div>
-        )}
-        <button
-          onClick={addContact}
-          disabled={savingContact || !contactName.trim()}
-          className='flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition disabled:opacity-50'
-        >
-          {savingContact ? (
-            <Loader2 className='w-3.5 h-3.5 animate-spin' />
-          ) : (
-            <UserPlus className='w-3.5 h-3.5' />
-          )}
-          {savingContact ? 'Adding…' : 'Quick Add'}
-        </button>
-      </div>
     </div>
   )
 }
@@ -2817,7 +3039,7 @@ export default function ClassDetailPage() {
       </div>
 
       <div
-        className={`mx-auto px-4 py-6 ${leadTab === 'edit' || leadTab === 'summary' ? 'max-w-3xl' : 'max-w-lg'}`}
+        className={`mx-auto px-4 py-6 ${leadTab === 'edit' || leadTab === 'summary' || leadTab === 'roster' ? 'max-w-3xl' : 'max-w-lg'}`}
       >
         {leadTab === 'roster' && (
           <RosterPanel

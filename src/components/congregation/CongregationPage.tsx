@@ -12,6 +12,9 @@ type Member = {
   isStudent: boolean
   schoolLevel: string
   schoolYear: string
+  parentName: string
+  parentPhone: string
+  parentEmail: string
   fellowshipGroups: string[]
 }
 
@@ -144,6 +147,9 @@ function MemberModal({ member, onSave, onClose, allGroups }: {
   const [isStudent,       setIsStudent]       = useState(member?.isStudent       ?? false)
   const [schoolLevel,     setSchoolLevel]     = useState(member?.schoolLevel     ?? '')
   const [schoolYear,      setSchoolYear]      = useState(member?.schoolYear      || currentSchoolYear())
+  const [parentName,      setParentName]      = useState(member?.parentName     ?? '')
+  const [parentPhone,     setParentPhone]     = useState(member?.parentPhone    ?? '')
+  const [parentEmail,     setParentEmail]     = useState(member?.parentEmail    ?? '')
   const [fellowshipGroups, setFellowshipGroups] = useState<string[]>(member?.fellowshipGroups ?? [])
   const [uploading, setUploading] = useState(false)
   const [saving,    setSaving]    = useState(false)
@@ -174,7 +180,7 @@ function MemberModal({ member, onSave, onClose, allGroups }: {
     setSaving(true)
     setError(null)
     try {
-      await onSave({ name, phone, email, photoUrl, notes, isStudent, schoolLevel: isStudent ? schoolLevel : '', schoolYear: isStudent ? schoolYear : '', fellowshipGroups })
+      await onSave({ name, phone, email, photoUrl, notes, isStudent, schoolLevel: isStudent ? schoolLevel : '', schoolYear: isStudent ? schoolYear : '', parentName: isStudent ? parentName : '', parentPhone: isStudent ? parentPhone : '', parentEmail: isStudent ? parentEmail : '', fellowshipGroups })
       onClose()
     } catch (err: any) {
       setError(err.message ?? 'Save failed')
@@ -288,6 +294,21 @@ function MemberModal({ member, onSave, onClose, allGroups }: {
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Parent Name</label>
+                <input type="text" value={parentName} onChange={e => setParentName(e.target.value)} placeholder="Parent/guardian full name"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Parent Phone</label>
+                <input type="tel" value={parentPhone} onChange={e => setParentPhone(e.target.value)} placeholder="+1 (555) 000-0000"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1">Parent Email</label>
+                <input type="email" value={parentEmail} onChange={e => setParentEmail(e.target.value)} placeholder="parent@example.com"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400 transition" />
+              </div>
             </div>
           )}
         </div>
@@ -319,7 +340,7 @@ function MemberCard({ member, onEdit, onDelete }: {
   const initials = member.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
 
   const groups    = member.fellowshipGroups ?? []
-  const hasMore   = !!member.notes || (member.isStudent && !!member.schoolYear) || groups.length > 2
+  const hasMore   = !!member.notes || (member.isStudent && (!!member.schoolYear || !!member.parentName || !!member.parentPhone || !!member.parentEmail)) || groups.length > 2
   const previewGroups = expanded ? groups : groups.slice(0, 2)
 
   return (
@@ -376,6 +397,11 @@ function MemberCard({ member, onEdit, onDelete }: {
             {member.isStudent && member.schoolYear && (
               <div className="flex items-center gap-1 text-xs text-gray-500">
                 <span className="font-medium text-gray-400">School year:</span> {member.schoolYear}
+              </div>
+            )}
+            {member.isStudent && (member.parentName || member.parentPhone || member.parentEmail) && (
+              <div className="flex items-center gap-1 text-xs text-gray-500">
+                <span className="font-medium text-gray-400">Parent:</span> {[member.parentName, member.parentPhone, member.parentEmail].filter(Boolean).join(' · ')}
               </div>
             )}
             {member.notes && (
@@ -586,14 +612,16 @@ function CongregationContent() {
 
   function handleExportCsv() {
     const esc = (v: string) => { const s = String(v ?? ''); return /[,"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s }
-    const header = ['Name','Phone','Email','Fellowship Groups','Student','School Level','School Year','Notes']
+    const header = ['Name','Phone','Email','Fellowship Groups','Student','School Level','School Year','Parent Name','Parent Phone','Parent Email','Notes']
     const lines = [
       header.join(','),
       ...filtered.map(m => [
         esc(m.name), esc(m.phone), esc(m.email),
         esc((m.fellowshipGroups ?? []).join('; ')),
         m.isStudent ? 'Yes' : 'No',
-        esc(m.schoolLevel), esc(m.schoolYear), esc(m.notes),
+        esc(m.schoolLevel), esc(m.schoolYear),
+        esc(m.parentName), esc(m.parentPhone), esc(m.parentEmail),
+        esc(m.notes),
       ].join(',')),
     ].join('\r\n')
     const blob = new Blob([lines], { type: 'text/csv' })
