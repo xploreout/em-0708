@@ -57,7 +57,7 @@ function App() {
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route element={<Layout />}>
-            {/* <Route path="/class-resources" element={<ClassResourcesPage />} /> */}
+            <Route path="/class-resources" element={<ClassResourcesPage />} />
             <Route path="/events" element={<Events />} />
             <Route path="/resources/adult-small-group" element={<AdultSmallGroup />} />
             <Route path="/resources/youth" element={<Youth />} />
