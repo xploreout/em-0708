@@ -18,7 +18,7 @@ export const upcomingEvents: Event[] = [
   {
     id: 1,
     title: 'Sunday Worship Service',
-    date: 'Every Sunday',
+    date: 'Every Sunday (Note: 9/6 Zoom service)',
     time: '11:00am – 12:30pm',
     location: 'SDA Church, Duluth, GA',
     mapUrl:
@@ -43,8 +43,8 @@ export const upcomingEvents: Event[] = [
   {
     id: 4,
     title: 'Salt n Light (SnL) ',
-    date: '1st & 3rd Fridays, August',
-    time: '7:30pm – 9:15pm',
+    date: '2nd & 3rd Fridays, September/October',
+    time: '7:30pm – 9:30pm',
     location: 'SDA Church, Duluth, GA',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
@@ -58,7 +58,7 @@ export const upcomingEvents: Event[] = [
     id: 5,
     title: 'Youth Friday Night Fellowship',
     date: '1st, 2nd & 3rd Fridays',
-    time: '7:30pm – 9:15pm',
+    time: '7:30pm – 9:30pm',
     location: 'SDA Church, Duluth, GA',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
@@ -93,17 +93,15 @@ export const upcomingEvents: Event[] = [
   },
   {
     id: 11,
-    title: 'Summer Kids',
-    date: '1st, 2nd & 3rd Fridays, June – August',
-    time: '7:30pm – 9:30pm',
+    title: 'Children Sunday Worship',
+    date: 'Every Sunday',
+    time: '9:40am - 10:30am',
     location: 'SDA Church, Duluth, GA',
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      "This summer, we're excited to invite children to join our Summer Kids Fellowship, a fun and meaningful time designed to help children grow in faith, build friendships, and enjoy a safe, joyful community. ",
-    image: '',
-    video:
-      'https://res.cloudinary.com/dz2zqnf2q/video/upload/video/fridaykids.mp4',
+      'While parents are attending adult sunday school, children are invited to join our children’s worship service. They will learn about God’s love through songs, stories, and activities.',
+    image: './images/kidsworship.JPG',
   },
   {
     id: 10,
