@@ -233,8 +233,8 @@ export const t = {
     },
     snlTitle: { en: 'Salt n Light (SnL)', zh: '盐与光 (SnL)' },
     snlText: {
-      en: 'We just finished the "Basics of Faith" series. We will start a book discussion on Philippians, a letter by apostle Paul on joy, unity ad living as citizens of heaven. We also will join with the younger generation during the summer.',
-      zh: '我们刚刚结束了“信仰基础”系列课程。接下来，我们将围绕《腓立比书》展开研读与讨论——这是使徒保罗写的一封书信，探讨了喜乐、合一以及作为天国子民的生活方式。此外，我们夏天也会与年轻一代会合。',
+      en: 'We just finished the "Basics of Faith" series. We will start a book discussion on Philippians, a letter by apostle Paul on joy, unity ad living as citizens of heaven.',
+      zh: '我们刚刚结束了“信仰基础”系列课程。接下来，我们将围绕《腓立比书》展开研读与讨论——这是使徒保罗写的一封书信，探讨了喜乐、合一以及作为天国子民的生活方式。',
     },
     philippiansTitle: { en: 'Book of Philippians', zh: '腓立比书' },
     philippiansDesc: {

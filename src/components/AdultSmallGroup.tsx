@@ -71,11 +71,11 @@ const AdultSmallGroup = () => {
               </p>
               <div className='flex items-center gap-2'>
                 <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />
-                <span>2nd &amp; 3rd Fridays, September/October</span>
+                <span>10/9, 10/16, 11/6 &amp; 11/13</span>
               </div>
               <div className='flex items-center gap-2'>
                 <Clock className='h-3.5 w-3.5 text-emerald-400 shrink-0' />
-                <span>7:30pm – 9:15pm</span>
+                <span>7:30pm – 9:30pm</span>
               </div>
               <div className='flex items-center gap-2'>
                 <MapPin className='h-3.5 w-3.5 text-blue-400 shrink-0' />

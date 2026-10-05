@@ -18,7 +18,7 @@ export const upcomingEvents: Event[] = [
   {
     id: 1,
     title: 'Sunday Worship Service',
-    date: 'Every Sunday (Note: 9/6 Zoom service)',
+    date: 'Every Sunday ',
     time: '11:00am – 12:30pm',
     location: 'SDA Church, Duluth, GA',
     mapUrl:
@@ -75,7 +75,7 @@ export const upcomingEvents: Event[] = [
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      'Stick around after service and share a meal and fellowship with us. The meals are catered from local restaurants and serve with love by our volunteers!  Everyone is welcome to join, free for first time visitors.',
+      'Stick around after service and share a meal and fellowship with us. The meals are catered from local restaurants and serve with love by our volunteers!  Sign up in advance is preferred, and it is free for first time visitors.',
     image:
       'https://images.pexels.com/photos/14164040/pexels-photo-14164040.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
   },
@@ -114,5 +114,15 @@ export const upcomingEvents: Event[] = [
     description:
       'Every Sunday, children join our Sunday School class for engaging and fun Bible learning experiences focused on knowing, loving and serving Jesus.',
     image: './images/ch.jpg',
+  },
+  {
+    id: 12,
+    title: 'Autumn Outing',
+    date: 'November 1',
+    time: '1:30pm',
+    location: 'Park Trailhead',
+    description:
+      'Join us for an autumn walk at Vickery Creek Falls in Roswell. Bring snacks and lunch to enjoy along the way, and stay for dinner together after the walk!',
+    image: './images/fall.jpg',
   },
 ]
