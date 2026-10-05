@@ -210,7 +210,7 @@ type Video2026 = {
 }
 
 const videos2026: Video2026[] = [
-  { id: 'sGDQJdupD1c', title: 'EM Feud', subtitle: 'Latest', isShort: true },
+  // { id: 'sGDQJdupD1c', title: 'EM Feud', subtitle: 'Latest', isShort: true },
   { id: 'n9toPMxF8Yw', title: 'Flowers for Mothers', maxSeconds: 20 },
   { id: 'ouhQ2YjhBQQ', title: "Happy Mother's Day", maxSeconds: 3 },
   { id: 'eRqvh6wT2aU', title: 'Volunteer Day', maxSeconds: 3 },
