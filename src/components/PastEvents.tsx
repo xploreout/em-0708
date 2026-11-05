@@ -231,7 +231,9 @@ const videos2026: Video2026[] = [
 ]
 
 const PastEvents = () => {
-  const [featured, setFeatured] = useState<Video2026>(videos2026[0])
+  const featured = videos2026[0]
+  // Which side card is playing inline (null = none)
+  const [playingId, setPlayingId] = useState<string | null>(null)
 
   const pastEvents = [
     {
@@ -456,14 +458,33 @@ const PastEvents = () => {
               )}
             </div>
 
-            {/* Side thumbnails — click to feature */}
+            {/* Side thumbnails — click to play inside the same card */}
             <div className='flex-1 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-2 gap-2 content-start'>
               {videos2026
                 .filter((v) => v.id !== featured.id)
-                .map((video) => (
+                .map((video) =>
+                  playingId === video.id ? (
+                    <div
+                      key={video.id}
+                      className='relative w-full rounded-lg overflow-hidden shadow-md bg-black'
+                    >
+                      <div
+                        className='relative w-full'
+                        style={{ paddingBottom: '56.25%' }}
+                      >
+                        <iframe
+                          src={`https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0&modestbranding=1&playsinline=1${video.startSeconds ? `&start=${video.startSeconds}` : ''}`}
+                          title={video.title}
+                          className='absolute inset-0 w-full h-full border-0'
+                          allow='autoplay; fullscreen; encrypted-media'
+                          allowFullScreen
+                        />
+                      </div>
+                    </div>
+                  ) : (
                   <button
                     key={video.id}
-                    onClick={() => setFeatured(video)}
+                    onClick={() => setPlayingId(video.id)}
                     className='relative w-full rounded-lg overflow-hidden shadow hover:shadow-md transition-shadow group'
                   >
                     <div
@@ -494,7 +515,8 @@ const PastEvents = () => {
                       </p>
                     </div>
                   </button>
-                ))}
+                  )
+                )}
             </div>
           </div>
         </div>
