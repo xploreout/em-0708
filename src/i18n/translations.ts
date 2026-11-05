@@ -233,7 +233,7 @@ export const t = {
     },
     snlTitle: { en: 'Salt n Light (SnL)', zh: '盐与光 (SnL)' },
     snlText: {
-      en: 'We are starting a bible study on John in November. Together we will explore Jesus\' seven signs, His "I AM" statements, His encounters with people like Nicodemus and the Samaritan woman, and His death and resurrection, discovering who Jesus is and what it means to have life in Him. Everyone is welcome, no prior Bible knowledge needed!',
+      en: 'We are studying gospel of John in November. Together we will explore Jesus\' seven signs, His "I AM" statements, His encounters with people like Nicodemus and the Samaritan woman, and His death and resurrection, discovering who Jesus is and what it means to have life in Him. Everyone is welcome, no prior Bible knowledge needed!',
       zh: '我们正在研读《约翰福音》。使徒约翰写这卷书，“要叫你们信耶稣是基督，是神的儿子，并且叫你们信了他，就可以因他的名得生命”（约翰福音20:31）。我们将一同探讨耶稣所行的七个神迹、祂“我是”的宣告、祂与尼哥底母和撒玛利亚妇人等人的相遇，以及祂的受死与复活，认识耶稣是谁，并明白在祂里面得生命的意义。欢迎所有人参加，无需任何圣经基础！',
     },
     philippiansTitle: { en: 'Book of Philippians', zh: '腓立比书' },
