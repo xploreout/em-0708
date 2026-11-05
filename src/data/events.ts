@@ -117,12 +117,14 @@ export const upcomingEvents: Event[] = [
   },
   {
     id: 12,
-    title: 'Autumn Outing',
-    date: 'November 1',
-    time: '1:30pm',
-    location: 'Park Trailhead',
+    title: 'November Baptism',
+    date: 'November 29',
+    time: '11:00am – 12:30pm',
+    location: 'SDA Church, Duluth, GA',
+    mapUrl:
+      'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      'Join us for an autumn walk at Vickery Creek Falls in Roswell. Bring snacks and lunch to enjoy along the way, and stay for dinner together after the walk!',
-    image: './images/fall.jpg',
+      'Join us as we celebrate those publicly declaring their faith in Jesus through baptism. Please contact us if you have any questions or are interested in being baptized.',
+    image: './images/worship1.jpeg',
   },
 ]
