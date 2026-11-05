@@ -251,6 +251,11 @@ export const t = {
       en: 'A 40-day devotional series helping you discover what you were created for and how to live with purpose.',
       zh: '一个40天的灵修系列，帮助您发现上帝创造您的目的，以及如何活出有意义的人生。',
     },
+    johnOverviewTitle: { en: 'Gospel of John: Overview', zh: '约翰福音：概览' },
+    johnOverviewDesc: {
+      en: 'A whiteboard video overview of the Gospel of John — a great introduction to our SnL study.',
+      zh: '以白板讲解的约翰福音概览视频——是我们SnL查经的绝佳入门。',
+    },
   },
   youth: {
     title: { en: 'Youth Ministry', zh: '青少年事工' },

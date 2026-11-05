@@ -6,7 +6,20 @@ import { t, tx } from '../i18n/translations'
 const AdultSmallGroup = () => {
   const { lang } = useLang()
 
-  const studies = [
+  const studies: {
+    titleKey: 'johnOverviewTitle' | 'philippiansTitle' | 'studiesTitle' | 'pdlTitle'
+    descKey: 'johnOverviewDesc' | 'philippiansDesc' | 'studiesDesc' | 'pdlDesc'
+    href: string
+    image: string
+    external?: boolean
+  }[] = [
+    {
+      titleKey: 'johnOverviewTitle',
+      descKey: 'johnOverviewDesc',
+      href: 'https://youtu.be/8M8XXzAplF0',
+      image: 'https://i.ytimg.com/vi/8M8XXzAplF0/hqdefault.jpg',
+      external: true,
+    },
     {
       titleKey: 'philippiansTitle' as const,
       descKey: 'philippiansDesc' as const,
@@ -93,12 +106,11 @@ const AdultSmallGroup = () => {
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {studies.map((study) => (
-            <Link
-              key={study.href}
-              to={study.href}
-              className='bg-gray-50 rounded-lg overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200 flex flex-col group'
-            >
+          {studies.map((study) => {
+            const cardClass =
+              'bg-gray-50 rounded-lg overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200 flex flex-col group'
+            const content = (
+              <>
               <img
                 src={study.image}
                 alt={tx(t.adultSmallGroup[study.titleKey], lang)}
@@ -112,8 +124,24 @@ const AdultSmallGroup = () => {
                   {tx(t.adultSmallGroup[study.descKey], lang)}
                 </p>
               </div>
-            </Link>
-          ))}
+              </>
+            )
+            return study.external ? (
+              <a
+                key={study.href}
+                href={study.href}
+                target='_blank'
+                rel='noopener noreferrer'
+                className={cardClass}
+              >
+                {content}
+              </a>
+            ) : (
+              <Link key={study.href} to={study.href} className={cardClass}>
+                {content}
+              </Link>
+            )
+          })}
         </div>
       </div>
     </section>
