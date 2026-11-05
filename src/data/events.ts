@@ -49,7 +49,7 @@ export const upcomingEvents: Event[] = [
     mapUrl:
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
-      ' Our fellowship consists of sharing live with testimonies, prayers and study the bible. We are studying the book of Philippians, a letter from apostle Paul on joy, unity and living as citizens of heaven. ',
+      'Our fellowship consists of sharing life through testimonies, prayer and Bible study. We are now studying the Gospel of John, written by the apostle John "so that you may believe that Jesus is the Christ, the Son of God, and that by believing you may have life in his name" (John 20:31). Together we will walk through Jesus\' seven signs, His "I AM" statements, His conversations with Nicodemus and the Samaritan woman, and His death and resurrection, discovering who Jesus is and what it means to have life in Him. Everyone is welcome, no prior Bible knowledge needed!',
     image:
       'https://images.pexels.com/photos/5206051/pexels-photo-5206051.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
     link: '/resources/basicoffaith',
@@ -125,6 +125,6 @@ export const upcomingEvents: Event[] = [
       'https://www.google.com/maps/search/?api=1&query=2965+Duluth+Hwy+Duluth+GA+30096',
     description:
       'Join us as we celebrate those publicly declaring their faith in Jesus through baptism. Please contact us if you have any questions or are interested in being baptized.',
-    image: './images/worship1.jpeg',
+    image: './images/water.jpg',
   },
 ]
