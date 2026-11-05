@@ -57,7 +57,8 @@ const Header = () => {
         <div className='flex justify-between items-center py-4'>
 
           {/* Logo */}
-          <a href='#' rel='noopener noreferrer'>
+          <a href='#' rel='noopener noreferrer' className='flex items-center gap-2'>
+            <img src='/images/logo.png' alt='ACBCCEM logo' className='h-9 w-auto' />
             <h1 className='text-xl font-bold brush-title-inline'>ACBCCEM</h1>
           </a>
 
