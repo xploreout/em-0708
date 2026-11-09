@@ -7,7 +7,11 @@ const AdultSmallGroup = () => {
   const { lang } = useLang()
 
   const studies: {
-    titleKey: 'johnOverviewTitle' | 'philippiansTitle' | 'studiesTitle' | 'pdlTitle'
+    titleKey:
+      | 'johnOverviewTitle'
+      | 'philippiansTitle'
+      | 'studiesTitle'
+      | 'pdlTitle'
     descKey: 'johnOverviewDesc' | 'philippiansDesc' | 'studiesDesc' | 'pdlDesc'
     href: string
     image: string
@@ -84,7 +88,7 @@ const AdultSmallGroup = () => {
               </p>
               <div className='flex items-center gap-2'>
                 <Calendar className='h-3.5 w-3.5 text-blue-400 shrink-0' />
-                <span>11/6, 11/13, 12/4 &amp; 12/11</span>
+                <span>11/13, 12/11, 12/18, 1/15 &amp; 1/22</span>
               </div>
               <div className='flex items-center gap-2'>
                 <Clock className='h-3.5 w-3.5 text-emerald-400 shrink-0' />
@@ -111,19 +115,19 @@ const AdultSmallGroup = () => {
               'bg-gray-50 rounded-lg overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200 flex flex-col group'
             const content = (
               <>
-              <img
-                src={study.image}
-                alt={tx(t.adultSmallGroup[study.titleKey], lang)}
-                className='w-full h-44 object-cover'
-              />
-              <div className='p-5 flex flex-col flex-1'>
-                <h4 className='text-lg font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors'>
-                  {tx(t.adultSmallGroup[study.titleKey], lang)}
-                </h4>
-                <p className='text-base text-gray-600 leading-relaxed flex-1'>
-                  {tx(t.adultSmallGroup[study.descKey], lang)}
-                </p>
-              </div>
+                <img
+                  src={study.image}
+                  alt={tx(t.adultSmallGroup[study.titleKey], lang)}
+                  className='w-full h-44 object-cover'
+                />
+                <div className='p-5 flex flex-col flex-1'>
+                  <h4 className='text-lg font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors'>
+                    {tx(t.adultSmallGroup[study.titleKey], lang)}
+                  </h4>
+                  <p className='text-base text-gray-600 leading-relaxed flex-1'>
+                    {tx(t.adultSmallGroup[study.descKey], lang)}
+                  </p>
+                </div>
               </>
             )
             return study.external ? (
